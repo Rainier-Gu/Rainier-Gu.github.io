@@ -2,3 +2,6 @@
 # GitHub Pages project-site base path configured in _config.yml.
 url: "https://rainiergu.vercel.app"
 baseurl: ""
+
+vercel:
+  web_analytics: true

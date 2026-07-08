@@ -1,2 +1,7 @@
 <!-- Custom site-wide stylesheet loaded after the Chirpy theme styles. -->
 <link rel="stylesheet" href="{{ '/assets/css/custom-font.css' | relative_url }}">
+
+{% if site.vercel.web_analytics %}
+  <!-- Vercel Web Analytics: visitors and page views. -->
+  <script defer src="/_vercel/insights/script.js"></script>
+{% endif %}
