@@ -1,0 +1,33 @@
+# Ruby / Bundler（Gemfile.lock 有意纳入版本控制）
+.bundle/
+vendor/
+*.gem
+
+# Jekyll 生成物与缓存
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
+# Node（项目当前不需要 Node；未来如引入，应提交 lockfile）
+node_modules/
+
+# Chirpy 主题开发时才会生成的目录
+_sass/vendors/
+assets/js/dist/
+
+# 本地环境与凭据
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# 编辑器与操作系统
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+*~
+.DS_Store
+Thumbs.db

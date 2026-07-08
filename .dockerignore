@@ -1,0 +1,17 @@
+.git
+.github
+.devcontainer
+.idea
+.vscode
+.bundle
+vendor
+node_modules
+_site
+.jekyll-cache
+.jekyll-metadata
+.env
+.env.*
+!.env.example
+*.log
+Thumbs.db
+.DS_Store

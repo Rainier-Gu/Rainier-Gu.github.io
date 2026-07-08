@@ -1,0 +1,12 @@
+# 侧边栏联系入口。社交账号统一优先从 _config.yml 读取。
+- type: github
+  icon: "fab fa-github"
+
+- type: rss
+  icon: "fas fa-rss"
+  noblank: true
+
+# 需要公开邮箱时，先填写 _config.yml 中的 social.email，再取消以下注释。
+# - type: email
+#   icon: "fas fa-envelope"
+#   noblank: true
