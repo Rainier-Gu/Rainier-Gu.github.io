@@ -2,9 +2,9 @@
 
 基于 [Jekyll](https://jekyllrb.com/) 与 [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) 的个人学术/技术博客，内容包括物理课程笔记、科研学习记录、技术文章与项目展示。
 
-当前仓库为 `Driving-Rain/Driving-rain`，GitHub Pages 地址按项目站点配置为：
+当前仓库为 `Rainier-Gu/Rainier-Gu.github.io`，GitHub Pages 地址按用户站点配置为：
 
-<https://driving-rain.github.io/Driving-rain/>
+<https://rainier-gu.github.io/>
 
 ## 技术栈
 
@@ -20,12 +20,12 @@ Windows 主机只需要 Git、Docker Desktop、VS Code 和 Dev Containers 扩展
 ## Windows 本地开发
 
 ```powershell
-git clone https://github.com/Driving-Rain/Driving-rain.git
-cd Driving-rain
+git clone https://github.com/Rainier-Gu/Rainier-Gu.github.io.git
+cd Rainier-Gu.github.io
 docker compose up --build
 ```
 
-浏览器访问 <http://localhost:4000/Driving-rain/>。首次构建需要下载镜像和 gems，之后会复用 `bundle-cache` volume。
+浏览器访问 <http://localhost:4000/>。首次构建需要下载镜像和 gems，之后会复用 `bundle-cache` volume。
 
 也可以运行：
 
@@ -112,7 +112,7 @@ mermaid: true    # 使用 Mermaid 时添加
 
 - `title`、`tagline`、`description`：站点文案；
 - `url`：协议加域名，不以 `/` 结尾；
-- `baseurl`：当前项目站点为 `/Driving-rain`；若仓库改名为 `Driving-Rain.github.io`，改成空字符串；
+- `baseurl`：当前用户站点为根路径，保持空字符串；
 - `github.username`、`social`：署名与社交链接；
 - `avatar`：头像路径；
 - `comments.provider` 与 `analytics`：目前留空关闭，配置完整后再启用。
@@ -125,7 +125,7 @@ mermaid: true    # 使用 Mermaid 时添加
 .\scripts\build.ps1
 ```
 
-该脚本构建 Docker 镜像，在容器中按 `_config.yml` 的 `baseurl` 生成生产站点，并运行 HTML 链接检查。当前产物位于 `_site/Driving-rain/`，整个 `_site/` 目录只用于检查，不提交 Git。
+该脚本构建 Docker 镜像，在容器中按 `_config.yml` 的 `baseurl` 生成生产站点，并运行 HTML 链接检查。当前产物位于 `_site/`，整个 `_site/` 目录只用于检查，不提交 Git。
 
 ## 部署到 GitHub Pages
 
@@ -136,9 +136,9 @@ mermaid: true    # 使用 Mermaid 时添加
 1. 打开仓库 **Settings → Pages**。
 2. 在 **Build and deployment → Source** 选择 **GitHub Actions**。
 3. 确认仓库允许 Actions 运行；推送到 `main` 后查看 **Actions** 页面。
-4. 部署成功后访问 <https://driving-rain.github.io/Driving-rain/>。
+4. 部署成功后访问 <https://rainier-gu.github.io/>。
 
-如绑定自定义域名，在 Pages 设置中填写域名，再将 `_config.yml` 的 `url` 改成新域名、把 `baseurl` 改为空，并按 GitHub 指引配置 DNS。不要提交 DNS 服务商 token 或其他凭据。
+如绑定自定义域名，在 Pages 设置中填写域名，再将 `_config.yml` 的 `url` 改成新域名，并保持 `baseurl` 为空；然后按 GitHub 指引配置 DNS。不要提交 DNS 服务商 token 或其他凭据。
 
 ## 常见问题
 
@@ -153,7 +153,7 @@ mermaid: true    # 使用 Mermaid 时添加
   ```
 
   构建完成后可运行 `Remove-Item Env:HTTP_PROXY, Env:HTTPS_PROXY` 清除本会话变量。
-- **页面打开但样式丢失**：核对 `url` 与 `baseurl`；当前仓库必须使用 `/Driving-rain`。
+- **页面打开但样式丢失**：核对 `url` 与 `baseurl`；当前用户站点必须保持 `baseurl: ""`。
 - **Windows 修改文件后不刷新**：确认命令包含 `--force_polling`，并暴露了 35729 端口。
 - **端口 4000 被占用**：停止占用程序，或临时修改 `compose.yaml` 左侧宿主机端口。
 - **依赖状态异常**：运行 `docker compose down --volumes` 后重新 `docker compose up --build`。

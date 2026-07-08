@@ -45,7 +45,7 @@ docker compose up
 
 然后访问：
 
-<http://localhost:4000/Driving-rain/>
+<http://localhost:4000/>
 
 终端保持运行。修改文章后，页面通常会自动刷新；若没有刷新，手动按 `Ctrl+F5`。
 
@@ -62,7 +62,7 @@ docker compose down
 ### 网站名称与介绍
 
 ```yaml
-title: Driving Rain
+title: RainierGu's Page
 tagline: 物理、科研与技术随笔
 description: >-
   记录物理课程、科研学习、技术实践与项目进展的个人博客。
@@ -76,33 +76,33 @@ description: >-
 
 ```yaml
 github:
-  username: Driving-Rain
+  username: Rainier-Gu
 
 social:
   name: Driving Rain
   email:
   links:
-    - https://github.com/Driving-Rain
+    - https://github.com/Rainier-Gu
 ```
 
 不想公开邮箱就让 `email:` 保持为空。不要把密码、Token 或私人邮箱凭据放进这里。
 
 ### 网站地址
 
-当前仓库是项目网站，因此配置为：
+当前仓库是用户网站，因此配置为：
 
 ```yaml
-url: "https://driving-rain.github.io"
-baseurl: "/Driving-rain"
+url: "https://rainier-gu.github.io"
+baseurl: ""
 ```
 
 这两个值共同组成线上地址：
 
 ```text
-https://driving-rain.github.io/Driving-rain/
+https://rainier-gu.github.io/
 ```
 
-如果以后把仓库改名为 `Driving-Rain.github.io`，需要把 `baseurl` 改为空字符串：
+用户站点不需要路径前缀，因此 `baseurl` 保持空字符串：
 
 ```yaml
 baseurl: ""
@@ -407,7 +407,7 @@ git push
 
 线上地址：
 
-<https://driving-rain.github.io/Driving-rain/>
+<https://rainier-gu.github.io/>
 
 ## 十二、如何判断发布成功
 
@@ -457,10 +457,10 @@ docker compose restart site
 
 ### 页面有内容但没有样式
 
-当前项目站点必须保持：
+当前用户站点必须保持：
 
 ```yaml
-baseurl: "/Driving-rain"
+baseurl: ""
 ```
 
 ### Docker Hub 下载超时

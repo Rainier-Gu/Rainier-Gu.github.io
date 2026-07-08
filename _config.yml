@@ -25,9 +25,8 @@ description: >- # 用于 SEO 元信息与 Atom Feed
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
 url: "https://rainier-gu.github.io"
 
-# 当前仓库是项目站点 Rainier-Gu/Rainier-Gu，因此需要此前缀。
-# 若仓库以后改名为 Rainier-Gu.github.io，请将 baseurl 改为 ""。
-baseurl: "/Rainier-Gu"
+# 当前仓库是用户站点 Rainier-Gu/Rainier-Gu.github.io，因此不需要路径前缀。
+baseurl: ""
 
 github:
   username: Rainier-Gu
