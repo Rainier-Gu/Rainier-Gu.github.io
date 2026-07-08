@@ -14,7 +14,7 @@ timezone: Asia/Shanghai
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: Driving Rain # 站点主标题：可替换为姓名或品牌名
+title: RainierGu's Page # 站点主标题：可替换为姓名或品牌名
 
 tagline: 物理、科研与技术随笔 # 侧边栏副标题
 
@@ -23,14 +23,14 @@ description: >- # 用于 SEO 元信息与 Atom Feed
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
-url: "https://driving-rain.github.io"
+url: "https://rainier-gu.github.io"
 
-# 当前仓库是项目站点 Driving-Rain/Driving-rain，因此需要此前缀。
-# 若仓库以后改名为 Driving-Rain.github.io，请将 baseurl 改为 ""。
-baseurl: "/Driving-rain"
+# 当前仓库是项目站点 Rainier-Gu/Rainier-Gu，因此需要此前缀。
+# 若仓库以后改名为 Rainier-Gu.github.io，请将 baseurl 改为 ""。
+baseurl: "/Rainier-Gu"
 
 github:
-  username: Driving-Rain
+  username: Rainier-Gu
 
 twitter:
   username:
@@ -43,7 +43,7 @@ social:
   fediverse_handle: # fill in your fediverse handle. E.g. "@username@domain.com"
   links:
     # The first element serves as the copyright owner's link
-    - https://github.com/Driving-Rain
+    - https://github.com/Rainier-Gu
     # Uncomment below to add more social links
     # - https://www.facebook.com/username
     # - https://www.linkedin.com/in/username

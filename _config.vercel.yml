@@ -1,0 +1,4 @@
+# Vercel deploys this site from the domain root, so it must not use the
+# GitHub Pages project-site base path configured in _config.yml.
+url: "https://rainiergu.vercel.app"
+baseurl: ""
