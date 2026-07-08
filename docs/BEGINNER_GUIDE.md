@@ -76,13 +76,13 @@ description: >-
 
 ```yaml
 github:
-  username: Rainier-Gu
+  username: RainierGu
 
 social:
-  name: Driving Rain
+  name: RainierGu
   email:
   links:
-    - https://github.com/Rainier-Gu
+    - https://github.com/RainierGu
 ```
 
 不想公开邮箱就让 `email:` 保持为空。不要把密码、Token 或私人邮箱凭据放进这里。
@@ -92,14 +92,14 @@ social:
 当前仓库是用户网站，因此配置为：
 
 ```yaml
-url: "https://rainier-gu.github.io"
+url: "https://rainiergu.github.io"
 baseurl: ""
 ```
 
 这两个值共同组成线上地址：
 
 ```text
-https://rainier-gu.github.io/
+https://rainiergu.github.io/
 ```
 
 用户站点不需要路径前缀，因此 `baseurl` 保持空字符串：
@@ -407,7 +407,7 @@ git push
 
 线上地址：
 
-<https://rainier-gu.github.io/>
+<https://rainiergu.github.io/>
 
 ## 十二、如何判断发布成功
 

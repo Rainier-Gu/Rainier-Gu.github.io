@@ -1,10 +1,10 @@
-# Driving Rain
+# RainierGu
 
 基于 [Jekyll](https://jekyllrb.com/) 与 [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) 的个人学术/技术博客，内容包括物理课程笔记、科研学习记录、技术文章与项目展示。
 
-当前仓库为 `Rainier-Gu/Rainier-Gu.github.io`，GitHub Pages 地址按用户站点配置为：
+当前仓库为 `RainierGu/RainierGu.github.io`，GitHub Pages 地址按用户站点配置为：
 
-<https://rainier-gu.github.io/>
+<https://rainiergu.github.io/>
 
 ## 技术栈
 
@@ -20,8 +20,8 @@ Windows 主机只需要 Git、Docker Desktop、VS Code 和 Dev Containers 扩展
 ## Windows 本地开发
 
 ```powershell
-git clone https://github.com/Rainier-Gu/Rainier-Gu.github.io.git
-cd Rainier-Gu.github.io
+git clone https://github.com/RainierGu/RainierGu.github.io.git
+cd RainierGu.github.io
 docker compose up --build
 ```
 
@@ -136,7 +136,7 @@ mermaid: true    # 使用 Mermaid 时添加
 1. 打开仓库 **Settings → Pages**。
 2. 在 **Build and deployment → Source** 选择 **GitHub Actions**。
 3. 确认仓库允许 Actions 运行；推送到 `main` 后查看 **Actions** 页面。
-4. 部署成功后访问 <https://rainier-gu.github.io/>。
+4. 部署成功后访问 <https://rainiergu.github.io/>。
 
 如绑定自定义域名，在 Pages 设置中填写域名，再将 `_config.yml` 的 `url` 改成新域名，并保持 `baseurl` 为空；然后按 GitHub 指引配置 DNS。不要提交 DNS 服务商 token 或其他凭据。
 

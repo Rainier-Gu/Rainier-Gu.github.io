@@ -4,7 +4,7 @@ icon: fas fa-info-circle
 order: 4
 ---
 
-你好，我是 **Driving Rain**。
+你好，我是 **RainierGu**。
 
 这里主要记录物理课程学习、科研阅读、技术实践与个人项目。文章力求保留推导过程、实验条件和可复现细节，而不只留下结论。
 

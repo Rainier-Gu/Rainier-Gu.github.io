@@ -23,13 +23,13 @@ description: >- # 用于 SEO 元信息与 Atom Feed
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
-url: "https://rainier-gu.github.io"
+url: "https://rainiergu.github.io"
 
-# 当前仓库是用户站点 Rainier-Gu/Rainier-Gu.github.io，因此不需要路径前缀。
+# 当前仓库是用户站点 RainierGu/RainierGu.github.io，因此不需要路径前缀。
 baseurl: ""
 
 github:
-  username: Rainier-Gu
+  username: RainierGu
 
 twitter:
   username:
@@ -37,12 +37,12 @@ twitter:
 social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
-  name: Driving Rain # 可替换为你的真实姓名或常用署名
+  name: RainierGu # 可替换为你的真实姓名或常用署名
   email: # 如需公开邮箱，请在此填写
   fediverse_handle: # fill in your fediverse handle. E.g. "@username@domain.com"
   links:
     # The first element serves as the copyright owner's link
-    - https://github.com/Rainier-Gu
+    - https://github.com/RainierGu
     # Uncomment below to add more social links
     # - https://www.facebook.com/username
     # - https://www.linkedin.com/in/username

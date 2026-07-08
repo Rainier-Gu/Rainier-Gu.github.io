@@ -1,5 +1,5 @@
 {
-  "name": "Driving Rain · Chirpy Blog",
+  "name": "RainierGu · Chirpy Blog",
   "dockerComposeFile": "../compose.yaml",
   "service": "site",
   "workspaceFolder": "/workspaces/site",
