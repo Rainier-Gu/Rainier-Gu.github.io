@@ -16,10 +16,10 @@ timezone: Asia/Shanghai
 
 title: RainierGu's Page # 站点主标题：可替换为姓名或品牌名
 
-tagline: 物理、科研与技术随笔 # 侧边栏副标题
+tagline: 学业、科研与随笔 # 侧边栏副标题
 
 description: >- # 用于 SEO 元信息与 Atom Feed
-  记录物理课程、科研学习、技术实践与项目进展的个人博客。
+  记录大学课程、科研学习与日常随笔的个人博客。
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
@@ -38,7 +38,7 @@ social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
   name: RainierGu # 可替换为你的真实姓名或常用署名
-  email: # 如需公开邮箱，请在此填写
+  email: dizzyingrain@gmail.com # 如需公开邮箱，请在此填写
   fediverse_handle: # fill in your fediverse handle. E.g. "@username@domain.com"
   links:
     # The first element serves as the copyright owner's link
@@ -101,7 +101,7 @@ theme_mode: # 留空时跟随系统，可选 light 或 dark
 cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar: /assets/img/avatar/avatar.svg
+avatar: /assets/img/avatar/avatar.jpg
 
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.
