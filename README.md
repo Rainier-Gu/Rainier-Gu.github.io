@@ -63,7 +63,7 @@ npm run build
 
 不要把密钥写进仓库。需要时请在 Vercel 的 Environment Variables 中配置：
 
-- `GEMINI_API_KEY`：AI 猫猫助手。
+- `DEEPSEEK_API_KEY`：AI 猫猫助手（DeepSeek 服务端密钥，不要加 `NEXT_PUBLIC_` 前缀）。
 - `QWEATHER_KEY`：天气组件。
 - `NEXT_PUBLIC_GITALK_CLIENT_ID` / `NEXT_PUBLIC_GITALK_CLIENT_SECRET`：GitHub Issues 评论系统。配置步骤见 `docs/GITHUB_COMMENTS.md`。
 

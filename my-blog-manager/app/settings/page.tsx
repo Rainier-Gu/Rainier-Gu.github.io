@@ -46,7 +46,7 @@ function SettingsContent() {
     footerBadges: [...(siteConfig.footerBadges || [])],
     // 👇 🌟 初始化小猫 AI 配置数据
     geminiConfig: siteConfig.geminiConfig || {
-      modelId: 'gemini-2.5-flash-lite',
+      modelId: 'deepseek-v4-flash',
       systemPrompt: '',
       maxOutputTokens: 150,
       temperature: 0.85

@@ -88,7 +88,7 @@ public/assets/files/
 
 下面这些功能已经预留入口，但不要把密钥写进代码仓库：
 
-- AI 猫猫助手：需要在 Vercel 环境变量里配置 `GEMINI_API_KEY`。
+- AI 猫猫助手：需要在 Vercel 环境变量里配置 `DEEPSEEK_API_KEY`，详细说明见 `docs/DEEPSEEK_AI.md`。
 - 天气接口：需要在 Vercel 环境变量里配置 `QWEATHER_KEY`。
 - 评论系统：已经预留 Gitalk / GitHub Issues 接入。详细配置见 `docs/GITHUB_COMMENTS.md`。
 

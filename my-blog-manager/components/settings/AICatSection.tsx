@@ -7,7 +7,7 @@ import { Save, Bot, Sparkles, Sliders, MessageSquareText, Cpu } from 'lucide-rea
 export default function AICatSection({ formData, handleUpdate, pushToQueue }: any) {
   // 防止 undefined
   const config = formData.geminiConfig || {
-    modelId: 'gemini-2.5-flash-lite',
+    modelId: 'deepseek-v4-flash',
     systemPrompt: '',
     maxOutputTokens: 150,
     temperature: 0.85
@@ -74,7 +74,7 @@ export default function AICatSection({ formData, handleUpdate, pushToQueue }: an
             value={config.modelId}
             onChange={(e) => updateConfig('modelId', e.target.value)}
             className="w-full bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl py-3.5 px-5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-medium"
-            placeholder="例如: gemini-2.5-flash-lite"
+            placeholder="例如: deepseek-v4-flash"
           />
           <p className="text-[11px] text-slate-400 mt-2 ml-1">推荐使用默认的轻量级模型，响应速度最快。</p>
         </div>

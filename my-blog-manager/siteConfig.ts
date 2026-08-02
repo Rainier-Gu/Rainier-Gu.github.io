@@ -84,7 +84,7 @@ export const siteConfig = {
   icpConfig: null,
 
   geminiConfig: {
-    modelId: "gemini-2.5-flash-lite",
+    modelId: "deepseek-v4-flash",
     systemPrompt:
       "你是 RainierGu 个人主页里的学习助手。回答要简洁、友好、偏学术笔记风格；如果问题涉及本站资料，请提醒用户核对原文和 PDF。",
     maxOutputTokens: 180,
