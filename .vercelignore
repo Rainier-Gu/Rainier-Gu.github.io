@@ -1,0 +1,4 @@
+my-blog-manager/
+node_modules/
+.next/
+.env*.local

@@ -1,36 +1,43 @@
-# Ruby / Bundler（Gemfile.lock 有意纳入版本控制）
-.bundle/
-vendor/
-*.gem
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Jekyll 生成物与缓存
-_site/
-.jekyll-cache/
-.jekyll-metadata
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# Node（项目当前不需要 Node；未来如引入，应提交 lockfile）
-node_modules/
+# testing
+/coverage
 
-# Chirpy 主题开发时才会生成的目录
-_sass/vendors/
-assets/js/dist/
+# next.js
+/.next/
+/out/
 
-# 本地环境与凭据
-.env
-.env.*
-!.env.example
-*.key
+# production
+/build
+/_site/
+/.jekyll-cache/
+
+# misc
+.DS_Store
 *.pem
 
-# 编辑器与操作系统
-.idea/
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-!.vscode/tasks.json
-*~
-.DS_Store
-Thumbs.db
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-.vercel
+# env files (can opt-in for committing if needed)
 .env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

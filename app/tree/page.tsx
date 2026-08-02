@@ -1,0 +1,268 @@
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+import Link from 'next/link';
+import { ArrowRight, BookOpen, Clock3, FileText, FolderKanban, Map, MessageCircle, Sparkles, Tags } from 'lucide-react';
+
+import Navbar from '../../components/Navbar';
+import PageTransition from '../../components/PageTransition';
+import { siteConfig } from '../../siteConfig';
+
+type KnowledgeItem = {
+  title: string;
+  description: string;
+  date: string;
+  href: string;
+  type: '文章' | '杂谈' | '说说';
+  cover?: string;
+  tags: string[];
+  pdfCount: number;
+};
+
+const POSTS_DIR = path.join(process.cwd(), 'posts');
+const CHATTERS_DIR = path.join(process.cwd(), 'chatters');
+const MOMENTS_DIR = path.join(process.cwd(), 'moments');
+
+export const metadata = {
+  title: `知识地图 | ${siteConfig.title}`,
+  description: '把博客文章、课程笔记、杂谈与说说整理成一张轻量的学习地图。',
+};
+
+function normalizeDate(date: unknown) {
+  if (!date) return '';
+  if (date instanceof Date) return date.toISOString();
+  return String(date);
+}
+
+function formatDate(date: string) {
+  if (!date) return '未标注日期';
+  const clean = date.replace('T', ' ').slice(0, 10);
+  return clean || date;
+}
+
+function excerptFromContent(content: string) {
+  return content
+    .replace(/[#>*_\-[\]()`]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 110);
+}
+
+function readMarkdownItems(
+  directoryPath: string,
+  type: KnowledgeItem['type'],
+  hrefPrefix: '/posts' | '/chatter' | '/moments'
+) {
+  if (!fs.existsSync(directoryPath)) return [];
+
+  return fs
+    .readdirSync(directoryPath)
+    .filter((fileName) => fileName.endsWith('.md'))
+    .map((fileName) => {
+      const slug = fileName.replace(/\.md$/, '');
+      const fullPath = path.join(directoryPath, fileName);
+      const fileContents = fs.readFileSync(fullPath, 'utf8');
+      const { data, content } = matter(fileContents);
+      const tags = Array.isArray(data.tags) ? data.tags.map(String) : [];
+      const fallbackTitle = excerptFromContent(content) || `${type}记录`;
+      const pdfCount = (content.match(/\.pdf/gi) || []).length;
+
+      return {
+        title: String(data.title || fallbackTitle),
+        description: String(data.description || excerptFromContent(content) || '暂无摘要'),
+        date: normalizeDate(data.date),
+        href: hrefPrefix === '/moments' ? '/moments' : `${hrefPrefix}/${slug}`,
+        type,
+        cover: data.cover || data.image,
+        tags,
+        pdfCount,
+      } satisfies KnowledgeItem;
+    });
+}
+
+function sortByDate(items: KnowledgeItem[]) {
+  return items.sort((a, b) => {
+    const timeA = new Date(a.date.replace(' ', 'T')).getTime();
+    const timeB = new Date(b.date.replace(' ', 'T')).getTime();
+    return (Number.isFinite(timeB) ? timeB : 0) - (Number.isFinite(timeA) ? timeA : 0);
+  });
+}
+
+export default function KnowledgeMapPage() {
+  const posts = readMarkdownItems(POSTS_DIR, '文章', '/posts');
+  const chatters = readMarkdownItems(CHATTERS_DIR, '杂谈', '/chatter');
+  const moments = readMarkdownItems(MOMENTS_DIR, '说说', '/moments');
+  const allItems = sortByDate([...posts, ...chatters, ...moments]);
+  const recentItems = allItems.slice(0, 6);
+  const pdfTotal = allItems.reduce((sum, item) => sum + item.pdfCount, 0);
+
+  const tagCounts = allItems.reduce<Record<string, number>>((acc, item) => {
+    item.tags.forEach((tag) => {
+      acc[tag] = (acc[tag] || 0) + 1;
+    });
+    return acc;
+  }, {});
+
+  const topTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12);
+
+  const sections = [
+    {
+      title: '课程与研究文章',
+      count: posts.length,
+      href: '/',
+      icon: BookOpen,
+      description: '集中整理课程笔记、PDF 资料、研究阅读和技术实践。',
+    },
+    {
+      title: '站点维护杂谈',
+      count: chatters.length,
+      href: '/chatter',
+      icon: MessageCircle,
+      description: '记录网站改版、工具配置和阶段性想法。',
+    },
+    {
+      title: '日常说说',
+      count: moments.length,
+      href: '/moments',
+      icon: Sparkles,
+      description: '轻量记录当日进展、灵感和待整理素材。',
+    },
+    {
+      title: 'PDF 资料',
+      count: pdfTotal,
+      href: '/',
+      icon: FileText,
+      description: '文章中已接入的课程讲义、实验报告与笔记文件。',
+    },
+  ];
+
+  return (
+    <div className="min-h-screen pb-24">
+      <Navbar />
+      <PageTransition>
+        <main className="w-full max-w-6xl mx-auto px-4 sm:px-8 pt-28">
+          <section className="relative overflow-hidden rounded-[2rem] border border-white/40 dark:border-white/10 bg-white/55 dark:bg-slate-900/55 backdrop-blur-2xl shadow-2xl p-8 md:p-12">
+            <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-indigo-500/20 blur-3xl" />
+            <div className="absolute -left-20 bottom-0 w-64 h-64 rounded-full bg-sky-400/20 blur-3xl" />
+
+            <div className="relative z-10 max-w-3xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-300/40 bg-indigo-500/10 px-4 py-2 text-sm font-bold text-indigo-600 dark:text-indigo-300 mb-6">
+                <Map size={16} />
+                Knowledge Map
+              </div>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-950 dark:text-white">
+                把学习资料整理成一张会生长的地图
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
+                这里会自动汇总站内文章、杂谈和说说，方便快速查看最近更新、资料数量和常用标签。
+                以后新增 Markdown 文章或 PDF 资料时，这张地图也会跟着更新。
+              </p>
+            </div>
+          </section>
+
+          <section className="grid md:grid-cols-4 gap-4 mt-8">
+            {sections.map((section) => {
+              const Icon = section.icon;
+              return (
+                <Link
+                  key={section.title}
+                  href={section.href}
+                  className="group rounded-3xl border border-white/50 dark:border-white/10 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-6 shadow-lg hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 flex items-center justify-center">
+                      <Icon size={22} />
+                    </div>
+                    <ArrowRight size={18} className="text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
+                  </div>
+                  <div className="mt-5 text-3xl font-black text-slate-950 dark:text-white">{section.count}</div>
+                  <h2 className="mt-2 font-black text-slate-800 dark:text-slate-100">{section.title}</h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{section.description}</p>
+                </Link>
+              );
+            })}
+          </section>
+
+          <section className="grid lg:grid-cols-[1.5fr_0.8fr] gap-6 mt-8">
+            <div className="rounded-[2rem] border border-white/50 dark:border-white/10 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-6 md:p-8 shadow-xl">
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-2xl font-black text-slate-950 dark:text-white flex items-center gap-2">
+                    <Clock3 size={22} className="text-indigo-500" />
+                    最近更新
+                  </h2>
+                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">按发布时间自动排序，优先看到最新内容。</p>
+                </div>
+                <Link href="/timeline" className="text-sm font-bold text-indigo-600 dark:text-indigo-300 hover:underline">
+                  查看归档
+                </Link>
+              </div>
+
+              <div className="space-y-4">
+                {recentItems.map((item) => (
+                  <Link
+                    key={`${item.type}-${item.href}-${item.date}`}
+                    href={item.href}
+                    className="group block rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/65 dark:bg-slate-800/45 p-5 hover:border-indigo-300/70 hover:bg-white/90 dark:hover:bg-slate-800 transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
+                          <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-indigo-600 dark:text-indigo-300">{item.type}</span>
+                          <span>{formatDate(item.date)}</span>
+                          {item.pdfCount > 0 && <span>{item.pdfCount} 个 PDF</span>}
+                        </div>
+                        <h3 className="mt-3 text-lg font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
+                          {item.title}
+                        </h3>
+                        <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.description}</p>
+                      </div>
+                      <ArrowRight size={18} className="mt-1 shrink-0 text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <aside className="space-y-6">
+              <div className="rounded-[2rem] border border-white/50 dark:border-white/10 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-6 shadow-xl">
+                <h2 className="text-xl font-black text-slate-950 dark:text-white flex items-center gap-2">
+                  <Tags size={20} className="text-indigo-500" />
+                  常用标签
+                </h2>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {topTags.length > 0 ? (
+                    topTags.map(([tag, count]) => (
+                      <span key={tag} className="rounded-full border border-indigo-300/30 bg-indigo-500/10 px-3 py-1.5 text-sm font-bold text-indigo-700 dark:text-indigo-200">
+                        {tag} · {count}
+                      </span>
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">还没有标签。给文章 frontmatter 添加 tags 后会自动显示。</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-[2rem] border border-white/50 dark:border-white/10 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-6 shadow-xl">
+                <h2 className="text-xl font-black text-slate-950 dark:text-white flex items-center gap-2">
+                  <FolderKanban size={20} className="text-indigo-500" />
+                  维护提示
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                  新文章放到 <code className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800">posts/</code>，
+                  PDF 放到 <code className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800">public/assets/files/</code>。
+                  构建时页面会自动扫描 Markdown 并刷新统计。
+                </p>
+                <Link href="/about" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-300 hover:underline">
+                  查看站点说明 <ArrowRight size={16} />
+                </Link>
+              </div>
+            </aside>
+          </section>
+        </main>
+      </PageTransition>
+    </div>
+  );
+}
