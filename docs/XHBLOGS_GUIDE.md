@@ -90,6 +90,6 @@ public/assets/files/
 
 - AI 猫猫助手：需要在 Vercel 环境变量里配置 `GEMINI_API_KEY`。
 - 天气接口：需要在 Vercel 环境变量里配置 `QWEATHER_KEY`。
-- 评论系统：需要在 GitHub 创建 OAuth App，然后把 Gitalk 配置填入 `siteConfig.ts`。
+- 评论系统：已经预留 Gitalk / GitHub Issues 接入。详细配置见 `docs/GITHUB_COMMENTS.md`。
 
 如果暂时不配置，网站仍可正常访问。

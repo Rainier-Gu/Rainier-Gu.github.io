@@ -1,24 +1,16 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import 'gitalk/dist/gitalk.css';
 import Gitalk from 'gitalk';
-
-// 🌟 引入全局配置，读取你的 GitHub OAuth 凭证
-import { siteConfig } from '../siteConfig'; // 如果路径报错，请检查层级是否需要改成 '../../siteConfig'
+import { getGitalkConfig, getGitalkIssueId, isGitalkConfigured } from './gitalkConfig';
 
 export default function Comments() {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const gitalkConfig = siteConfig.gitalkConfig;
-  const isConfigured = Boolean(
-    gitalkConfig.clientID &&
-    gitalkConfig.clientSecret &&
-    gitalkConfig.repo &&
-    gitalkConfig.owner &&
-    gitalkConfig.admin?.some(Boolean)
-  );
+  const gitalkConfig = useMemo(() => getGitalkConfig(), []);
+  const isConfigured = isGitalkConfigured(gitalkConfig);
 
   useEffect(() => {
     if (!containerRef.current || !isConfigured) return;
@@ -34,9 +26,9 @@ export default function Comments() {
       admin: gitalkConfig.admin,
 
       // 👇 指向我们自己的同源 API，彻底告别跨域和第三方拦截！
-      proxy: '/api/github',
+      proxy: gitalkConfig.proxy,
 
-      id: (pathname.replace(/\/$/, '') || '/').substring(0, 49),
+      id: getGitalkIssueId(pathname),
       distractionFreeMode: false,
     });
 
@@ -56,7 +48,13 @@ export default function Comments() {
     return (
       <div className="w-full mt-16 rounded-3xl bg-white/40 dark:bg-slate-800/50 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-xl p-6 text-center text-slate-600 dark:text-slate-300">
         <p className="font-bold text-slate-800 dark:text-white mb-2">评论系统尚未配置</p>
-        <p className="text-sm">填写 GitHub OAuth 与 Gitalk 仓库信息后，这里会自动变成文章评论区。</p>
+        <p className="text-sm">
+          已接入 GitHub Issues / Gitalk。创建 GitHub OAuth App，并在 Vercel 配置
+          <code className="mx-1 rounded bg-slate-200/70 px-1.5 py-0.5 dark:bg-slate-700">NEXT_PUBLIC_GITALK_CLIENT_ID</code>
+          和
+          <code className="mx-1 rounded bg-slate-200/70 px-1.5 py-0.5 dark:bg-slate-700">NEXT_PUBLIC_GITALK_CLIENT_SECRET</code>
+          后，这里会自动变成评论区。
+        </p>
       </div>
     );
   }

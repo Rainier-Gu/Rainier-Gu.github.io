@@ -1,33 +1,35 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import 'gitalk/dist/gitalk.css';
 import Gitalk from 'gitalk';
 
-import { siteConfig } from '../siteConfig';
+import { getGitalkConfig, getGitalkIssueId, isGitalkConfigured } from './gitalkConfig';
 
 // 🌟 专门为炼金实验室定制的 Gitalk 组件，不影响原有的 Comments.tsx
 export default function LabComments({ pageId }: { pageId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const gitalkConfig = useMemo(() => getGitalkConfig(), []);
+  const isConfigured = isGitalkConfigured(gitalkConfig);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !isConfigured) return;
 
     // 清空之前的评论区，防止切换月份时叠加
     containerRef.current.innerHTML = '';
 
     // 优先使用传入的 pageId (如 workshop-2026-05)
-    const finalId = (pageId || pathname.replace(/\/$/, '') || '/').substring(0, 49);
+    const finalId = getGitalkIssueId(pageId || pathname);
 
     const gitalk = new Gitalk({
-      clientID: siteConfig.gitalkConfig.clientID,
-      clientSecret: siteConfig.gitalkConfig.clientSecret,
-      repo: siteConfig.gitalkConfig.repo,
-      owner: siteConfig.gitalkConfig.owner,
-      admin: siteConfig.gitalkConfig.admin,
-      proxy: '/api/github',
+      clientID: gitalkConfig.clientID,
+      clientSecret: gitalkConfig.clientSecret,
+      repo: gitalkConfig.repo,
+      owner: gitalkConfig.owner,
+      admin: gitalkConfig.admin,
+      proxy: gitalkConfig.proxy,
       id: finalId, // 这里的 ID 决定了留言板对应 GitHub 的哪个 Issue
       distractionFreeMode: false,
     });
@@ -41,7 +43,15 @@ export default function LabComments({ pageId }: { pageId?: string }) {
       window.history.replaceState({}, document.title, url.toString());
     }
 
-  }, [pathname, pageId]);
+  }, [pathname, pageId, isConfigured, gitalkConfig]);
+
+  if (!isConfigured) {
+    return (
+      <div className="w-full mt-16 rounded-3xl bg-white/40 dark:bg-slate-800/50 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-xl p-6 text-center text-slate-600 dark:text-slate-300">
+        配置 GitHub OAuth App 后，这里会显示 Gitalk 留言区。
+      </div>
+    );
+  }
 
   return (
     <div className="w-full mt-16 relative">

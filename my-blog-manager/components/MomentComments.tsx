@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import 'gitalk/dist/gitalk.css';
 import Gitalk from 'gitalk';
-import { siteConfig } from '../siteConfig';
+import { getGitalkConfig, getGitalkIssueId, isGitalkConfigured } from './gitalkConfig';
 
 interface MomentCommentsProps {
   id: string; // 必须传入说说的专属 ID
@@ -11,26 +11,37 @@ interface MomentCommentsProps {
 
 export default function MomentComments({ id }: MomentCommentsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const gitalkConfig = useMemo(() => getGitalkConfig(), []);
+  const isConfigured = isGitalkConfigured(gitalkConfig);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !isConfigured) return;
 
     // 清空重载，防止 React 严格模式下重复渲染
     containerRef.current.innerHTML = '';
 
     const gitalk = new Gitalk({
-      clientID: siteConfig.gitalkConfig.clientID,
-      clientSecret: siteConfig.gitalkConfig.clientSecret,
-      repo: siteConfig.gitalkConfig.repo,
-      owner: siteConfig.gitalkConfig.owner,
-      admin: siteConfig.gitalkConfig.admin,
+      clientID: gitalkConfig.clientID,
+      clientSecret: gitalkConfig.clientSecret,
+      repo: gitalkConfig.repo,
+      owner: gitalkConfig.owner,
+      admin: gitalkConfig.admin,
+      proxy: gitalkConfig.proxy,
       // 截取前49个字符作为 GitHub Issue 的 Label（Gitalk 的要求）
-      id: id.substring(0, 49),
+      id: getGitalkIssueId(id),
       distractionFreeMode: false,
     });
 
     gitalk.render(containerRef.current);
-  }, [id]);
+  }, [id, isConfigured, gitalkConfig]);
+
+  if (!isConfigured) {
+    return (
+      <div className="rounded-2xl border border-dashed border-slate-300/70 bg-white/40 px-4 py-3 text-xs text-slate-500 dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-400">
+        评论系统已预留，配置 GitHub OAuth App 后自动启用。
+      </div>
+    );
+  }
 
   return (
     <div className="w-full relative">

@@ -65,6 +65,7 @@ npm run build
 
 - `GEMINI_API_KEY`：AI 猫猫助手。
 - `QWEATHER_KEY`：天气组件。
+- `NEXT_PUBLIC_GITALK_CLIENT_ID` / `NEXT_PUBLIC_GITALK_CLIENT_SECRET`：GitHub Issues 评论系统。配置步骤见 `docs/GITHUB_COMMENTS.md`。
 
 评论系统需要在 GitHub 创建 OAuth App，并把 Gitalk 的 `clientID`、`clientSecret`、`repo`、`owner`、`admin` 填入 `siteConfig.ts`。
 
