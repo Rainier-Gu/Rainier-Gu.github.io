@@ -1,81 +1,99 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-// 🌟 引入咱们的控制中心配置
 import { siteConfig } from '../siteConfig';
 
-export default function SiteDashboard() {
-  const [timeStr, setTimeStr] = useState('');
-  const [uptimeStr, setUptimeStr] = useState('');
+type SiteDashboardProps = {
+  latestUpdatedAt?: string;
+};
 
-  // 🌟 从配置中读取建站时间
-  const START_DATE = new Date(siteConfig.buildDate || '2026-03-23T00:00:00').getTime();
+function formatDuration(diff: number, suffix = '') {
+  const safeDiff = Math.max(0, diff);
+  const days = Math.floor(safeDiff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((safeDiff / (1000 * 60 * 60)) % 24);
+
+  return `${days}天 ${hours}小时${suffix}`;
+}
+
+export default function SiteDashboard({ latestUpdatedAt }: SiteDashboardProps) {
+  const [timeStr, setTimeStr] = useState('');
+  const [dateStr, setDateStr] = useState('');
+  const [uptimeStr, setUptimeStr] = useState('');
+  const [latestUpdateStr, setLatestUpdateStr] = useState('');
 
   useEffect(() => {
+    const startTime = new Date(siteConfig.buildDate || '2026-03-23T00:00:00').getTime();
+    const latestUpdateTime = new Date(latestUpdatedAt || siteConfig.buildDate || Date.now()).getTime();
+
     const updateTime = () => {
       const now = new Date();
-      // 格式化当前时间为 HH:MM:SS
-      setTimeStr(now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
 
-      // 计算运行时间
-      const diff = now.getTime() - START_DATE;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      setUptimeStr(`${days}天 ${hours}小时`);
+      setTimeStr(now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setDateStr(now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' }));
+
+      setUptimeStr(formatDuration(now.getTime() - startTime));
+      setLatestUpdateStr(formatDuration(now.getTime() - latestUpdateTime, '前'));
     };
 
-    updateTime(); // 初始执行一次
+    updateTime();
     const timer = setInterval(updateTime, 1000);
     return () => clearInterval(timer);
-  }, [START_DATE]);
+  }, [latestUpdatedAt]);
+
+  const [hour = '00', minute = '00', second = '00'] = (timeStr || '00:00:00').split(':');
 
   return (
-    // 横向铺满 12 列的长条矩阵
-    <div className="md:col-span-12 rounded-3xl bg-white/40 dark:bg-slate-800/50 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-xl overflow-hidden flex flex-col md:flex-row items-stretch transition-colors duration-700 h-auto md:h-20 group">
+    <div className="group overflow-hidden rounded-[32px] border border-white/50 bg-white/45 shadow-xl backdrop-blur-xl transition-colors duration-700 dark:border-white/10 dark:bg-slate-800/55">
+      <div className="bg-white/70 px-4 py-5 text-slate-900 shadow-inner transition-colors duration-700 dark:bg-black dark:text-white">
+        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.32em] text-indigo-500 dark:text-indigo-300">
+          Local Time
+        </p>
 
-      {/* 左侧：翻页时钟特效 (使用等宽字体) */}
-      <div className="bg-slate-900 dark:bg-black text-white px-8 py-4 md:py-0 flex items-center justify-center font-mono text-2xl md:text-3xl font-black tracking-widest shadow-inner relative overflow-hidden group-hover:text-indigo-400 transition-colors">
-        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
-        {timeStr || '00:00:00'}
-        {/* 模拟翻页中间的分割线 */}
-        <div className="absolute left-0 right-0 top-1/2 h-px bg-black/50"></div>
+        <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-1 font-mono">
+          <ClockUnit value={hour} />
+          <span className="pb-1 text-xl font-black text-slate-300 dark:text-white/45">:</span>
+          <ClockUnit value={minute} />
+          <span className="pb-1 text-xl font-black text-slate-300 dark:text-white/45">:</span>
+          <ClockUnit value={second} isMuted />
+        </div>
+
+        <p className="mt-3 text-xs font-bold text-slate-500 dark:text-white/55">{dateStr || '同步时间中'}</p>
       </div>
 
-      {/* 中间与右侧：状态信息 */}
-      <div className="flex-1 px-6 py-4 md:py-0 flex flex-wrap items-center justify-between gap-4 text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300">
-
-        {/* 运行时间 */}
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          <span>系统已稳定运行：<span className="text-indigo-600 dark:text-indigo-400 font-black">{uptimeStr}</span></span>
+      <div className="space-y-4 p-4">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-black uppercase tracking-[0.28em] text-indigo-500 dark:text-indigo-300">
+            Site Status
+          </span>
+          <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-black text-emerald-600 dark:text-emerald-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Online
+          </span>
         </div>
 
-        {/* 技术栈徽章 (🌟 动态映射 siteConfig 里的数组) */}
-        <div className="flex gap-2">
-          {siteConfig.footerBadges?.map((badge, index) => (
-            <span
-              key={index}
-              className="px-2 py-1 bg-white/50 dark:bg-slate-700/50 rounded-md shadow-sm flex items-center gap-1 border border-white/40 dark:border-slate-600"
-            >
-              <svg className={`w-3.5 h-3.5 ${badge.color}`} fill="currentColor" viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: badge.svg }} />
-              {badge.name}
-            </span>
-          ))}
+        <div className="space-y-3 text-xs font-bold text-slate-600 dark:text-slate-300">
+          <div className="flex items-baseline justify-between gap-3">
+            <span>正常运行时间</span>
+            <span className="text-lg font-black text-indigo-600 dark:text-indigo-300">{uptimeStr || '计算中'}</span>
+          </div>
+          <div className="flex items-baseline justify-between gap-3 border-t border-slate-200/70 pt-3 dark:border-white/10">
+            <span>最近更新时间</span>
+            <span className="text-lg font-black text-indigo-600 dark:text-indigo-300">{latestUpdateStr || '计算中'}</span>
+          </div>
         </div>
-
-        {/* 备案信息 (🌟 从 siteConfig 读取链接和名称) */}
-        {siteConfig.icpConfig && (
-          <a
-            href={siteConfig.icpConfig.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-indigo-500 transition-colors border-b border-dashed border-slate-400 dark:border-slate-500 pb-0.5"
-          >
-            {siteConfig.icpConfig.name}
-          </a>
-        )}
-
       </div>
     </div>
+  );
+}
+
+function ClockUnit({ value, isMuted = false }: { value: string; isMuted?: boolean }) {
+  return (
+    <span
+      className={`relative overflow-hidden rounded-xl border border-slate-200/80 bg-slate-50/85 px-2 py-2 text-center text-xl font-black leading-none shadow-inner dark:border-white/10 dark:bg-white/10 ${
+        isMuted ? 'text-slate-500 dark:text-white/70' : 'text-slate-900 dark:text-white'
+      }`}
+    >
+      {value}
+    </span>
   );
 }

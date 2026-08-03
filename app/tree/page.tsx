@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Clock3, FileText, FolderKanban, Map, MessageCircle, Sparkles, Tags } from 'lucide-react';
+import { ArrowRight, BookOpen, Clock3, FileText, FolderKanban, MessageCircle, Sparkles, Tags } from 'lucide-react';
 
 import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
@@ -142,27 +142,21 @@ export default function KnowledgeMapPage() {
     <div className="min-h-screen pb-24">
       <Navbar />
       <PageTransition>
-        <main className="w-full max-w-6xl mx-auto px-4 sm:px-8 pt-28">
-          <section className="relative overflow-hidden rounded-[2rem] border border-white/40 dark:border-white/10 bg-white/55 dark:bg-slate-900/55 backdrop-blur-2xl shadow-2xl p-8 md:p-12">
-            <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-indigo-500/20 blur-3xl" />
-            <div className="absolute -left-20 bottom-0 w-64 h-64 rounded-full bg-sky-400/20 blur-3xl" />
-
-            <div className="relative z-10 max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-300/40 bg-indigo-500/10 px-4 py-2 text-sm font-bold text-indigo-600 dark:text-indigo-300 mb-6">
-                <Map size={16} />
-                Knowledge Map
+        <main className="w-full max-w-7xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
+          <section className="animate-fade-in-up">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">
+                  知识地图
+                </h1>
+                <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
+                  把博客文章、课程笔记、杂谈与说说整理成一张轻量的学习地图。
+                </p>
               </div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-950 dark:text-white">
-                把学习资料整理成一张会生长的地图
-              </h1>
-              <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
-                这里会自动汇总站内文章、杂谈和说说，方便快速查看最近更新、资料数量和常用标签。
-                以后新增 Markdown 文章或 PDF 资料时，这张地图也会跟着更新。
-              </p>
             </div>
           </section>
 
-          <section className="grid md:grid-cols-4 gap-4 mt-8">
+          <section className="grid md:grid-cols-4 gap-4">
             {sections.map((section) => {
               const Icon = section.icon;
               return (

@@ -16,38 +16,38 @@ export default function ProfileCard({ postCount, chatterCount, photoCount }: { p
   return (
     <div
       onClick={() => router.push('/about')}
-      className="md:col-span-7 rounded-3xl bg-white/40 dark:bg-slate-800/50 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-xl p-5 sm:p-6 md:p-8 flex flex-col justify-between transition-all duration-700 hover:scale-[1.01] cursor-pointer group relative overflow-hidden h-full min-h-[220px] md:min-h-[280px]"
+      className="rounded-[32px] bg-white/45 dark:bg-slate-800/55 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-xl p-6 flex flex-col justify-between transition-all duration-700 hover:scale-[1.01] cursor-pointer group relative overflow-hidden h-full min-h-[320px]"
     >
       <div className="flex items-start justify-between relative z-10">
-        <div className="flex items-center gap-4 md:gap-6 w-full">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-xl md:rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 p-1 shadow-lg flex-shrink-0 transition-transform duration-500 group-hover:rotate-3">
-            <img src={siteConfig.avatarUrl} alt="avatar" className="w-full h-full rounded-lg md:rounded-xl object-cover bg-white" />
+        <div className="flex w-full flex-col items-center text-center">
+          <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-400 p-1 shadow-lg flex-shrink-0 transition-transform duration-500 group-hover:rotate-3">
+            <img src={siteConfig.avatarUrl} alt="avatar" className="w-full h-full rounded-[20px] object-cover bg-white" />
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="mt-5 min-w-0">
             {/* 🌟 核心修复点：
                 1. 增加了 pb-1 (padding-bottom) 给字母降部留空间
                 2. 增加了 leading-snug 确保行高不至于太扁
             */}
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-1 md:mb-2 pb-1 leading-snug tracking-wider transition-colors duration-700 truncate">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-2 pb-1 leading-snug tracking-wider transition-colors duration-700">
               {siteConfig.authorName}
             </h1>
-            <p className="text-xs sm:text-sm md:text-base text-slate-700 dark:text-slate-300 font-medium leading-relaxed max-w-md transition-colors duration-700 line-clamp-2 md:line-clamp-none">
+            <p className="text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed transition-colors duration-700 line-clamp-4">
               {siteConfig.bio}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center md:items-end justify-between mt-6 md:mt-8 gap-5 md:gap-6 relative z-10">
-        <div className="flex gap-2 sm:gap-6 w-full md:w-auto justify-between sm:justify-around md:justify-start px-2 sm:px-0">
+      <div className="flex flex-col items-center justify-between mt-7 gap-5 relative z-10">
+        <div className="flex w-full justify-around gap-2 px-1">
           <StatItem count={postCount} label="文章" color="text-indigo-600 dark:text-indigo-400" />
-          <div className="w-px h-8 md:h-10 bg-slate-300/50 dark:bg-slate-700 hidden md:block"></div>
+          <div className="w-px h-10 bg-slate-300/50 dark:bg-slate-700"></div>
           <StatItem count={chatterCount} label="杂谈" color="text-purple-600 dark:text-purple-400" />
-          <div className="w-px h-8 md:h-10 bg-slate-300/50 dark:bg-slate-700 hidden md:block"></div>
+          <div className="w-px h-10 bg-slate-300/50 dark:bg-slate-700"></div>
           <StatItem count={photoCount} label="照片" color="text-pink-600 dark:text-pink-400" />
         </div>
 
-        <div className="flex gap-2 md:gap-3 flex-wrap justify-center md:justify-end w-full md:w-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex gap-2 flex-wrap justify-center w-full" onClick={(e) => e.stopPropagation()}>
           {siteConfig.social?.github && <SocialBtn type="github" url={siteConfig.social.github} />}
           {siteConfig.social?.gitee && <SocialBtn type="gitee" url={siteConfig.social.gitee} />}
           {siteConfig.social?.google && <SocialBtn type="google" url={siteConfig.social.google} />}

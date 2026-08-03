@@ -6,7 +6,6 @@ This repository is RainierGu's personal homepage.
 
 - Frontend: Next.js + React + Tailwind CSS
 - Primary hosting: Vercel
-- Local CMS/admin: `my-blog-manager/`
 
 ## Important conventions
 
@@ -16,7 +15,6 @@ This repository is RainierGu's personal homepage.
 - Chatter notes live in `chatters/`.
 - Moments live in `moments/`.
 - Global homepage configuration lives in `siteConfig.ts`.
-- When changing public-facing content, keep matching data in `my-blog-manager/` in sync if the local manager should show the same content.
 
 ## Deployment
 

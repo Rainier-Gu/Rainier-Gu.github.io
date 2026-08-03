@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import BackButton from '../../components/BackButton';
 import { friendsData } from '../../data/friends';
 import Comments from '../../components/Comments'; // 🌟 引入你的 Gitalk 组件
 import { siteConfig } from '../../siteConfig'; // 🌟 引入刚刚更新的全局配置文件
@@ -35,20 +34,18 @@ export default function FriendsBoard() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-3 sm:px-10 py-6 md:py-10 relative z-10 scroll-smooth mt-20 md:mt-10">
+    <div className="w-full max-w-7xl mx-auto mt-28 px-4 sm:px-10 relative z-10 scroll-smooth">
 
-      {/* 顶部导航与标题 */}
-      <div className="mb-8 md:mb-12 flex flex-col items-center md:items-start">
-        <div className="w-full flex justify-start mb-4 md:mb-6">
-          <BackButton />
-        </div>
-        <div className="text-center md:text-left w-full px-2 md:px-0">
-          <h1 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-widest drop-shadow-sm uppercase">
-            云端引力
-          </h1>
-          <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 font-serif">
-            那些散落在赛博宇宙各处的有趣灵魂与神经节点。
-          </p>
+      <div className="animate-fade-in-up">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">
+              云端引力
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
+              那些散落在赛博宇宙各处的有趣灵魂与神经节点。
+            </p>
+          </div>
         </div>
       </div>
 

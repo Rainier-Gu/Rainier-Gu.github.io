@@ -1,19 +1,24 @@
 // siteConfig.ts - 全站展示配置中心
 
 export const siteConfig = {
-  title: "RainierGu 的学习档案馆",
+  title: "RainierGu's Blog",
   faviconUrl: "/assets/img/avatar/avatar.jpg",
   authorName: "RainierGu",
-  bio: "记录物理课程、经济学笔记、科研学习、技术实践与项目进展。这里会尽量保存推导、尝试、失败路径和可复用资料。",
+  bio: "课程学习，科研心得，以及个人的碎碎念。",
+
+  // 首页大图文案：这里单独控制，不再强制跟网站标题/简介绑定
+  heroEyebrow: "Blog",
+  heroTitle: "RainierGu's Blog",
+  heroSubtitle: "课程学习，科研心得，以及个人的碎碎念。",
 
   navTitle: "RainierGu",
-  navSuffix: "·",
-  navAfter: "Learning Archive",
+  navSuffix: "'s",
+  navAfter: "Blog",
 
   avatarUrl: "/assets/img/avatar/avatar.jpg",
 
-  useGradient: false,
-  themeColors: ["#0f172a", "#312e81", "#0f766e", "#0369a1"],
+  useGradient: true,
+  themeColors: ["#48c6f0", "#fff0d6", "#ff8a3d"],
   bgImages: [
     "/assets/img/posts/welcome.webp",
     "/assets/img/posts/research-writing-cover.svg",
@@ -25,13 +30,13 @@ export const siteConfig = {
   photoWallImage: "/assets/img/posts/general-physics-lab.webp",
 
   // 可在网易云音乐网页地址中复制歌曲 id 后填入，例如 ["1809646618"]。
-  cloudMusicIds: [],
+  cloudMusicIds: ["2082326625", "1983714138"],
 
   social: {
     github: "https://github.com/Rainier-Gu",
     gitee: "",
     google: "",
-    email: "",
+    email: "greenbig22@163.com",
     qq: "",
     wechat: "",
   },
@@ -44,13 +49,6 @@ export const siteConfig = {
   chatterDescription: "课程、科研、代码、阅读和一些短想法的碎片记录。",
 
   danmakuList: [
-    "今天也要认真推导",
-    "PDF 资料库加载中",
-    "实验报告请合理参考",
-    "计算物理启动！",
-    "经济学模型正在收敛",
-    "代码和公式都要写清楚",
-    "欢迎来到学习档案馆",
   ],
 
   gitalkConfig: {
@@ -61,7 +59,7 @@ export const siteConfig = {
     admin: ["Rainier-Gu"],
   },
 
-  buildDate: "2026-07-08T00:00:00+08:00",
+  buildDate: "2026-08-01T00:00:00+08:00",
 
   footerBadges: [
     {
@@ -92,7 +90,7 @@ export const siteConfig = {
   },
 
   friendLinkApplyFormat:
-    "名称：RainierGu 的学习档案馆\n简介：记录物理、经济学、科研学习与技术实践\n链接：https://rainiergu.vercel.app\n头像：https://rainiergu.vercel.app/assets/img/avatar/avatar.jpg",
+    "名称：RainierGu's Blog\n简介：课程学习，科研心得，以及个人的碎碎念。\n链接：https://rainiergu.vercel.app\n头像：https://rainiergu.vercel.app/assets/img/avatar/avatar.jpg",
 
-  enableLevelSystem: false,
+  enableLevelSystem: true,
 };

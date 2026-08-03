@@ -38,32 +38,34 @@ export default function ChatterBoard({ chatters }: { chatters: Chatter[] }) {
 
   return (
     // 🌟 核心修改：缩紧整体容器的左右边距 px-3 md:px-10
-    <div className="w-full max-w-7xl mx-auto px-3 sm:px-10 py-6 md:py-10 pt-24 md:pt-28 relative z-10">
+    <div className="w-full max-w-7xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
 
-      <div className="mb-8 md:mb-14 text-center">
-        {/* 🌟 核心修改：标题字号响应式 */}
-        <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tighter">
-          {siteConfig.chatterTitle || "研究与生活札记"}
-        </h1>
-        <p className="text-xs md:text-base text-slate-500 dark:text-slate-400 font-medium italic opacity-80">
-          “ {siteConfig.chatterDescription || "日常碎片与灵感记录"} ”
-        </p>
-      </div>
+      <div className="animate-fade-in-up">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">
+              {siteConfig.chatterTitle || "研究与生活札记"}
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
+              {siteConfig.chatterDescription || "日常碎片与灵感记录"}
+            </p>
+          </div>
 
-      <div className="mb-8 md:mb-12 flex flex-col items-center gap-5 md:gap-8">
-        <div className="relative w-full max-w-lg group px-2 md:px-0">
-          {/* 🌟 核心修改：搜索框在手机端更扁凑 */}
-          <input
-            type="text"
-            placeholder="搜寻被遗忘的思绪..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/40 dark:border-white/5 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 pl-10 md:pl-14 text-sm md:text-base text-slate-800 dark:text-white shadow-lg md:shadow-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder-slate-400 font-medium"
-          />
-          <svg className="w-4 h-4 md:w-6 md:h-6 absolute left-5 md:left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <div className="relative w-full md:w-80 group">
+            <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-slate-500 dark:text-slate-400 group-focus-within:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="搜索杂谈内容..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-12 pl-12 pr-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md border border-white/50 dark:border-white/10 rounded-full text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all duration-700"
+            />
+          </div>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-1.5 md:gap-2 px-2 md:px-0">
+        <div className="mb-12 flex flex-wrap justify-center md:justify-start gap-1.5 md:gap-2">
           {allTags.map(tag => (
             <button
               key={tag}

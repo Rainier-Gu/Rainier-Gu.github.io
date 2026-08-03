@@ -2,6 +2,12 @@
 
 这个站点已经从 Jekyll/Chirpy 切换为 Next.js + XHBlogs 模板。
 
+如果你是第一次自己维护这个项目，建议优先阅读更完整的新手手册：
+
+```text
+docs/NEWBIE_SITE_MANUAL.md
+```
+
 ## 常用命令
 
 安装依赖：

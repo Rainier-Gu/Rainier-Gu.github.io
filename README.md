@@ -16,7 +16,6 @@
 - AI 猫猫助手入口
 - Gitalk 评论预留入口
 - Vercel Web Analytics 访问统计
-- 本地 `my-blog-manager` 管理后台
 
 ## 本地开发
 
@@ -57,7 +56,16 @@ npm run build
 | 友链数据 | `data/friends.ts` |
 | 相册数据 | `data/albums.ts` |
 | 图片、PDF 等静态资源 | `public/assets/` |
-| 本地管理后台 | `my-blog-manager/` |
+
+## 新手维护手册
+
+如果你想自己继续开发和更新内容，建议先阅读：
+
+```text
+docs/NEWBIE_SITE_MANUAL.md
+```
+
+它按“页面元素在哪里改、功能如何设置、内容如何上传”的方式整理了完整步骤。
 
 ## 需要密钥的功能
 

@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import TimelineNode from './TimelineNode';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Sparkles, LayoutGrid, ListTree, Calendar, Hash, ArrowUp } from 'lucide-react';
+import { Search, LayoutGrid, ListTree, Calendar, Hash, ArrowUp } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TimelineClient({ posts: initialPosts, tags }: { posts: any[], tags: { name: string, count: number }[] }) {
@@ -76,30 +76,30 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
+    <div className="w-full max-w-7xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
 
-      <div className="text-center mb-12 relative z-20">
-        <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">归档与探索</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-medium flex items-center justify-center gap-2 italic">
-          <Sparkles size={16} className="text-indigo-500" /> 总计 {posts.length} 篇研究记录
-        </p>
-      </div>
+      <div className="animate-fade-in-up">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6 relative z-[100]">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">归档与探索</h1>
+            <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
+              总计 {posts.length} 篇研究记录
+            </p>
+          </div>
 
-      <div className="flex flex-col items-center gap-8 mb-16 relative z-[99]">
-
-        <div className="relative w-full max-w-lg group" ref={searchContainerRef}>
-          <input
-            type="text"
-            placeholder="搜寻被封存的知识..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setIsDropdownOpen(true);
-            }}
-            onFocus={() => setIsDropdownOpen(true)}
-            className="w-full bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/40 dark:border-white/5 rounded-2xl px-6 py-4 pl-14 text-slate-800 dark:text-white shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder-slate-400 font-medium relative z-20"
-          />
-          <Search className="w-6 h-6 absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors z-20" />
+          <div className="relative w-full md:w-80 group" ref={searchContainerRef}>
+            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-slate-500 dark:text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+            <input
+              type="text"
+              placeholder="搜索归档文章..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setIsDropdownOpen(true);
+              }}
+              onFocus={() => setIsDropdownOpen(true)}
+              className="w-full h-12 pl-12 pr-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md border border-white/50 dark:border-white/10 rounded-full text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all duration-700"
+            />
 
           <AnimatePresence>
             {isDropdownOpen && searchQuery.trim() !== '' && (
@@ -142,7 +142,9 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
             )}
           </AnimatePresence>
         </div>
+        </div>
 
+      <div className="mb-16 relative z-[99]">
         <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 bg-white/30 dark:bg-slate-800/30 backdrop-blur-md p-4 rounded-3xl border border-white/20 dark:border-white/5">
           <div className="flex flex-wrap justify-center md:justify-start gap-2 flex-1">
             <button onClick={() => setSelectedTag('All')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${selectedTag === 'All' ? 'bg-indigo-500 text-white shadow-md' : 'bg-white/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 hover:bg-white'}`}>
@@ -168,6 +170,7 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
           </div>
         </div>
 
+      </div>
       </div>
 
       <AnimatePresence mode="wait">
