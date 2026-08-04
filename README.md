@@ -87,6 +87,7 @@ docs/NEWBIE_SITE_MANUAL.md
 
 - `DEEPSEEK_API_KEY`：AI 小猫助手服务端密钥，不要加 `NEXT_PUBLIC_` 前缀。
 - `QWEATHER_KEY`：天气组件密钥。
+- `AMAP_WEB_SERVICE_KEY`：可选的高德 Web 服务 Key，用于把访客经纬度解析成区县、街道、门牌和附近建筑名。
 - `NEXT_PUBLIC_GITALK_CLIENT_ID` / `NEXT_PUBLIC_GITALK_CLIENT_SECRET`：GitHub Issues 评论系统。
 
 详细说明：

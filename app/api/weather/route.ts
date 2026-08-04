@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { DetailedLocation, resolveDetailedLocation } from './geocoding';
 
 const DEFAULT_LOCATION = '101010100'; // 北京
 const DEFAULT_CITY = '北京市';
@@ -27,6 +28,19 @@ function parseCoordinateLocation(value: string) {
   if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) return null;
 
   return { longitude, latitude };
+}
+
+function withDetailedLocation<T extends Record<string, any>>(weather: T, detailedLocation: DetailedLocation | null) {
+  if (!detailedLocation) return weather;
+
+  return {
+    ...weather,
+    city: detailedLocation.city || weather.city,
+    address: detailedLocation.address,
+    district: detailedLocation.district,
+    landmark: detailedLocation.landmark,
+    addressProvider: detailedLocation.provider,
+  };
 }
 
 function weatherCodeToText(code: number) {
@@ -287,29 +301,40 @@ async function fetchWeatherBundle(locationId: string, token: string) {
 export async function GET(request: NextRequest) {
   const token = process.env.QWEATHER_KEY?.trim();
   const rawLocation = request.nextUrl.searchParams.get('location')?.trim() || DEFAULT_LOCATION;
+  const detailedLocation = await resolveDetailedLocation(
+    rawLocation,
+    process.env.AMAP_WEB_SERVICE_KEY
+  ).catch(() => null);
+  const weatherLocation = detailedLocation?.weatherLocation || rawLocation;
 
   if (!token) {
     try {
-      return NextResponse.json(await fetchOpenMeteoWeather(rawLocation));
+      const weather = await fetchOpenMeteoWeather(weatherLocation);
+      return NextResponse.json(withDetailedLocation(weather, detailedLocation));
     } catch (error: any) {
-      return NextResponse.json(createMockWeather(error?.message || '天气服务暂时不可用'));
+      return NextResponse.json(withDetailedLocation(
+        createMockWeather(error?.message || '天气服务暂时不可用'),
+        detailedLocation
+      ));
     }
   }
 
   try {
-    let locationId = rawLocation;
-    let city = DEFAULT_CITY;
+    let locationId = weatherLocation;
+    let city = detailedLocation?.city || DEFAULT_CITY;
 
     try {
-      const location = await lookupLocation(rawLocation, token);
-      locationId = location.id || rawLocation;
-      city = [location.adm2, location.name]
-        .filter(Boolean)
-        .filter((item, index, arr) => arr.indexOf(item) === index)
-        .join(' · ') || location.name || DEFAULT_CITY;
+      const location = await lookupLocation(weatherLocation, token);
+      locationId = location.id || weatherLocation;
+      if (!detailedLocation?.city) {
+        city = [location.adm2, location.name]
+          .filter(Boolean)
+          .filter((item, index, arr) => arr.indexOf(item) === index)
+          .join(' · ') || location.name || DEFAULT_CITY;
+      }
     } catch {
-      if (isLocationId(rawLocation) || isCoordinateLocation(rawLocation)) {
-        locationId = rawLocation;
+      if (isLocationId(weatherLocation) || isCoordinateLocation(weatherLocation)) {
+        locationId = weatherLocation;
       } else {
         throw new Error(`没有找到地点：${rawLocation}`);
       }
@@ -317,7 +342,7 @@ export async function GET(request: NextRequest) {
 
     const weather = await fetchWeatherBundle(locationId, token);
 
-    return NextResponse.json({
+    return NextResponse.json(withDetailedLocation({
       code: '200',
       isMock: false,
       provider: 'QWeather',
@@ -326,10 +351,11 @@ export async function GET(request: NextRequest) {
       now: weather.now,
       daily: weather.daily,
       hourly: weather.hourly,
-    });
+    }, detailedLocation));
   } catch (error: any) {
     try {
-      return NextResponse.json(await fetchOpenMeteoWeather(rawLocation));
+      const weather = await fetchOpenMeteoWeather(weatherLocation);
+      return NextResponse.json(withDetailedLocation(weather, detailedLocation));
     } catch {
       return NextResponse.json(
         {

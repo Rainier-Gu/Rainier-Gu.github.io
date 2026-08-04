@@ -45,6 +45,10 @@ type WeatherHourly = {
 type WeatherData = {
   code: string;
   city: string;
+  address?: string;
+  district?: string;
+  landmark?: string;
+  addressProvider?: string;
   locationId?: string;
   isMock?: boolean;
   message?: string;
@@ -119,7 +123,7 @@ export default function WeatherWidget() {
 
   const locateAndFetch = useCallback(() => {
     if (!navigator.geolocation) {
-      setError('当前浏览器不支持定位，请手动输入城市');
+      setError('当前浏览器不支持定位，请手动输入城市或详细地址');
       fetchWeather();
       return;
     }
@@ -187,6 +191,14 @@ export default function WeatherWidget() {
                 {weather?.city || '同步天气中'}
               </h3>
             </div>
+            {weather?.address && (
+              <p
+                className="type-summary mt-1 max-w-[190px] line-clamp-2 text-[10px] text-slate-500 dark:text-slate-400"
+                title={`${weather.address}（定位地址为近似结果）`}
+              >
+                {weather.address}
+              </p>
+            )}
           </div>
 
           <button
@@ -207,7 +219,7 @@ export default function WeatherWidget() {
             <input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="输入城市，如 北京 / 上海"
+              placeholder="输入城市或详细地址"
               className="h-10 w-full rounded-2xl border border-white/50 bg-white/60 pl-9 pr-3 text-xs font-bold text-slate-700 outline-none transition focus:ring-2 focus:ring-indigo-400 dark:border-white/10 dark:bg-slate-950/35 dark:text-slate-100"
             />
           </div>
