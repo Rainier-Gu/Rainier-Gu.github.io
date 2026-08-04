@@ -25,10 +25,10 @@ export default function ProjectsBoard() {
       <div className="animate-fade-in-up">
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">
+            <h1 className="type-page-title text-4xl md:text-5xl text-slate-900 dark:text-white mb-2 transition-colors duration-700">
               正在折腾
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
+            <p className="type-page-subtitle text-slate-600 dark:text-slate-400 font-medium transition-colors duration-700">
               一点一点慢慢地把小想法实现。
             </p>
           </div>
@@ -73,7 +73,7 @@ export default function ProjectsBoard() {
                 <div className="flex items-start justify-between mb-4 relative z-10">
                   <div className="flex items-center gap-4">
                     <span className="text-4xl">{project.icon}</span>
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    <h2 className="type-card-title text-2xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                       {project.name}
                     </h2>
                   </div>
@@ -83,13 +83,13 @@ export default function ProjectsBoard() {
                   </svg>
                 </div>
 
-                <p className="text-sm text-slate-700 dark:text-slate-300 font-serif leading-relaxed line-clamp-3 mb-6 relative z-10 min-h-[60px]">
+                <p className="type-summary text-sm text-slate-700 dark:text-slate-300 font-serif line-clamp-3 mb-6 relative z-10 min-h-[60px]">
                   {project.description}
                 </p>
 
                 <div className="flex flex-wrap gap-2 relative z-10 mt-auto">
                   {project.tags.map(tag => (
-                    <span key={tag} className="text-[10px] font-bold tracking-wider uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-md shadow-sm border border-indigo-500/20">
+                    <span key={tag} className="type-label text-[10px] font-bold uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-md shadow-sm border border-indigo-500/20">
                       {tag}
                     </span>
                   ))}

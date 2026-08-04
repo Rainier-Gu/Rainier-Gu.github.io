@@ -135,7 +135,7 @@ export default function SearchBar({ posts = [] }: { posts: Post[] }) {
                     </div>
 
                     {post.description && (
-                      <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      <p className="type-summary text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
                         <Highlight text={post.description} query={searchQuery} />
                       </p>
                     )}

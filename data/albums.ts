@@ -28,4 +28,16 @@ export const albums: Album[] = [
       { url: "/assets/img/posts/晨昏蒙影/博雅塔.png", caption: "2026.07 摄于北京大学未名湖" },
     ],
   },
+  {
+    id: "院衫文创图案",
+    title: "院衫文创图案",
+    description: "用来白嫖院衫奖励的即兴创作",
+    cover: "/assets/img/posts/院衫文创图案/1.png",
+    date: "2026.07",
+    photos: [
+      { url: "/assets/img/posts/院衫文创图案/1.png", caption: "应允" },
+      { url: "/assets/img/posts/院衫文创图案/2.png", caption: "MEOW or NO MEOW?" },
+      { url: "/assets/img/posts/院衫文创图案/3.png", caption: "de Broglie's Cat（德布罗意的猫）" },
+    ],
+  },
 ];

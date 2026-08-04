@@ -34,10 +34,10 @@ export default function HomePostStream({ posts }: { posts: any[] }) {
     <section id="all-posts" ref={sectionRef} className="scroll-mt-24">
       <div className="mb-5 flex items-end justify-between gap-4 px-1">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.32em] text-indigo-500 dark:text-indigo-300">
+          <p className="type-kicker text-[12px] text-indigo-500 dark:text-indigo-300">
             All Notes
           </p>
-          <h2 className="mt-2 text-2xl font-black tracking-wide text-slate-900 dark:text-white">
+          <h2 className="type-section-title mt-2 text-2xl text-slate-900 dark:text-white">
             所有文章
           </h2>
         </div>
@@ -72,21 +72,21 @@ export default function HomePostStream({ posts }: { posts: any[] }) {
             <div className="relative z-10 flex min-h-[270px] flex-col justify-end p-6 text-slate-900 dark:text-white">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 {!featuredPost.pinned && (
-                  <span className="rounded-full bg-indigo-500/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] shadow-lg">
+                  <span className="type-label rounded-full bg-indigo-500/90 px-3 py-1 text-[10px] font-black uppercase shadow-lg">
                     Featured
                   </span>
                 )}
                 {featuredPost.formattedDate && (
-                  <time className="rounded-full border border-indigo-200/80 bg-white/90 px-3 py-1.5 text-xs font-black tracking-wide text-indigo-700 shadow-sm backdrop-blur-md dark:border-white/30 dark:bg-black/45 dark:text-indigo-100">
+                  <time className="type-meta rounded-full border border-indigo-200/80 bg-white/90 px-3 py-1.5 text-xs font-black text-indigo-700 shadow-sm backdrop-blur-md dark:border-white/30 dark:bg-black/45 dark:text-indigo-100">
                     {featuredPost.formattedDate}
                   </time>
                 )}
               </div>
-              <h3 className="text-2xl font-black leading-tight drop-shadow-sm md:text-3xl">
+              <h3 className="type-card-title text-2xl font-black drop-shadow-sm md:text-3xl">
                 {featuredPost.title}
               </h3>
               {featuredPost.description && (
-                <p className="mt-3 line-clamp-2 text-sm font-medium leading-relaxed text-slate-700 dark:text-white/80">
+                <p className="type-summary mt-3 line-clamp-2 text-sm font-medium text-slate-700 dark:text-white/80">
                   {featuredPost.description}
                 </p>
               )}
@@ -130,24 +130,24 @@ export default function HomePostStream({ posts }: { posts: any[] }) {
               }`}>
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   {post.formattedDate && (
-                    <time className="rounded-lg bg-indigo-500/10 px-2.5 py-1 text-xs font-black tracking-wide text-indigo-700 ring-1 ring-inset ring-indigo-500/10 dark:bg-indigo-400/10 dark:text-indigo-200 dark:ring-indigo-300/10">
+                    <time className="type-meta rounded-lg bg-indigo-500/10 px-2.5 py-1 text-xs font-black text-indigo-700 ring-1 ring-inset ring-indigo-500/10 dark:bg-indigo-400/10 dark:text-indigo-200 dark:ring-indigo-300/10">
                       {post.formattedDate}
                     </time>
                   )}
                   {(post.tags || []).slice(0, 2).map((tag: string) => (
                     <span
                       key={tag}
-                      className="rounded-md bg-indigo-500/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-300"
+                      className="type-label rounded-md bg-indigo-500/10 px-2 py-0.5 text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-300"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <h3 className="line-clamp-2 text-lg font-black leading-snug text-slate-900 transition-colors group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-300">
+                <h3 className="type-card-title line-clamp-2 text-lg font-black text-slate-900 transition-colors group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-300">
                   {post.title}
                 </h3>
                 {post.description && (
-                  <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                  <p className="type-summary mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
                     {post.description}
                   </p>
                 )}

@@ -235,7 +235,7 @@ export default function MomentList({ moments, authorName, avatarUrl }: MomentLis
           />
           <span aria-hidden="true" className="absolute -right-5 -top-5 h-20 w-20 rounded-full bg-white/20 blur-xl" />
 
-          <p className="relative z-10 whitespace-pre-wrap break-words text-[15px] font-semibold leading-8 tracking-wide text-slate-800 dark:text-slate-100">
+          <p className="type-body relative z-10 whitespace-pre-wrap break-words text-[15px] font-semibold text-slate-800 dark:text-slate-100">
             {moment.content}
           </p>
 
@@ -295,11 +295,11 @@ export default function MomentList({ moments, authorName, avatarUrl }: MomentLis
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-2 text-4xl font-black tracking-widest text-slate-900 transition-colors duration-700 dark:text-white md:text-5xl"
+              className="type-page-title mb-2 text-4xl text-slate-900 transition-colors duration-700 dark:text-white md:text-5xl"
             >
               说说
             </motion.h1>
-            <p className="font-medium tracking-wider text-slate-600 transition-colors duration-700 dark:text-slate-400">
+            <p className="type-page-subtitle font-medium text-slate-600 transition-colors duration-700 dark:text-slate-400">
               把一闪而过的心情，钉在生活的软木板上。
             </p>
           </div>
@@ -363,10 +363,10 @@ export default function MomentList({ moments, authorName, avatarUrl }: MomentLis
               <span className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-500/10 text-indigo-500">
                 <Ghost size={38} strokeWidth={1.5} aria-hidden="true" />
               </span>
-              <h2 className="text-xl font-black text-slate-900 dark:text-white">
+              <h2 className="type-section-title text-xl text-slate-900 dark:text-white">
                 {searchQuery ? '没有找到相关便利贴' : '便利贴墙还是空的'}
               </h2>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              <p className="type-summary mt-2 text-sm text-slate-500 dark:text-slate-400">
                 {searchQuery ? '换一个关键词再试试吧。' : '在 moments 目录中新建 Markdown 文件即可添加说说。'}
               </p>
             </motion.div>
@@ -395,8 +395,8 @@ export default function MomentList({ moments, authorName, avatarUrl }: MomentLis
             >
               <div className="mb-5 flex items-start justify-between gap-5 border-b border-slate-200 pb-5 dark:border-white/10">
                 <div className="min-w-0">
-                  <p className="text-xs font-black uppercase tracking-[0.22em] text-indigo-500">Moment Comments</p>
-                  <p className="mt-2 line-clamp-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">
+                  <p className="type-kicker text-sm text-indigo-500">Moment Comments</p>
+                  <p className="type-summary mt-2 line-clamp-2 text-sm font-bold text-slate-700 dark:text-slate-200">
                     {activeCommentMoment.content}
                   </p>
                 </div>
@@ -466,7 +466,7 @@ export default function MomentList({ moments, authorName, avatarUrl }: MomentLis
                 className="pointer-events-auto max-h-[84vh] max-w-full rounded-2xl border border-white/10 object-contain shadow-[0_0_80px_rgba(0,0,0,0.55)]"
                 alt="说说图片预览"
               />
-              <span className="absolute bottom-8 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black tracking-widest text-white/90 backdrop-blur-md">
+              <span className="type-meta absolute bottom-8 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black text-white/90 backdrop-blur-md">
                 {lightbox.index + 1} / {lightbox.images.length}
               </span>
             </motion.div>

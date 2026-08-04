@@ -49,7 +49,7 @@ export default function LatestChatterCarousel({ chatters }: { chatters: any[] })
 
       <div className="relative z-10 flex flex-col justify-center p-6 md:p-8 h-full pointer-events-none w-full md:w-[85%]">
         <div className="flex items-end gap-2 mb-2">
-          <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest bg-white/70 dark:bg-black/30 backdrop-blur-sm px-2 py-1 rounded-md border border-white/60 dark:border-white/10 shadow-sm">
+          <span className="type-label text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase bg-white/70 dark:bg-black/30 backdrop-blur-sm px-2 py-1 rounded-md border border-white/60 dark:border-white/10 shadow-sm">
             Records
           </span>
           {currentChatter.formattedDate && (
@@ -59,10 +59,10 @@ export default function LatestChatterCarousel({ chatters }: { chatters: any[] })
           )}
         </div>
 
-        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors line-clamp-1 drop-shadow-sm">
+        <h3 className="type-card-title text-2xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors line-clamp-1 drop-shadow-sm">
           {currentChatter.title}
         </h3>
-        <p className="text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed drop-shadow-sm line-clamp-2">
+        <p className="type-summary text-sm text-slate-600 dark:text-slate-300 font-medium drop-shadow-sm line-clamp-2">
           {currentChatter.description}
         </p>
       </div>

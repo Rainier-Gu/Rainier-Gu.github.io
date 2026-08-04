@@ -39,10 +39,10 @@ export default function FriendsBoard() {
       <div className="animate-fade-in-up">
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">
+            <h1 className="type-page-title text-4xl md:text-5xl text-slate-900 dark:text-white mb-2 transition-colors duration-700">
               彼此引力
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
+            <p className="type-page-subtitle text-slate-600 dark:text-slate-400 font-medium transition-colors duration-700">
               与真诚而有趣的灵魂互相照亮。
             </p>
           </div>
@@ -76,17 +76,17 @@ export default function FriendsBoard() {
                 </div>
 
                 <div className="flex-1 overflow-hidden w-full">
-                  <h2 className="text-sm md:text-xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+                  <h2 className="type-card-title text-sm md:text-xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                     {friend.name}
                   </h2>
-                  <div className="text-[9px] md:text-xs font-bold text-indigo-500/70 dark:text-indigo-400/70 tracking-widest uppercase mt-0.5 md:mt-1 flex items-center gap-1">
+                  <div className="type-label text-[9px] md:text-xs font-bold text-indigo-500/70 dark:text-indigo-400/70 uppercase mt-0.5 md:mt-1 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-500 animate-pulse"></span>
                     Online
                   </div>
                 </div>
               </div>
 
-              <p className="text-[10px] md:text-sm text-slate-700 dark:text-slate-300 font-serif leading-snug md:leading-relaxed line-clamp-2 md:line-clamp-3 relative z-10">
+              <p className="type-summary text-[10px] md:text-sm text-slate-700 dark:text-slate-300 font-serif line-clamp-2 md:line-clamp-3 relative z-10">
                 {friend.description}
               </p>
             </a>
@@ -102,10 +102,10 @@ export default function FriendsBoard() {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="mt-14 md:mt-20 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-2xl md:rounded-3xl p-5 md:p-8 max-w-3xl mx-auto text-center shadow-lg md:shadow-xl relative"
       >
-        <h2 className="text-lg md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-wider">
+        <h2 className="type-section-title text-lg md:text-2xl text-slate-900 dark:text-white mb-2 md:mb-4">
           ✨ 建立连接
         </h2>
-        <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 font-serif mb-4 md:mb-6">
+        <p className="type-body text-xs md:text-base text-slate-600 dark:text-slate-400 font-serif mb-4 md:mb-6">
           欢迎各位大佬交换友链！请一键复制下方格式，并在底部的 Gitalk 留言板申请：
         </p>
 
@@ -135,7 +135,7 @@ export default function FriendsBoard() {
         <div className="mt-6 md:mt-8">
           <a
             href="#gitalk-container"
-            className="inline-block px-6 py-2.5 md:px-8 md:py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-full text-sm md:text-base font-bold tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/30"
+            className="type-label inline-block px-6 py-2.5 md:px-8 md:py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-full text-sm md:text-base font-bold transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/30"
           >
             前往留言区申请 👇
           </a>
@@ -153,7 +153,7 @@ export default function FriendsBoard() {
       >
         <div className="flex items-center justify-center gap-2 md:gap-3 mb-4 md:mb-6">
           <span className="w-8 md:w-12 h-[1px] bg-slate-300 dark:bg-slate-700"></span>
-          <h3 className="text-sm md:text-xl font-bold text-slate-800 dark:text-gray-200 tracking-widest uppercase">
+          <h3 className="type-section-title text-sm md:text-xl font-bold text-slate-800 dark:text-gray-200 uppercase">
             留言板
           </h3>
           <span className="w-8 md:w-12 h-[1px] bg-slate-300 dark:bg-slate-700"></span>

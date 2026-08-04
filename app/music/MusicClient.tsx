@@ -121,7 +121,7 @@ export default function MusicClient() {
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center animate-pulse gap-4">
           <Disc3 size={48} className="text-indigo-500 animate-spin" />
-          <span className="font-black text-slate-500 tracking-widest text-sm">唤醒音频引擎中...</span>
+          <span className="type-meta font-black text-slate-500 text-sm">唤醒音频引擎中...</span>
         </div>
       </div>
     );
@@ -143,8 +143,8 @@ export default function MusicClient() {
           <div className="animate-fade-in-up">
             <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
               <div>
-                <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">共鸣时刻</h1>
-                <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">在旋律中与世界同频。</p>
+                <h1 className="type-page-title text-4xl md:text-5xl text-slate-900 dark:text-white mb-2 transition-colors duration-700">共鸣时刻</h1>
+                <p className="type-page-subtitle text-slate-600 dark:text-slate-400 font-medium transition-colors duration-700">在旋律中与世界同频。</p>
               </div>
 
               <div className="relative w-full md:w-80 group">
@@ -186,8 +186,8 @@ export default function MusicClient() {
                    </motion.div>
                 </div>
                 <div className="w-full text-center px-2 md:px-4 mb-2 md:mb-6">
-                  <h1 className="text-lg md:text-xl lg:text-2xl font-black text-slate-900 dark:text-white truncate drop-shadow-sm tracking-tight">{currentSong.title || currentSong.name}</h1>
-                  <h2 className="text-xs md:text-sm font-bold text-slate-500 dark:text-slate-400 truncate mt-1 md:mt-2 tracking-widest">{currentSong.artist || currentSong.author}</h2>
+                  <h1 className="type-card-title text-lg md:text-xl lg:text-2xl font-black text-slate-900 dark:text-white truncate drop-shadow-sm">{currentSong.title || currentSong.name}</h1>
+                  <h2 className="type-meta text-xs md:text-sm font-bold text-slate-500 dark:text-slate-400 truncate mt-1 md:mt-2">{currentSong.artist || currentSong.author}</h2>
                 </div>
               </div>
 
@@ -241,7 +241,7 @@ export default function MusicClient() {
                                     className={`transition-all duration-700 cursor-pointer px-2 md:px-4 rounded-2xl ${isActive ? 'opacity-100 scale-105 py-2 md:py-3 bg-white/10' : 'opacity-20 hover:opacity-40'}`}
                                     onClick={() => duration > 0 && handleSeek({ target: { value: String((line.time / duration) * 100) } } as any)}
                                   >
-                                    <p className={`font-black tracking-tight leading-relaxed transition-all duration-700 ${isActive ? 'text-lg md:text-2xl text-indigo-600 dark:text-indigo-400' : 'text-sm md:text-lg text-slate-700 dark:text-slate-300'}`} style={isActive ? { textShadow: '0 0 20px rgba(99,102,241,0.15)' } : {}}>{line.text}</p>
+                                    <p className={`type-body font-black transition-all duration-700 ${isActive ? 'text-lg md:text-2xl text-indigo-600 dark:text-indigo-400' : 'text-sm md:text-lg text-slate-700 dark:text-slate-300'}`} style={isActive ? { textShadow: '0 0 20px rgba(99,102,241,0.15)' } : {}}>{line.text}</p>
                                   </div>
                                 );
                               })
@@ -289,7 +289,7 @@ export default function MusicClient() {
              <div className="px-5 sm:px-8 md:px-16 py-8 md:py-12 relative">
                 <div className="flex items-center gap-3 mb-6 md:mb-8 border-b border-slate-300/50 dark:border-slate-700 pb-4 md:pb-6">
                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-indigo-500/10 flex items-center justify-center"><MessageSquare className="text-indigo-500 w-5 h-5 md:w-6 md:h-6" /></div>
-                   <div><h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">乐迷留言板</h3><p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">听着这首歌，你想到了什么？</p></div>
+                   <div><h3 className="type-section-title text-xl md:text-2xl text-slate-900 dark:text-white">乐迷留言板</h3><p className="type-summary text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">听着这首歌，你想到了什么？</p></div>
                 </div>
                 <div className="relative"><Comments /></div>
              </div>

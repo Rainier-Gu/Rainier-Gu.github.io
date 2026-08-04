@@ -37,10 +37,19 @@ export const siteConfig = {
        src: "/assets/music/tracks/风华正茂-门尼.m4a",
        lrcUrl: "/assets/music/lyrics/风华正茂-门尼.lrc",
      },
+     {
+       id: "平庸",
+       title: "平庸(live)",
+       artist: "薛之谦",
+       album: "音乐缘计划2 第3期",
+       cover: "/assets/music/covers/平庸-薛之谦.webp",
+       src: "/assets/music/tracks/平庸-薛之谦.m4a",
+       lrcUrl: "/assets/music/lyrics/平庸-薛之谦.lrc",
+     },
   ],
 
   // 可在网易云音乐网页地址中复制歌曲 id 后填入，例如 ["1809646618"]。
-  cloudMusicIds: ["2082326625", "1983714138"],
+  cloudMusicIds: [],
 
   social: {
     github: "https://github.com/Rainier-Gu",

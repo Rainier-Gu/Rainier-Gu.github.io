@@ -38,13 +38,13 @@ export default function TimelineNode({ post, index }: { post: any, index: number
           {/* 下半部分：文本信息 */}
           <div className="p-6">
             <div className="flex items-center justify-between mb-3">
-              <div className="text-indigo-600 dark:text-indigo-400 font-bold text-[11px] flex items-center gap-1 uppercase tracking-wider">
+              <div className="type-meta text-indigo-600 dark:text-indigo-400 font-bold text-[11px] flex items-center gap-1 uppercase">
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 {post.date}
               </div>
             </div>
 
-            <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 leading-tight">
+            <h3 className="type-card-title font-bold text-lg text-slate-800 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
               {post.title}
             </h3>
 
@@ -54,7 +54,7 @@ export default function TimelineNode({ post, index }: { post: any, index: number
                 {post.tags.map((tag: string) => (
                   <span
                     key={tag}
-                    className="px-2 py-0.5 rounded-md text-[10px] font-black bg-indigo-500/10 text-indigo-600 dark:bg-indigo-400/10 dark:text-indigo-400 border border-indigo-500/10 dark:border-indigo-400/10"
+                    className="type-label px-2 py-0.5 rounded-md text-[10px] font-black bg-indigo-500/10 text-indigo-600 dark:bg-indigo-400/10 dark:text-indigo-400 border border-indigo-500/10 dark:border-indigo-400/10"
                   >
                     #{tag}
                   </span>
@@ -62,7 +62,7 @@ export default function TimelineNode({ post, index }: { post: any, index: number
               </div>
             )}
 
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2 font-medium">
+            <p className="type-summary text-xs text-slate-600 dark:text-slate-400 line-clamp-2 font-medium">
               {post.description}
             </p>
           </div>

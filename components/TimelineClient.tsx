@@ -81,8 +81,8 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
       <div className="animate-fade-in-up">
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6 relative z-[100]">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">归档与探索</h1>
-            <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
+            <h1 className="type-page-title text-4xl md:text-5xl text-slate-900 dark:text-white mb-2 transition-colors duration-700">归档与探索</h1>
+            <p className="type-page-subtitle text-slate-600 dark:text-slate-400 font-medium transition-colors duration-700">
               总计 {posts.length} 篇研究记录
             </p>
           </div>
@@ -120,14 +120,14 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
                         className="px-6 py-4 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors group border-b border-slate-100/50 dark:border-slate-800/50 last:border-0 flex flex-col gap-1.5"
                       >
                         <div className="flex items-center justify-between">
-                          <h4 className="text-base font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1 pr-4">
+                          <h4 className="type-card-title text-base font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1 pr-4">
                             {post.title}
                           </h4>
                           <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md shrink-0">
                             {post.date.split(' ')[0]}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed">
+                        <p className="type-summary text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
                           {post.description}
                         </p>
                       </Link>
@@ -216,11 +216,11 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
 
                         {/* 🌟 文本边距和字号全方位缩放 */}
                         <div className="p-3 md:p-5 flex-1 flex flex-col">
-                          <h3 className="text-xs sm:text-sm md:text-lg font-bold text-slate-800 dark:text-slate-100 mb-1 md:mb-2 line-clamp-2 transition-colors group-hover:text-indigo-500">{post.title}</h3>
-                          <p className="text-[10px] sm:text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-2 md:mb-4 line-clamp-2 flex-1 leading-snug">{post.description || "暂时没有描述喵..."}</p>
+                          <h3 className="type-card-title text-xs sm:text-sm md:text-lg font-bold text-slate-800 dark:text-slate-100 mb-1 md:mb-2 line-clamp-2 transition-colors group-hover:text-indigo-500">{post.title}</h3>
+                          <p className="type-summary text-[10px] sm:text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-2 md:mb-4 line-clamp-2 flex-1">{post.description || "暂时没有描述喵..."}</p>
                           <div className="flex flex-wrap gap-1 sm:gap-2 mt-auto">
                             {post.tags.map((tag: string) => (
-                              <span key={tag} className="text-[8px] md:text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 px-1.5 py-0.5 md:px-2 md:py-1 rounded">#{tag}</span>
+                              <span key={tag} className="type-label text-[8px] md:text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 px-1.5 py-0.5 md:px-2 md:py-1 rounded">#{tag}</span>
                             ))}
                           </div>
                         </div>
@@ -275,7 +275,7 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
               </AnimatePresence>
 
               {timelinePosts.length === 0 && (
-                 <div className="text-center py-20 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-sm">
+                 <div className="type-label text-center py-20 text-slate-500 dark:text-slate-400 font-bold uppercase text-sm">
                     这个频段没有接收到任何信号 📡
                  </div>
               )}

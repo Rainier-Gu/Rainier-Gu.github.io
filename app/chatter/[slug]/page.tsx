@@ -158,7 +158,7 @@ export default async function ChatterDetail({ params }: { params: Promise<{ slug
               <BackButton />
 
               <header className="mb-6 md:mb-10 border-b border-slate-300/30 dark:border-slate-700/50 pb-5 md:pb-8 relative">
-                <h1 className="text-2xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 md:mb-6 tracking-tight transition-colors duration-700 pr-16 md:pr-24 leading-snug md:leading-tight">
+                <h1 className="type-page-title text-2xl md:text-5xl text-slate-900 dark:text-white mb-4 md:mb-6 transition-colors duration-700 pr-16 md:pr-24">
                   {chatterData.title}
                 </h1>
 
@@ -274,7 +274,7 @@ export default async function ChatterDetail({ params }: { params: Promise<{ slug
                 `}</style>
 
                 <div
-                  className="prose prose-slate dark:prose-invert prose-base md:prose-lg max-w-none text-slate-800 dark:text-slate-200 font-serif transition-colors duration-700 leading-relaxed scroll-smooth"
+                  className="prose article-prose prose-slate dark:prose-invert prose-base md:prose-lg max-w-none text-slate-800 dark:text-slate-200 font-serif transition-colors duration-700 scroll-smooth"
                   dangerouslySetInnerHTML={{ __html: chatterData.contentHtml }}
                 />
               </div>
@@ -291,8 +291,8 @@ export default async function ChatterDetail({ params }: { params: Promise<{ slug
               <div className="w-20 h-20 mx-auto rounded-full p-1 bg-gradient-to-tr from-indigo-500 to-purple-500 shadow-md mb-4 hover:rotate-3 transition-transform">
                 <img src={siteConfig.avatarUrl} alt="avatar" className="w-full h-full rounded-full object-cover bg-white" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{siteConfig.authorName}</h3>
-              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium mb-4">{siteConfig.bio}</p>
+              <h3 className="type-section-title text-xl font-bold text-slate-900 dark:text-white mb-2">{siteConfig.authorName}</h3>
+              <p className="type-summary text-xs text-slate-700 dark:text-slate-300 font-medium mb-4">{siteConfig.bio}</p>
               <ClientSocials />
             </div>
 
@@ -300,7 +300,7 @@ export default async function ChatterDetail({ params }: { params: Promise<{ slug
 
             <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-6 border border-white/40 dark:border-white/10 shadow-xl">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-black text-slate-800 dark:text-white tracking-wider">{yearStr}年{monthNum}月</h3>
+                <h3 className="type-section-title text-lg text-slate-800 dark:text-white">{yearStr}年{monthNum}月</h3>
               </div>
               <div className="grid grid-cols-7 gap-1 mb-4 text-center">
                 {weekDays.map(day => <div key={day} className="text-[10px] font-black text-slate-400 uppercase">{day}</div>)}
@@ -320,12 +320,12 @@ export default async function ChatterDetail({ params }: { params: Promise<{ slug
             </div>
 
             <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-6 border border-white/40 dark:border-white/10 shadow-xl">
-              <h3 className="font-black text-slate-900 dark:text-white mb-4 border-l-4 border-indigo-500 pl-2 text-xs tracking-widest uppercase">Recent Records</h3>
+              <h3 className="sidebar-heading text-slate-900 dark:text-white">Recent Records</h3>
               <div className="space-y-4">
                 {recentChatters.map(p => (
                   <Link key={p.slug} href={`/chatter/${p.slug}`} className="group block">
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">{p.title}</h4>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-bold uppercase">{p.date}</p>
+                    <h4 className="type-card-title text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">{p.title}</h4>
+                    <p className="type-meta text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-bold uppercase">{p.date}</p>
                   </Link>
                 ))}
               </div>

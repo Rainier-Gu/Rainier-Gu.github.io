@@ -1417,6 +1417,60 @@ className="... font-serif"
 
 `body` 通过 `font-family: var(--font-serif)` 使用衬线字体。修改网站字体时，只需调整 `--font-serif` 中的顺序，例如把你喜欢的字体放在最前面。最后的 `serif` 就是最终回退选项，建议始终保留。
 
+标题中的英文优先使用 Centaur。相关配置位于 `app/globals.css`：
+
+```css
+--font-title: "Site Centaur", "Centaur", Baskerville, "Palatino Linotype", "Book Antiqua", "Times New Roman", var(--font-serif);
+```
+
+语义标题 `h1` 到 `h6` 会自动使用该字体；其它英文栏目名通过 `title-font-regular` 或 `title-font-black` 控制字重。字体文件保存在 `public/assets/fonts/centaur-regular.ttf`，会随网站一起部署，因此访客不需要在自己的设备上安装 Centaur。浏览器无法加载字体文件时，才会自动使用后面的回退字体。
+
+### 20.1 全站字距与行距规范
+
+全站的排版参数统一写在 `app/globals.css`，页面组件不应再随意添加 `tracking-widest`、`tracking-[0.3em]`、`leading-snug` 或 `leading-relaxed`。新增文字时，应按照文字用途选择下面的排版角色：
+
+| 排版角色 | CSS 类名 | 适合内容 | 行高 | 字距 |
+| --- | --- | --- | --- | --- |
+| 页面主标题 | `type-page-title` | 每个页面顶部的唯一主标题 | `1.1` | `-0.02em` |
+| 页面副标题 | `type-page-subtitle` | 主标题下面的一句话说明 | `1.8` | `0.04em` |
+| 区块标题 | `type-section-title` | 卡片组、留言区、文章分区 | `1.3` | `-0.012em` |
+| 卡片标题 | `type-card-title` | 文章、相册、项目等卡片标题 | `1.35` | `-0.006em` |
+| 正文 | `type-body` | 较长的完整文字 | `1.8` | `0.012em` |
+| 摘要 | `type-summary` | 卡片简介、个人简介、搜索结果摘要 | `1.7` | `0.012em` |
+| 日期和元信息 | `type-meta` | 日期、作者、状态等辅助信息 | `1.6` | `0.04em` |
+| 英文小标题 | `type-kicker` | `Weather`、`Photo Wall`、`All Notes` 等 | `1.4` | `0.14em` |
+| 标签和短按钮 | `type-label` | 标签、徽章、短按钮文字 | `1.4` | `0.08em` |
+
+文章阅读页右侧的 `NOW PLAYING`、`RECOMMENDED`、`TABLE OF CONTENTS` 和杂谈详情页的 `RECENT RECORDS` 必须统一使用 `sidebar-heading`，不要再分别添加字重、字距或左边框。
+
+例如，新增一个普通卡片时可以这样写：
+
+```tsx
+<article>
+  <p className="type-meta text-xs">2026-08-04</p>
+  <h2 className="type-card-title text-xl font-bold">卡片标题</h2>
+  <p className="type-summary text-sm">这里是一两行简短说明。</p>
+</article>
+```
+
+文章 Markdown 生成的正文统一使用 `article-prose`。文章页已经配置好，一般不需要单独修改段落行高。时钟数字、歌词动画、代码和知识地图内部的主题化界面可以保留专用排版，它们属于有意设计的例外。
+
+### 20.2 为什么中英文混排有时看起来大小不一致
+
+Centaur 只有西文字形，没有中文字形。如果在同一个标题里写 `stamp制作`，并直接使用 Centaur，浏览器会用 Centaur 显示 `stamp`，再用中文回退字体显示“制作”。两套字体的字面高度、基线和粗细不同，看起来就像使用了两种字号。
+
+因此本项目采用以下规则：
+
+- 页面主标题、独立英文栏目标题使用 Centaur；
+- Markdown 文章内部的 `h1` 到 `h6` 使用统一的正文宋体，适合中英文混排；
+- 四级标题在桌面端为 `1.2rem`，不会再小于 `1.15rem` 的正文；
+- 代码、命令和变量使用等宽字体；
+- 不要为了修正某一个英文单词而在 Markdown 中单独添加字号样式。
+
+对应规则位于 `app/globals.css` 的 `.prose.article-prose` 部分。
+
+文章内部标题遵循“标题前留白大于标题后留白”的阅读节奏：二级标题前留白 `2.75rem`，三级标题前留白 `2.125rem`，四级标题前留白 `1.75rem`。这样标题会明确归属于后面的内容，不会贴住上一段。若标题是文章正文的第一个元素，则自动取消顶部留白。
+
 如果你想将全站改成无衬线字体，可以把 `body` 改成：
 
 ```css

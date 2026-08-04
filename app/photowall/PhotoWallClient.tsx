@@ -50,8 +50,8 @@ export default function PhotoWallClient() {
             <div className="animate-fade-in-up">
               <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
                 <div>
-                  <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">光影画廊</h1>
-                  <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">用影像记录学习之外依然鲜活的日子。</p>
+                  <h1 className="type-page-title text-4xl md:text-5xl text-slate-900 dark:text-white mb-2 transition-colors duration-700">光影画廊</h1>
+                  <p className="type-page-subtitle text-slate-600 dark:text-slate-400 font-medium transition-colors duration-700">用影像记录学习之外依然鲜活的日子。</p>
                 </div>
 
                 <div className="relative w-full md:w-80 group">
@@ -72,7 +72,7 @@ export default function PhotoWallClient() {
 
                 {activeQuery && matchedPhotos.length > 0 && (
                   <div className="mb-16">
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2">
+                    <h3 className="type-section-title text-xl font-bold text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2">
                       <span className="w-2 h-6 bg-indigo-500 rounded-full"></span>
                       匹配的单张照片 ({matchedPhotos.length})
                     </h3>
@@ -85,8 +85,8 @@ export default function PhotoWallClient() {
                         >
                           <img src={photo.url} alt={photo.caption} className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105" loading="lazy" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-5">
-                            <span className="text-indigo-300 font-black text-[10px] tracking-widest uppercase mb-1 drop-shadow-md">{photo.albumName}</span>
-                            <p className="text-white font-medium text-sm drop-shadow-md translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{photo.caption}</p>
+                            <span className="type-label text-indigo-300 font-black text-[10px] uppercase mb-1 drop-shadow-md">{photo.albumName}</span>
+                            <p className="type-summary text-white font-medium text-sm drop-shadow-md translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{photo.caption}</p>
                           </div>
                         </div>
                       ))}
@@ -95,7 +95,7 @@ export default function PhotoWallClient() {
                 )}
 
                 {activeQuery && matchedAlbums.length > 0 && (
-                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2">
+                  <h3 className="type-section-title text-xl font-bold text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2">
                     <span className="w-2 h-6 bg-purple-500 rounded-full"></span>
                     相关相册 ({matchedAlbums.length})
                   </h3>
@@ -126,10 +126,10 @@ export default function PhotoWallClient() {
 
                       <div className="text-center px-4 w-full">
                         <div className="flex items-center justify-center gap-2 mb-1">
-                          <h2 className="text-xl font-bold text-slate-900 dark:text-white transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{album.title}</h2>
-                          <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-sm uppercase tracking-wider">{album.date}</span>
+                          <h2 className="type-card-title text-xl font-bold text-slate-900 dark:text-white transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{album.title}</h2>
+                          <span className="type-meta text-[10px] font-black text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-sm uppercase">{album.date}</span>
                         </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-1">{album.description}</p>
+                        <p className="type-summary text-sm text-slate-600 dark:text-slate-400 line-clamp-1">{album.description}</p>
                       </div>
                     </div>
                   ))}
@@ -159,9 +159,9 @@ export default function PhotoWallClient() {
                       返回画廊
                     </button>
                     <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></span>
-                    <span className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{currentAlbum.date}</span>
+                    <span className="type-meta text-xs font-black text-slate-400 dark:text-slate-500 uppercase">{currentAlbum.date}</span>
                   </div>
-                  <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-wider mb-2">{currentAlbum.title}</h1>
+                  <h1 className="type-page-title text-4xl md:text-5xl text-slate-900 dark:text-white mb-2">{currentAlbum.title}</h1>
                   <p className="text-slate-600 dark:text-slate-400 font-medium text-lg">{currentAlbum.description}</p>
                 </div>
 
@@ -212,7 +212,7 @@ export default function PhotoWallClient() {
           />
 
           {selectedImage.caption && (
-            <div className="absolute bottom-10 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-full text-white text-sm font-medium tracking-wide shadow-2xl">
+            <div className="type-meta absolute bottom-10 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-full text-white text-sm font-medium shadow-2xl">
               {selectedImage.caption}
             </div>
           )}

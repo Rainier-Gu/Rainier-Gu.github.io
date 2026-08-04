@@ -178,12 +178,12 @@ export default function WeatherWidget() {
       <div className="relative z-10">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 dark:text-amber-300">
+            <p className="type-kicker text-[12px] text-amber-500 dark:text-amber-300">
               Weather
             </p>
             <div className="mt-2 flex items-center gap-2">
               <MapPin size={15} className="text-indigo-500" />
-              <h3 className="line-clamp-1 text-base font-black text-slate-900 dark:text-white">
+              <h3 className="type-card-title line-clamp-1 text-base font-black text-slate-900 dark:text-white">
                 {weather?.city || '同步天气中'}
               </h3>
             </div>
@@ -223,7 +223,7 @@ export default function WeatherWidget() {
         {loading && !weather ? (
           <div className="flex min-h-[260px] flex-col items-center justify-center gap-3 text-slate-500">
             <Loader2 className="animate-spin text-indigo-400" size={30} />
-            <span className="text-[10px] font-black uppercase tracking-[0.24em]">同步气象云...</span>
+            <span className="type-label text-[10px] font-black uppercase">同步气象云...</span>
           </div>
         ) : weather ? (
           <>
@@ -298,7 +298,7 @@ function Metric({ icon, label, value }: { icon: React.ReactNode; label: string; 
       <div className="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-500 dark:text-indigo-300">
         {icon}
       </div>
-      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">{label}</p>
+      <p className="type-label text-[10px] font-black uppercase text-slate-400">{label}</p>
       <p className="mt-1 text-xs font-black text-slate-800 dark:text-white">{value}</p>
     </div>
   );

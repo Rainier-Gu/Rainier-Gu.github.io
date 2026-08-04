@@ -137,10 +137,10 @@ export default function KnowledgeMapPage() {
           <section className="animate-fade-in-up">
             <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
               <div>
-                <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">
+                <h1 className="type-page-title text-4xl md:text-5xl text-slate-900 dark:text-white mb-2 transition-colors duration-700">
                   知识地图
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
+                <p className="type-page-subtitle text-slate-600 dark:text-slate-400 font-medium transition-colors duration-700">
                   把文章、说说与 PDF 资料整理成一张轻量的学习地图。
                 </p>
               </div>
@@ -163,14 +163,14 @@ export default function KnowledgeMapPage() {
                     <ArrowRight size={18} className="text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
                   </div>
                   <div className="mt-5 text-3xl font-black text-slate-950 dark:text-white">{section.count}</div>
-                  <h2 className="mt-2 font-black text-slate-800 dark:text-slate-100">{section.title}</h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{section.description}</p>
+                  <h2 className="type-card-title mt-2 font-black text-slate-800 dark:text-slate-100">{section.title}</h2>
+                  <p className="type-summary mt-2 text-sm text-slate-500 dark:text-slate-400">{section.description}</p>
                 </Link>
               );
             })}
 
             <div className="rounded-3xl border border-white/50 bg-white/60 p-6 shadow-lg backdrop-blur-xl transition-colors duration-300 dark:border-white/10 dark:bg-slate-900/50">
-              <h2 className="flex items-center gap-2 text-lg font-black text-slate-950 dark:text-white">
+              <h2 className="type-section-title flex items-center gap-2 text-lg text-slate-950 dark:text-white">
                 <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-300">
                   <Tags size={20} />
                 </span>
@@ -184,7 +184,7 @@ export default function KnowledgeMapPage() {
                     </span>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">还没有标签。给文章 frontmatter 添加 tags 后会自动显示。</p>
+                  <p className="type-summary text-sm text-slate-500 dark:text-slate-400">还没有标签。给文章 frontmatter 添加 tags 后会自动显示。</p>
                 )}
               </div>
             </div>
@@ -194,11 +194,11 @@ export default function KnowledgeMapPage() {
             <div className="rounded-[2rem] border border-white/50 dark:border-white/10 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-6 md:p-8 shadow-xl">
               <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-950 dark:text-white flex items-center gap-2">
+                  <h2 className="type-section-title text-2xl text-slate-950 dark:text-white flex items-center gap-2">
                     <Clock3 size={22} className="text-indigo-500" />
                     最近更新
                   </h2>
-                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">按发布时间自动排序，优先看到最新内容。</p>
+                  <p className="type-summary mt-2 text-sm text-slate-500 dark:text-slate-400">按发布时间自动排序，优先看到最新内容。</p>
                 </div>
               </div>
 
@@ -211,7 +211,7 @@ export default function KnowledgeMapPage() {
                     <span className="absolute -left-[33px] top-2 h-4 w-4 rounded-full border-[3px] border-white bg-indigo-500 shadow-[0_0_0_3px_rgba(99,102,241,0.16)] transition-transform duration-300 group-hover:scale-125 dark:border-slate-900 dark:bg-indigo-400 md:-left-[41px]" />
                     <time
                       dateTime={item.date}
-                      className="mb-2 inline-flex rounded-full bg-indigo-500/10 px-3 py-1.5 text-sm font-black tracking-wide text-indigo-700 ring-1 ring-inset ring-indigo-500/15 dark:bg-indigo-400/10 dark:text-indigo-200 dark:ring-indigo-300/15"
+                      className="type-meta mb-2 inline-flex rounded-full bg-indigo-500/10 px-3 py-1.5 text-sm font-black text-indigo-700 ring-1 ring-inset ring-indigo-500/15 dark:bg-indigo-400/10 dark:text-indigo-200 dark:ring-indigo-300/15"
                     >
                       {formatDate(item.date)}
                     </time>
@@ -225,10 +225,10 @@ export default function KnowledgeMapPage() {
                             <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-indigo-600 dark:text-indigo-300">{item.type}</span>
                             {item.pdfCount > 0 && <span>{item.pdfCount} 个 PDF</span>}
                           </div>
-                          <h3 className="mt-3 text-lg font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
+                          <h3 className="type-card-title mt-3 text-lg font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
                             {item.title}
                           </h3>
-                          <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.description}</p>
+                          <p className="type-summary mt-2 line-clamp-2 text-sm text-slate-500 dark:text-slate-400">{item.description}</p>
                         </div>
                         <ArrowRight size={18} className="mt-1 shrink-0 text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
                       </div>

@@ -130,10 +130,10 @@ export default function Home() {
 
             <div className="relative z-10 mx-auto flex w-[90%] max-w-5xl flex-col items-center px-4 text-center text-white">
               <div aria-hidden="true" className="mb-5 h-9" />
-              <h1 className="text-5xl font-black tracking-tight drop-shadow-2xl md:text-7xl">
+              <h1 className="type-page-title hero-title text-5xl drop-shadow-2xl md:text-[5.5rem]">
                 {heroTitle}
               </h1>
-              <p className="mt-6 max-w-3xl text-base font-medium leading-relaxed text-white/90 drop-shadow md:text-xl">
+              <p className="type-page-subtitle mt-6 max-w-3xl text-base font-medium text-white/90 drop-shadow md:text-xl">
                 {heroSubtitle}
               </p>
             </div>

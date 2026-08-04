@@ -43,10 +43,10 @@ export default function ChatterBoard({ chatters }: { chatters: Chatter[] }) {
       <div className="animate-fade-in-up">
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">
+            <h1 className="type-page-title text-4xl md:text-5xl text-slate-900 dark:text-white mb-2 transition-colors duration-700">
               {siteConfig.chatterTitle || "研究与生活札记"}
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
+            <p className="type-page-subtitle text-slate-600 dark:text-slate-400 font-medium transition-colors duration-700">
               {siteConfig.chatterDescription || "课程，科研，和一些短想法的碎片记录。"}
             </p>
           </div>
@@ -107,7 +107,7 @@ export default function ChatterBoard({ chatters }: { chatters: Chatter[] }) {
 
                     {/* 🌟 核心修改 4：心情徽章微缩 */}
                     {chatter.mood && (
-                      <span className="absolute top-2 right-2 md:top-4 md:right-4 bg-white/20 backdrop-blur-md text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-sm border border-white/20 uppercase tracking-widest">
+                      <span className="type-label absolute top-2 right-2 md:top-4 md:right-4 bg-white/20 backdrop-blur-md text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-sm border border-white/20 uppercase">
                         ✨ {chatter.mood}
                       </span>
                     )}
@@ -117,7 +117,7 @@ export default function ChatterBoard({ chatters }: { chatters: Chatter[] }) {
                 {/* 🌟 核心修改 5：内部 padding 极致压缩 p-3 md:p-7 */}
                 <div className="p-3 md:p-7">
                   <div className="flex items-center justify-between mb-2 md:mb-4">
-                    <div className="text-[8px] md:text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-wider md:tracking-[0.2em] bg-indigo-500/5 dark:bg-indigo-400/10 px-1.5 py-0.5 md:px-3 md:py-1 rounded-md md:rounded-lg border border-indigo-500/10">
+                    <div className="type-meta text-[8px] md:text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase bg-indigo-500/5 dark:bg-indigo-400/10 px-1.5 py-0.5 md:px-3 md:py-1 rounded-md md:rounded-lg border border-indigo-500/10">
                       {chatter.date}
                     </div>
                     {/* 心情展示 - 无封面版 */}
@@ -130,11 +130,11 @@ export default function ChatterBoard({ chatters }: { chatters: Chatter[] }) {
 
                   {chatter.title && (
                     // 🌟 核心修改 6：标题压缩 text-sm md:text-xl
-                    <h3 className="text-sm md:text-xl font-bold text-slate-800 dark:text-white mb-1.5 md:mb-4 leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 md:line-clamp-none">{chatter.title}</h3>
+                    <h3 className="type-card-title text-sm md:text-xl font-bold text-slate-800 dark:text-white mb-1.5 md:mb-4 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 md:line-clamp-none">{chatter.title}</h3>
                   )}
 
                   {/* 🌟 核心修改 7：正文压缩，限制行数 */}
-                  <div className="text-[10px] md:text-sm text-slate-600 dark:text-slate-300 leading-snug md:leading-relaxed line-clamp-4 md:line-clamp-5 opacity-90 font-medium italic">
+                  <div className="type-summary text-[10px] md:text-sm text-slate-600 dark:text-slate-300 line-clamp-4 md:line-clamp-5 opacity-90 font-medium italic">
                     {chatter.content}
                   </div>
 

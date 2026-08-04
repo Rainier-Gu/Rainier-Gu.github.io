@@ -47,7 +47,7 @@ export default function SiteDashboard({ latestUpdatedAt }: SiteDashboardProps) {
   return (
     <div className="group overflow-hidden rounded-[32px] border border-white/50 bg-white/45 shadow-xl backdrop-blur-xl transition-colors duration-700 dark:border-white/10 dark:bg-slate-800/55">
       <div className="bg-white/70 px-4 py-5 text-slate-900 shadow-inner transition-colors duration-700 dark:bg-black dark:text-white">
-        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.32em] text-indigo-500 dark:text-indigo-300">
+        <p className="type-kicker mb-3 text-[12px] text-indigo-500 dark:text-indigo-300">
           Local Time
         </p>
 
@@ -59,14 +59,14 @@ export default function SiteDashboard({ latestUpdatedAt }: SiteDashboardProps) {
           <ClockUnit value={second} isMuted />
         </div>
 
-        <p className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-indigo-500/10 px-3 py-2 text-sm font-black tracking-[0.08em] text-slate-800 ring-1 ring-inset ring-indigo-500/10 dark:bg-indigo-400/10 dark:text-white/90 dark:ring-indigo-300/10">
+        <p className="type-meta mt-4 inline-flex w-full items-center justify-center rounded-xl bg-indigo-500/10 px-3 py-2 text-sm font-black text-slate-800 ring-1 ring-inset ring-indigo-500/10 dark:bg-indigo-400/10 dark:text-white/90 dark:ring-indigo-300/10">
           {dateStr || '同步时间中'}
         </p>
       </div>
 
       <div className="space-y-4 p-4">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-black uppercase tracking-[0.28em] text-indigo-500 dark:text-indigo-300">
+          <span className="type-kicker text-[12px] text-indigo-500 dark:text-indigo-300">
             Site Status
           </span>
           <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-black text-emerald-600 dark:text-emerald-300">

@@ -139,8 +139,8 @@ export default function AboutClient({
         {/* 🌟 核心修复区：手机端排版优雅适配 */}
         <div className="mt-4 md:mt-6 mb-6 md:mb-8 relative flex flex-col md:flex-row md:items-end justify-between gap-5 md:gap-4">
           <div className="text-center md:text-left">
-            <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-1 md:mb-3 transition-colors duration-700">关于我</h1>
-            <p className="text-sm md:text-lg text-indigo-600 dark:text-indigo-400 font-bold tracking-widest uppercase transition-colors duration-700">Hello World, I'm {siteConfig.authorName}</p>
+            <h1 className="type-page-title text-3xl md:text-5xl text-slate-900 dark:text-white mb-1 md:mb-3 transition-colors duration-700">关于我</h1>
+            <p className="type-page-subtitle title-font-regular text-base md:text-xl text-indigo-600 dark:text-indigo-400 transition-colors duration-700">Hello World, I'm {siteConfig.authorName}</p>
           </div>
 
           <div className="flex items-center w-full md:w-auto gap-1 bg-white/50 dark:bg-slate-900/50 p-1 md:p-1.5 rounded-xl md:rounded-2xl shadow-inner border border-white/40 dark:border-white/5">
@@ -212,7 +212,7 @@ export default function AboutClient({
                     .prose pre code { font-size: 0.9em !important; }
                   }
                 `}</style>
-                <div className="prose prose-slate dark:prose-invert prose-base md:prose-lg max-w-none text-slate-800 dark:text-slate-200 font-serif transition-colors duration-700 leading-relaxed scroll-smooth" dangerouslySetInnerHTML={{ __html: contentHtml }} />
+                <div className="prose article-prose prose-slate dark:prose-invert prose-base md:prose-lg max-w-none text-slate-800 dark:text-slate-200 font-serif transition-colors duration-700 scroll-smooth" dangerouslySetInnerHTML={{ __html: contentHtml }} />
               </div>
               <div className="mt-12 md:mt-16"><Comments /></div>
             </motion.div>

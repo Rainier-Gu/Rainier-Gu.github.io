@@ -52,9 +52,9 @@ export default function PhotoWallCarousel({ albums }: { albums: Album[] }) {
         href="/photowall"
         className="block rounded-[32px] bg-white/45 p-6 shadow-xl backdrop-blur-xl border border-white/50 dark:bg-slate-800/55 dark:border-white/10"
       >
-        <p className="text-[10px] font-black uppercase tracking-[0.35em] text-pink-500">Photo Wall</p>
-        <h2 className="mt-3 text-2xl font-black text-slate-900 dark:text-white">照片墙</h2>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">还没有照片，去添加第一张吧。</p>
+        <p className="type-kicker text-[12px] text-pink-500">Photo Wall</p>
+        <h2 className="type-section-title mt-3 text-2xl text-slate-900 dark:text-white">照片墙</h2>
+        <p className="type-summary mt-2 text-sm text-slate-600 dark:text-slate-300">还没有照片，去添加第一张吧。</p>
       </Link>
     );
   }
@@ -87,17 +87,17 @@ export default function PhotoWallCarousel({ albums }: { albums: Album[] }) {
 
       <div className="relative z-10 flex min-h-[310px] flex-col justify-end p-6 text-slate-900 pointer-events-none dark:text-white">
         <div className="mb-auto flex items-center justify-between gap-3">
-          <span className="rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-slate-700 backdrop-blur-md dark:border-white/25 dark:bg-white/20 dark:text-white">
+          <span className="type-kicker rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[12px] text-slate-700 backdrop-blur-md dark:border-white/25 dark:bg-white/20 dark:text-white">
             Photo Wall
           </span>
-          <span className="rounded-full bg-white/70 px-3 py-1 text-[10px] font-bold tracking-widest text-slate-600 backdrop-blur-md dark:bg-black/25 dark:text-white">
+          <span className="type-meta rounded-full bg-white/70 px-3 py-1 text-[10px] font-bold text-slate-600 backdrop-blur-md dark:bg-black/25 dark:text-white">
             {current.albumDate}
           </span>
         </div>
 
         <div>
-          <h2 className="text-2xl font-black tracking-wide drop-shadow-sm">{current.albumTitle}</h2>
-          <p className="mt-2 line-clamp-2 text-sm font-medium leading-relaxed text-slate-700 dark:text-white/85">
+          <h2 className="type-card-title text-2xl font-black drop-shadow-sm">{current.albumTitle}</h2>
+          <p className="type-summary mt-2 line-clamp-2 text-sm font-medium text-slate-700 dark:text-white/85">
             {current.caption || '定格时间，保存学习与生活里的每一次闪光'}
           </p>
         </div>

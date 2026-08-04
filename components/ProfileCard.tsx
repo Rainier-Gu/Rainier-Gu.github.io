@@ -32,14 +32,11 @@ export default function ProfileCard({
             <img src={siteConfig.avatarUrl} alt="avatar" className="w-full h-full rounded-[20px] object-cover bg-white" />
           </div>
           <div className="mt-5 min-w-0">
-            {/* 🌟 核心修复点：
-                1. 增加了 pb-1 (padding-bottom) 给字母降部留空间
-                2. 增加了 leading-snug 确保行高不至于太扁
-            */}
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-2 pb-1 leading-snug tracking-wider transition-colors duration-700">
+            {/* pb-1 给英文字母的下伸部预留空间。 */}
+            <h1 className="type-section-title text-2xl text-slate-900 dark:text-white mb-2 pb-1 transition-colors duration-700">
               {siteConfig.authorName}
             </h1>
-            <p className="text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed transition-colors duration-700 line-clamp-4">
+            <p className="type-summary text-sm text-slate-700 dark:text-slate-300 font-medium transition-colors duration-700 line-clamp-4">
               {siteConfig.bio}
             </p>
           </div>
@@ -72,7 +69,7 @@ function StatItem({ count, label, color }: { count: number, label: string, color
   return (
     <div className="text-center group/stat px-2">
       <div className={`text-xl md:text-2xl font-black ${color} transition-transform group-hover/stat:scale-110`}>{count}</div>
-      <div className="text-[9px] md:text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5">{label}</div>
+      <div className="type-label text-[9px] md:text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mt-0.5">{label}</div>
     </div>
   );
 }

@@ -142,7 +142,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="w-[95%] md:w-[90%] max-w-6xl mx-auto mt-24 md:mt-28 flex flex-col lg:flex-row gap-6 md:gap-8 relative z-10">
+        <main className="relative z-10 mx-auto mt-24 flex w-full max-w-[1440px] flex-col gap-6 px-4 sm:px-6 md:mt-28 md:gap-8 lg:flex-row lg:px-8 xl:px-10">
 
           <article className="flex-1 bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/40 dark:border-white/10 overflow-hidden transition-colors duration-700">
             <div className="w-full aspect-video bg-slate-200 dark:bg-slate-700 relative group">
@@ -153,7 +153,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
               <BackButton />
 
               <header className="mb-6 md:mb-8 border-b border-slate-300/50 dark:border-slate-700 pb-5 md:pb-6 relative">
-                <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight transition-colors duration-700 pr-16 md:pr-24 leading-snug">
+                <h1 className="type-page-title text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 transition-colors duration-700 pr-16 md:pr-24">
                   {postData.title}
                 </h1>
 
@@ -264,7 +264,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
 
                 <div
                   id="article-content"
-                  className="prose prose-slate dark:prose-invert prose-base md:prose-lg max-w-none text-slate-800 dark:text-slate-200 transition-colors duration-700 scroll-smooth"
+                  className="prose article-prose prose-slate dark:prose-invert prose-base md:prose-lg max-w-none text-slate-800 dark:text-slate-200 transition-colors duration-700 scroll-smooth"
                   dangerouslySetInnerHTML={{ __html: postData.contentHtml }}
                 />
               </div>
@@ -281,20 +281,20 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
               <div className="w-20 h-20 mx-auto rounded-full p-1 bg-gradient-to-tr from-indigo-500 to-purple-500 shadow-md mb-4 transition-transform duration-500 hover:rotate-3">
                 <img src={siteConfig.avatarUrl} alt="avatar" className="w-full h-full rounded-full object-cover bg-white" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{siteConfig.authorName}</h3>
-              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium mb-4">{siteConfig.bio}</p>
+              <h3 className="type-section-title text-xl font-bold text-slate-900 dark:text-white mb-2">{siteConfig.authorName}</h3>
+              <p className="type-summary text-xs text-slate-700 dark:text-slate-300 font-medium mb-4">{siteConfig.bio}</p>
               <ClientSocials />
             </div>
 
             <SidebarLyric />
 
             <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-6 border border-white/40 dark:border-white/10 shadow-xl">
-              <h3 className="font-black text-slate-900 dark:text-white mb-4 border-l-4 border-indigo-500 pl-2 text-sm">RECOMMENDED</h3>
+              <h3 className="sidebar-heading text-slate-900 dark:text-white">RECOMMENDED</h3>
               <div className="space-y-4">
                 {recentPosts.map(p => (
                   <Link key={p.slug} href={`/posts/${p.slug}`} className="group block">
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">{p.title}</h4>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-bold uppercase">{p.date}</p>
+                    <h4 className="type-card-title text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">{p.title}</h4>
+                    <p className="type-meta text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-bold uppercase">{p.date}</p>
                   </Link>
                 ))}
               </div>

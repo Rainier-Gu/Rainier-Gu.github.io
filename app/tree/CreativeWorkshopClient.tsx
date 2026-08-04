@@ -93,10 +93,10 @@ export default function CreativeWorkshopClient({ posts = [], chatters = [], mome
 
           {/* 顶部标题栏 */}
           <div className="w-full flex flex-col items-center mb-16 animate-fade-in-up text-center">
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-3 flex items-center justify-center gap-3 transition-colors duration-700">
+            <h1 className="type-page-title text-4xl md:text-5xl text-slate-900 dark:text-white mb-3 flex items-center justify-center gap-3 transition-colors duration-700">
               <Trees className="text-indigo-500" size={40} /> 灵境
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider mb-8 transition-colors duration-700">
+            <p className="type-page-subtitle text-slate-600 dark:text-slate-400 font-medium mb-8 transition-colors duration-700">
               从神秘的记忆试管到深邃的星际巨舰，在这里封存所有的灵感与奇迹
             </p>
 
