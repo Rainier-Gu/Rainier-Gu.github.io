@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title description">
+  <title id="title">XinghuisamaBlogs</title>
+  <desc id="description">XH monogram on an indigo and violet background</desc>
+  <defs>
+    <linearGradient id="background" x1="24" y1="18" x2="178" y2="184" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4f46e5"/>
+      <stop offset="0.54" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#ec4899"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(58 48) rotate(48) scale(124)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="100" cy="100" r="100" fill="url(#background)"/>
+  <circle cx="100" cy="100" r="100" fill="url(#glow)"/>
+  <path d="m48 61 24 38-26 40h21l16-27 17 27h22L95 98l24-37H98L84 85 69 61H48Z" fill="#fff"/>
+  <path d="M127 61h19v30h29V61h19v78h-19v-31h-29v31h-19V61Z" fill="#fff" fill-opacity="0.94"/>
+</svg>

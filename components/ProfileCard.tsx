@@ -33,7 +33,7 @@ export default function ProfileCard({
           </div>
           <div className="mt-5 min-w-0">
             {/* pb-1 给英文字母的下伸部预留空间。 */}
-            <h1 className="type-section-title text-2xl text-slate-900 dark:text-white mb-2 pb-1 transition-colors duration-700">
+            <h1 className="type-section-title author-name text-2xl text-slate-900 dark:text-white mb-2 pb-1 transition-colors duration-700">
               {siteConfig.authorName}
             </h1>
             <p className="type-summary text-sm text-slate-700 dark:text-slate-300 font-medium transition-colors duration-700 line-clamp-4">

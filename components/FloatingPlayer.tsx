@@ -7,8 +7,20 @@ import { useState, useEffect } from 'react';
 
 export default function FloatingPlayer() {
   const pathname = usePathname();
-  const { currentSong, isPlaying, togglePlay, nextSong, currentLyric, isLoading } = useMusic();
+  const {
+    currentSong,
+    isPlaying,
+    togglePlay,
+    nextSong,
+    currentLyric,
+    isLoading,
+    volume,
+    setVolume,
+    isMuted,
+    toggleMute,
+  } = useMusic();
   const [isMounted, setIsMounted] = useState(false);
+  const [showVolume, setShowVolume] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -55,6 +67,53 @@ export default function FloatingPlayer() {
 
         {/* 控制按钮 */}
         <div className="flex items-center gap-2 ml-1">
+          <div className="relative flex items-center">
+            {showVolume && (
+              <motion.div
+                initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.96 }}
+                onPointerDown={(e) => e.stopPropagation()}
+                className="absolute bottom-11 right-0 flex w-36 items-center gap-2 rounded-2xl border border-white/50 bg-white/90 px-3 py-2.5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/95"
+              >
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); toggleMute(); }}
+                  className="flex-shrink-0 text-slate-600 transition-colors hover:text-indigo-500 dark:text-slate-300 dark:hover:text-indigo-400"
+                  aria-label={isMuted ? '取消静音' : '静音'}
+                  title={isMuted ? '取消静音' : '静音'}
+                >
+                  {isMuted || volume === 0 ? <VolumeMutedIcon /> : <VolumeIcon />}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => setVolume(Number(e.target.value))}
+                  onClick={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="h-1 min-w-0 flex-1 cursor-pointer appearance-none rounded-full"
+                  style={{
+                    background: `linear-gradient(to right, #6366f1 ${(isMuted ? 0 : volume) * 100}%, rgba(148, 163, 184, 0.35) 0)`,
+                  }}
+                  aria-label="音乐音量"
+                />
+              </motion.div>
+            )}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setShowVolume((visible) => !visible); }}
+              onPointerDown={(e) => e.stopPropagation()}
+              className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors cursor-pointer ${showVolume ? 'bg-indigo-500 text-white' : 'text-slate-600 hover:bg-indigo-500/10 hover:text-indigo-500 dark:text-slate-300 dark:hover:text-indigo-400'}`}
+              aria-label="调节音乐音量"
+              aria-expanded={showVolume}
+              title={`音量 ${Math.round((isMuted ? 0 : volume) * 100)}%`}
+            >
+              {isMuted || volume === 0 ? <VolumeMutedIcon /> : <VolumeIcon />}
+            </button>
+          </div>
           <button
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             onPointerDown={(e) => e.stopPropagation()}
@@ -73,5 +132,21 @@ export default function FloatingPlayer() {
 
       </motion.div>
     </div>
+  );
+}
+
+function VolumeIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5 6 9H3v6h3l5 4V5Zm4.5 3.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12" />
+    </svg>
+  );
+}
+
+function VolumeMutedIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5 6 9H3v6h3l5 4V5Zm5 5 5 5m0-5-5 5" />
+    </svg>
   );
 }

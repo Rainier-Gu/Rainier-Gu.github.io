@@ -81,7 +81,7 @@ export default function FriendsBoard() {
                   </h2>
                   <div className="type-label text-[9px] md:text-xs font-bold text-indigo-500/70 dark:text-indigo-400/70 uppercase mt-0.5 md:mt-1 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                    Online
+                    {friend.badge || 'Online'}
                   </div>
                 </div>
               </div>

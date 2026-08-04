@@ -5,6 +5,7 @@ export interface Friend {
   description: string;
   avatar: string;
   themeColor: string;
+  badge?: string;
 }
 
 export const friendsData: Friend[] = [
@@ -15,5 +16,15 @@ export const friendsData: Friend[] = [
     avatar: "/vercel.svg",
     url: "https://vercel.com/",
     themeColor: "rgba(15, 23, 42, 0.45)",
+    badge: "部署服务",
+  },
+  {
+    id: "xinghuisama-blogs",
+    name: "XinghuisamaBlogs",
+    description: "本站基于这套 Next.js 毛玻璃博客模板改造，并在此基础上持续完善。",
+    avatar: "/assets/img/friends/xinghuisama-blogs.svg",
+    url: "https://github.com/heiehiehi/XinghuisamaBlogs",
+    themeColor: "rgba(99, 102, 241, 0.45)",
+    badge: "基础模板",
   },
 ];

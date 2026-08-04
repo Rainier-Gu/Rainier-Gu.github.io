@@ -133,6 +133,10 @@
   text-wrap: balance;
 }
 
+.author-name {
+  letter-spacing: 0.08em;
+}
+
 .type-card-title {
   font-family: var(--font-title);
   line-height: 1.35;
