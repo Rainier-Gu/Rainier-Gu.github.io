@@ -320,7 +320,6 @@ danmakuList: [],
 ```ts
 gitalkConfig: {
   clientID: "",
-  clientSecret: "",
   repo: "Rainier-Gu.github.io",
   owner: "Rainier-Gu",
   admin: ["Rainier-Gu"],
@@ -331,13 +330,13 @@ gitalkConfig: {
 
 ```env
 NEXT_PUBLIC_GITALK_CLIENT_ID=你的 Client ID
-NEXT_PUBLIC_GITALK_CLIENT_SECRET=你的 Client Secret
+GITALK_CLIENT_SECRET=你的 Client Secret
 NEXT_PUBLIC_GITALK_OWNER=Rainier-Gu
 NEXT_PUBLIC_GITALK_REPO=Rainier-Gu.github.io
 NEXT_PUBLIC_GITALK_ADMIN=Rainier-Gu
 ```
 
-通常不建议把 `clientID` 和 `clientSecret` 直接写进 `siteConfig.ts`。详细步骤见：
+`Client ID` 可以公开，`Client Secret` 只能放在服务端环境变量中，不能写进 `siteConfig.ts`。详细步骤见：
 
 ```text
 docs/GITHUB_COMMENTS.md
@@ -1325,7 +1324,7 @@ DEEPSEEK_API_KEY=你的 DeepSeek Key
 
 ## 18. 如何配置 GitHub 评论
 
-评论系统使用 Gitalk，把评论存在 GitHub Issues。
+评论系统通过服务端 OAuth 把评论保存在 GitHub Issues 中，并兼容旧 Gitalk Issue 标签。
 
 相关文件：
 
@@ -1341,7 +1340,7 @@ Vercel 环境变量：
 
 ```env
 NEXT_PUBLIC_GITALK_CLIENT_ID=你的 Client ID
-NEXT_PUBLIC_GITALK_CLIENT_SECRET=你的 Client Secret
+GITALK_CLIENT_SECRET=你的 Client Secret
 NEXT_PUBLIC_GITALK_OWNER=Rainier-Gu
 NEXT_PUBLIC_GITALK_REPO=Rainier-Gu.github.io
 NEXT_PUBLIC_GITALK_ADMIN=Rainier-Gu
@@ -1580,8 +1579,8 @@ http://localhost:4000/reading
 | `DEEPSEEK_API_KEY` | AI 小猫助手 | 不要 |
 | `DEEPSEEK_MODEL` | 可选，覆盖 DeepSeek 模型 | 不要 |
 | `QWEATHER_KEY` | 天气接口 | 不要 |
-| `NEXT_PUBLIC_GITALK_CLIENT_ID` | Gitalk 评论登录 | 需要 |
-| `NEXT_PUBLIC_GITALK_CLIENT_SECRET` | Gitalk 评论登录 | 需要 |
+| `NEXT_PUBLIC_GITALK_CLIENT_ID` | GitHub 评论登录的公开 Client ID | 需要 |
+| `GITALK_CLIENT_SECRET` | GitHub 评论登录的服务端 Secret | 不要 |
 | `NEXT_PUBLIC_GITALK_OWNER` | 评论仓库 owner | 需要 |
 | `NEXT_PUBLIC_GITALK_REPO` | 评论仓库 repo | 需要 |
 | `NEXT_PUBLIC_GITALK_ADMIN` | 评论管理员 | 需要 |
@@ -1594,7 +1593,7 @@ http://localhost:4000/reading
 DEEPSEEK_API_KEY=sk-xxx
 QWEATHER_KEY=xxx
 NEXT_PUBLIC_GITALK_CLIENT_ID=xxx
-NEXT_PUBLIC_GITALK_CLIENT_SECRET=xxx
+GITALK_CLIENT_SECRET=xxx
 ```
 
 Vercel 也要配置同样的线上变量。

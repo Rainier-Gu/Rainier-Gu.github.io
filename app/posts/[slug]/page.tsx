@@ -1,16 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
-
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkGfm from 'remark-gfm'; // 🌟 核心引入：支持删除线和表格等 GFM 语法
-import remarkRehype from 'remark-rehype';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeStringify from 'rehype-stringify';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import { parseFrontMatter } from '../../../utils/frontMatter';
+import { renderMarkdown } from '../../../utils/markdown';
+import { decodeRouteSlug, resolveMarkdownPath } from '../../../utils/contentFiles';
 
 // 引入高亮主题
 import 'highlight.js/styles/atom-one-dark.css';
@@ -51,18 +45,11 @@ function extractToc(content: string) {
   return toc;
 }
 
-function decodePostSlug(slug: string) {
-  try {
-    return decodeURIComponent(slug);
-  } catch {
-    return slug;
-  }
-}
-
 async function getPostData(slug: string) {
-  const fullPath = path.join(process.cwd(), 'posts', `${slug}.md`);
+  const fullPath = resolveMarkdownPath(path.join(process.cwd(), 'posts'), slug);
+  if (!fullPath) notFound();
   const fileContents = fs.readFileSync(fullPath, 'utf8');
-  let { data, content } = matter(fileContents);
+  let { data, content } = parseFrontMatter(fileContents);
 
   // ==========================================
   // 🌟 前台渲染清洗区：终极防吞换行补丁！
@@ -91,26 +78,11 @@ async function getPostData(slug: string) {
 
   // ==========================================
 
-  const processedContent = await unified()
-    .use(remarkParse)
-    .use(remarkGfm)
-    .use(remarkMath)
-    // 🌟 allowDangerousHtml 必须开启，这样上面生成的 <br/> 才能顺利通过变成真正的换行！
-    .use(remarkRehype, { allowDangerousHtml: true })
-    // 🌟 核心升级：开启代码语言自动侦测，并限制白名单，大幅提高 C++ 和常用语言的猜中率！
-    // @ts-ignore
-    .use(rehypeHighlight, {
-      detect: true,
-      ignoreMissing: true,
-      subset: ['cpp', 'c', 'python', 'java', 'javascript', 'typescript', 'go', 'rust', 'bash', 'json', 'html', 'css', 'sql', 'xml']
-    })
-    .use(rehypeKatex)
-    .use(rehypeStringify, { allowDangerousHtml: true })
-    .process(content);
+  const contentHtml = await renderMarkdown(content);
 
   return {
     slug,
-    contentHtml: processedContent.toString(),
+    contentHtml,
     toc: extractToc(content),
     title: data.title,
     date: data.date,
@@ -127,14 +99,15 @@ function getRecentPosts(currentSlug: string) {
   return fileNames.map(f => {
     const s = f.replace(/\.md$/, '');
     const c = fs.readFileSync(path.join(postsDirectory, f), 'utf8');
-    const { data } = matter(c);
+    const { data } = parseFrontMatter(c);
     return { slug: s, title: data.title || '无标题', date: data.date };
   }).filter(p => p.slug !== currentSlug).slice(0, 3);
 }
 
 export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const decodedSlug = decodePostSlug(resolvedParams.slug);
+  const decodedSlug = decodeRouteSlug(resolvedParams.slug);
+  if (!decodedSlug) notFound();
   const postData = await getPostData(decodedSlug);
   const recentPosts = getRecentPosts(decodedSlug);
 

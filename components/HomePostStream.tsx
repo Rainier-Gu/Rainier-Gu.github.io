@@ -62,10 +62,11 @@ export default function HomePostStream({ posts }: { posts: any[] }) {
               </span>
             )}
             <img
-              src={featuredPost.cover}
+              src={featuredPost.coverThumbnail || featuredPost.cover}
               alt={featuredPost.title}
               className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-1000 group-hover:scale-105 dark:opacity-90"
               loading="lazy"
+              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-transparent dark:hidden" />
             <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/35 to-transparent dark:block" />
@@ -116,10 +117,11 @@ export default function HomePostStream({ posts }: { posts: any[] }) {
               )}
               <div className={`${imageOnRight ? 'sm:order-2' : ''} relative min-h-[132px] overflow-hidden bg-slate-200 dark:bg-slate-700`}>
                 <img
-                  src={post.cover}
+                  src={post.coverThumbnail || post.cover}
                   alt={post.title}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
 

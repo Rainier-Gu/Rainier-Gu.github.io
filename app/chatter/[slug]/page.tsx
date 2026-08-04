@@ -1,17 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
-
-// 🌟 核心升级：引入 Next.js 现代统一解析流
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkGfm from 'remark-gfm'; // 🌟 挂载 GFM 支持删除线
-import remarkMath from 'remark-math';
-import remarkRehype from 'remark-rehype';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeStringify from 'rehype-stringify';
-import rehypeKatex from 'rehype-katex';
+import { parseFrontMatter } from '../../../utils/frontMatter';
+import { renderMarkdown } from '../../../utils/markdown';
+import { decodeRouteSlug, resolveMarkdownPath } from '../../../utils/contentFiles';
 
 // 🌟 引入神仙代码高亮主题（Atom One Dark）
 import 'highlight.js/styles/atom-one-dark.css';
@@ -36,10 +29,11 @@ export async function generateStaticParams() {
 }
 
 async function getChatterData(slug: string) {
-  const fullPath = path.join(process.cwd(), 'chatters', `${slug}.md`);
+  const fullPath = resolveMarkdownPath(path.join(process.cwd(), 'chatters'), slug);
+  if (!fullPath) notFound();
   const fileContents = fs.readFileSync(fullPath, 'utf8');
 
-  let { data, content } = matter(fileContents);
+  let { data, content } = parseFrontMatter(fileContents);
 
   // ==========================================
   // 前台渲染清洗区：沿用文章页的换行和安全处理逻辑。
@@ -75,24 +69,11 @@ async function getChatterData(slug: string) {
 
   // ==========================================
 
-  const processedContent = await unified()
-    .use(remarkParse)
-    .use(remarkGfm)
-    .use(remarkMath)
-    .use(remarkRehype, { allowDangerousHtml: true })
-    // @ts-ignore
-    .use(rehypeHighlight, {
-      detect: true,
-      ignoreMissing: true,
-      subset: ['cpp', 'c', 'python', 'java', 'javascript', 'typescript', 'go', 'rust', 'bash', 'json', 'html', 'css', 'sql', 'xml']
-    })
-    .use(rehypeKatex)
-    .use(rehypeStringify, { allowDangerousHtml: true })
-    .process(content);
+  const contentHtml = await renderMarkdown(content);
 
   return {
     slug,
-    contentHtml: processedContent.toString(),
+    contentHtml,
     title: data.title || '碎片记录',
     date: data.date,
     mood: data.mood,
@@ -110,7 +91,7 @@ function getRecentChatters(currentSlug: string) {
   return fileNames.map(f => {
     const s = f.replace(/\.md$/, '');
     const c = fs.readFileSync(path.join(chattersDirectory, f), 'utf8');
-    const { data } = matter(c);
+    const { data } = parseFrontMatter(c);
     return { slug: s, title: data.title || '碎片记录', date: data.date || '1970-01-01' };
   }).filter(p => p.slug !== currentSlug)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -129,8 +110,10 @@ function generateCalendarMatrix(year: number, month: number, targetDay: number) 
 
 export default async function ChatterDetail({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const chatterData = await getChatterData(resolvedParams.slug);
-  const recentChatters = getRecentChatters(resolvedParams.slug);
+  const decodedSlug = decodeRouteSlug(resolvedParams.slug);
+  if (!decodedSlug) notFound();
+  const chatterData = await getChatterData(decodedSlug);
+  const recentChatters = getRecentChatters(decodedSlug);
 
   const dateObj = new Date(chatterData.date || '2026-03-24');
   const yearStr = dateObj.getFullYear();

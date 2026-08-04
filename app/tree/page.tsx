@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
+import { parseFrontMatter } from '../../utils/frontMatter';
 import Link from 'next/link';
 import { ArrowRight, BookOpen, Clock3, FileText, Sparkles, Tags } from 'lucide-react';
 
@@ -61,7 +61,7 @@ function readMarkdownItems(
       const slug = fileName.replace(/\.md$/, '');
       const fullPath = path.join(directoryPath, fileName);
       const fileContents = fs.readFileSync(fullPath, 'utf8');
-      const { data, content } = matter(fileContents);
+      const { data, content } = parseFrontMatter(fileContents);
       const tags = Array.isArray(data.tags) ? data.tags.map(String) : [];
       const fallbackTitle = excerptFromContent(content) || `${type}记录`;
       const pdfCount = (content.match(/\.pdf/gi) || []).length;

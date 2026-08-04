@@ -5,44 +5,43 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig } from '../siteConfig';
 
 export default function SplashScreen() {
-  const [show, setShow] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [show, setShow] = useState(true);
 
   useEffect(() => {
-    setIsMounted(true);
-    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash') === 'true';
+    try {
+      const hasSeenSplash = sessionStorage.getItem('hasSeenSplash') === 'true';
 
-    if (!hasSeenSplash) {
-      setShow(true);
-      const timer = setTimeout(() => {
-        exitSplash();
-      }, 2200);
-      return () => clearTimeout(timer);
-    } else {
-      // 容错处理：确保直接访问时类名存在
-      document.documentElement.classList.add('splash-seen');
+      if (hasSeenSplash) {
+        document.documentElement.classList.add('splash-seen', 'splash-skip');
+        setShow(false);
+        return;
+      }
+    } catch {
+      // 无痕模式或浏览器禁用存储时，仍正常播放一次启动画面。
     }
+
+    const timer = window.setTimeout(() => {
+      document.documentElement.classList.add('splash-seen');
+      setShow(false);
+
+      try {
+        sessionStorage.setItem('hasSeenSplash', 'true');
+      } catch {
+        // 存储失败不影响页面进入。
+      }
+    }, 950);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
-  const exitSplash = () => {
-    setShow(false);
-    sessionStorage.setItem('hasSeenSplash', 'true');
-
-    // 【核心解封】：动画快结束时，给 html 加上类名，CSS 会自动把内容显示出来
-    setTimeout(() => {
-      document.documentElement.classList.add('splash-seen');
-    }, 500);
-  };
-
-  if (!isMounted) return null;
-
   return (
-    <AnimatePresence>
+    <AnimatePresence initial={false}>
       {show && (
         <motion.div
+          id="splash-screen"
           key="splash-screen-container"
-          exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          exit={{ opacity: 0, scale: 1.04, filter: "blur(12px)" }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
           className="fixed inset-0 z-[100000] flex flex-col items-center justify-center bg-white dark:bg-slate-950"
         >
           <div className="relative z-10 flex flex-col items-center">
@@ -50,7 +49,7 @@ export default function SplashScreen() {
             <div className="relative w-24 h-24 mb-8">
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
                 className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-60 blur-[3px]"
               />
               <div className="relative w-full h-full rounded-full p-1.5 bg-white dark:bg-slate-900 shadow-xl">
@@ -67,7 +66,7 @@ export default function SplashScreen() {
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 1.8, ease: "easeInOut" }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
                 className="absolute top-0 left-0 h-full bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.8)]"
               />
             </div>

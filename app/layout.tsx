@@ -34,6 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             __html: `
               #app-mount-root { opacity: 0; visibility: hidden; pointer-events: none; }
               html.splash-seen #app-mount-root { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+              html.splash-skip #splash-screen { display: none !important; }
             `
           }}
         />
@@ -43,7 +44,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             __html: `
               try {
                 if (sessionStorage.getItem('hasSeenSplash') === 'true') {
-                  document.documentElement.classList.add('splash-seen');
+                  document.documentElement.classList.add('splash-seen', 'splash-skip');
                 }
               } catch (e) {}
             `
@@ -60,7 +61,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <SplashScreen />
 
           <MusicProvider>
-            <div id="app-mount-root" className="flex-1 flex flex-col transition-opacity duration-1000">
+            <div id="app-mount-root" className="flex-1 flex flex-col transition-opacity duration-500">
               <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
                 {!siteConfig.useGradient && <BackgroundSlider />}
                 <div className="absolute inset-0 z-[-9] bg-white/30 dark:bg-slate-900/40 backdrop-blur-md transition-colors duration-1000"></div>

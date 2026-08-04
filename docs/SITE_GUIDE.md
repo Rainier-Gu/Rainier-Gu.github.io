@@ -124,6 +124,6 @@ public/assets/music/covers/   歌曲封面
 - AI 小猫助手：在 Vercel 环境变量里配置 `DEEPSEEK_API_KEY`，详细说明见 `docs/DEEPSEEK_AI.md`。
 - 天气接口：在 Vercel 环境变量里配置 `QWEATHER_KEY`。
 - 天气详细地址：可选配置 `AMAP_WEB_SERVICE_KEY`，必须使用高德“Web 服务”类型的 Key。
-- 评论系统：使用 Gitalk / GitHub Issues，详细配置见 `docs/GITHUB_COMMENTS.md`。
+- 评论系统：使用服务端 OAuth + GitHub Issues，详细配置见 `docs/GITHUB_COMMENTS.md`。
 
 如果暂时不配置这些密钥，网站主体内容仍可正常访问。

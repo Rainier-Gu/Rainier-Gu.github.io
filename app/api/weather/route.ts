@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DetailedLocation, resolveDetailedLocation } from './geocoding';
+import { checkRateLimit } from '../../../utils/apiSecurity';
 
 const DEFAULT_LOCATION = '101010100'; // 北京
 const DEFAULT_CITY = '北京市';
@@ -25,7 +26,14 @@ function parseCoordinateLocation(value: string) {
 
   const [longitude, latitude] = value.split(',').map((item) => Number.parseFloat(item.trim()));
 
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) return null;
+  if (
+    !Number.isFinite(longitude)
+    || !Number.isFinite(latitude)
+    || longitude < -180
+    || longitude > 180
+    || latitude < -90
+    || latitude > 90
+  ) return null;
 
   return { longitude, latitude };
 }
@@ -299,8 +307,38 @@ async function fetchWeatherBundle(locationId: string, token: string) {
 }
 
 export async function GET(request: NextRequest) {
+  const rateLimit = checkRateLimit(request, {
+    keyPrefix: 'weather',
+    limit: 30,
+    windowMs: 60 * 1_000,
+  });
+  const responseHeaders = {
+    ...rateLimit.headers,
+    'Cache-Control': 'private, no-store',
+  };
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { code: '429', message: '请求过于频繁，请稍后再试' },
+      {
+        status: 429,
+        headers: { ...responseHeaders, 'Retry-After': String(rateLimit.retryAfter) },
+      },
+    );
+  }
+
   const token = process.env.QWEATHER_KEY?.trim();
-  const rawLocation = request.nextUrl.searchParams.get('location')?.trim() || DEFAULT_LOCATION;
+  const requestedLocation = request.nextUrl.searchParams.get('location')?.trim() || '';
+  if (
+    requestedLocation.length > 120
+    || /[\u0000-\u001F\u007F]/.test(requestedLocation)
+    || (isCoordinateLocation(requestedLocation) && !parseCoordinateLocation(requestedLocation))
+  ) {
+    return NextResponse.json(
+      { code: '400', message: '地点参数无效' },
+      { status: 400, headers: responseHeaders },
+    );
+  }
+  const rawLocation = requestedLocation || DEFAULT_LOCATION;
   const detailedLocation = await resolveDetailedLocation(
     rawLocation,
     process.env.AMAP_WEB_SERVICE_KEY
@@ -310,12 +348,12 @@ export async function GET(request: NextRequest) {
   if (!token) {
     try {
       const weather = await fetchOpenMeteoWeather(weatherLocation);
-      return NextResponse.json(withDetailedLocation(weather, detailedLocation));
-    } catch (error: any) {
+      return NextResponse.json(withDetailedLocation(weather, detailedLocation), { headers: responseHeaders });
+    } catch {
       return NextResponse.json(withDetailedLocation(
-        createMockWeather(error?.message || '天气服务暂时不可用'),
+        createMockWeather(),
         detailedLocation
-      ));
+      ), { headers: responseHeaders });
     }
   }
 
@@ -351,18 +389,18 @@ export async function GET(request: NextRequest) {
       now: weather.now,
       daily: weather.daily,
       hourly: weather.hourly,
-    }, detailedLocation));
-  } catch (error: any) {
+    }, detailedLocation), { headers: responseHeaders });
+  } catch {
     try {
       const weather = await fetchOpenMeteoWeather(weatherLocation);
-      return NextResponse.json(withDetailedLocation(weather, detailedLocation));
+      return NextResponse.json(withDetailedLocation(weather, detailedLocation), { headers: responseHeaders });
     } catch {
       return NextResponse.json(
         {
           code: '500',
-          message: error?.message || '天气数据获取失败',
+          message: '天气数据获取失败',
         },
-        { status: 502 }
+        { status: 502, headers: responseHeaders }
       );
     }
   }

@@ -494,30 +494,29 @@ export default function DijiangModel({ posts = [], chatters = [], moments = [] }
   useEffect(() => {
     if (!mounted) return;
     let isMounted = true;
-    const fetchGitalkComments = async () => {
+    const fetchGitHubComments = async () => {
       try {
-        const { owner, repo } = siteConfig.gitalkConfig;
         const targetLabel = `workshop-${currentMonthStr}`;
-        const issueRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues?labels=${targetLabel}`);
-        const issues = await issueRes.json();
-
-        if (issues && issues.length > 0) {
-          const commentsRes = await fetch(issues[0].comments_url);
-          const comments = await commentsRes.json();
-          if (isMounted && Array.isArray(comments)) {
-            const fetchedWishes = comments.map((c: any) => ({
-              id: c.id.toString(), content: c.body, title: c.body, author: c.user.login, type: 'message', date: c.created_at,
-            }));
-            setRealWishes(fetchedWishes);
-            return;
-          }
+        const response = await fetch(`/api/github?id=${encodeURIComponent(targetLabel)}`, { cache: 'no-store' });
+        const data = await response.json();
+        if (response.ok && isMounted && Array.isArray(data.comments)) {
+          const fetchedWishes = data.comments.map((comment: any) => ({
+            id: String(comment.id),
+            content: String(comment.body || ''),
+            title: String(comment.body || ''),
+            author: String(comment.author?.login || 'github-user'),
+            type: 'message',
+            date: String(comment.createdAt || currentMonthStr + '-01'),
+          }));
+          setRealWishes(fetchedWishes);
+          return;
         }
         if (isMounted) setRealWishes([]);
       } catch (err) {
         if (isMounted) setRealWishes([]);
       }
     };
-    fetchGitalkComments();
+    fetchGitHubComments();
     return () => { isMounted = false; };
   }, [currentMonthStr, mounted]);
 

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
+import { parseFrontMatter } from '../../utils/frontMatter';
 import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
 import MomentList from './MomentList';
@@ -22,7 +22,7 @@ function readMomentsFromDirectory(directoryPath: string) {
     .filter((fileName) => fileName.endsWith('.md'))
     .map((fileName) => {
       const fullPath = path.join(directoryPath, fileName);
-      const { data, content } = matter(fs.readFileSync(fullPath, 'utf8'));
+      const { data, content } = parseFrontMatter(fs.readFileSync(fullPath, 'utf8'));
 
       return {
         id: fileName.replace(/\.md$/, ''),

@@ -360,24 +360,25 @@ export default function AlchemyLab({ posts = [], chatters = [], moments = [] }: 
   useEffect(() => {
     if (!mounted) return;
     let isMounted = true;
-    const fetchGitalkComments = async () => {
+    const fetchGitHubComments = async () => {
       try {
-        const { owner, repo } = siteConfig.gitalkConfig;
         const targetLabel = `workshop-${currentMonthStr}`;
-        const issueRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues?labels=${targetLabel}`);
-        const issues = await issueRes.json();
-        if (issues && issues.length > 0) {
-          const commentsRes = await fetch(issues[0].comments_url);
-          const comments = await commentsRes.json();
-          if (isMounted && Array.isArray(comments)) {
-            setRealWishes(comments.map((c: any) => ({ id: c.id.toString(), content: c.body, author: c.user.login, type: 'wish', date: currentMonthStr + '-01' })));
-            return;
-          }
+        const response = await fetch(`/api/github?id=${encodeURIComponent(targetLabel)}`, { cache: 'no-store' });
+        const data = await response.json();
+        if (response.ok && isMounted && Array.isArray(data.comments)) {
+          setRealWishes(data.comments.map((comment: any) => ({
+            id: String(comment.id),
+            content: String(comment.body || ''),
+            author: String(comment.author?.login || 'github-user'),
+            type: 'wish',
+            date: currentMonthStr + '-01',
+          })));
+          return;
         }
         if (isMounted) setRealWishes([]);
       } catch (err) { if (isMounted) setRealWishes([]); }
     };
-    fetchGitalkComments();
+    fetchGitHubComments();
     return () => { isMounted = false; };
   }, [currentMonthStr, mounted]);
 

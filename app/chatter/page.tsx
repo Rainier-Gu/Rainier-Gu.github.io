@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
+import { parseFrontMatter } from '../../utils/frontMatter';
 import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
 import ChatterBoard from './ChatterBoard';
@@ -37,7 +37,7 @@ export default function ChatterPage() {
     chatters = fileNames.map(fileName => {
       const slug = fileName.replace(/\.md$/, '');
       const fileContents = fs.readFileSync(path.join(chattersDirectory, fileName), 'utf8');
-      const { data, content } = matter(fileContents);
+      const { data, content } = parseFrontMatter(fileContents);
 
       return {
         slug,

@@ -1,11 +1,11 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const ThemeContext = createContext({ isDark: true, toggleTheme: () => {} });
+const ThemeContext = createContext({ isDark: false, toggleTheme: () => {} });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // 默认设为 true，这样在读取到配置前，如果是夜间模式就不会闪烁
-  const [isDark, setIsDark] = useState(true);
+  // 首次访问默认使用浅色模式；已有访客仍保留自己主动选择的主题。
+  const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -14,8 +14,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     // 从 localStorage 读取真实状态
     const savedTheme = localStorage.getItem('blog-theme');
-    // 如果没有记录，默认给深色模式（流萤飞舞）
-    const isDarkMode = savedTheme !== 'light';
+    // 只有访客明确选择过深色模式时才启用深色主题。
+    const isDarkMode = savedTheme === 'dark';
     setIsDark(isDarkMode);
 
     const root = document.documentElement;
@@ -42,11 +42,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setIsDark(newDark);
     localStorage.setItem('blog-theme', newDark ? 'dark' : 'light');
   };
-
-  // 在客户端挂载完成前，为了防止闪屏，先隐藏内容
-  if (!mounted) {
-    return <div className="invisible">{children}</div>;
-  }
 
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>

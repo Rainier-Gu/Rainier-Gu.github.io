@@ -2,7 +2,6 @@ import { siteConfig } from '../siteConfig';
 
 export type GitalkRuntimeConfig = {
   clientID: string;
-  clientSecret: string;
   repo: string;
   owner: string;
   admin: string[];
@@ -29,10 +28,6 @@ export function getGitalkConfig(): GitalkRuntimeConfig {
       process.env.NEXT_PUBLIC_GITALK_CLIENT_ID ||
       siteConfig.gitalkConfig.clientID ||
       '',
-    clientSecret:
-      process.env.NEXT_PUBLIC_GITALK_CLIENT_SECRET ||
-      siteConfig.gitalkConfig.clientSecret ||
-      '',
     repo:
       process.env.NEXT_PUBLIC_GITALK_REPO ||
       siteConfig.gitalkConfig.repo ||
@@ -44,16 +39,6 @@ export function getGitalkConfig(): GitalkRuntimeConfig {
     admin: envAdmin.length > 0 ? envAdmin : siteAdmin.length > 0 ? siteAdmin : ['Rainier-Gu'],
     proxy: '/api/github',
   };
-}
-
-export function isGitalkConfigured(config = getGitalkConfig()) {
-  return Boolean(
-    config.clientID &&
-    config.clientSecret &&
-    config.repo &&
-    config.owner &&
-    config.admin.length > 0
-  );
 }
 
 export function getGitalkIssueId(id: string) {

@@ -23,7 +23,14 @@ function coordinateValue(value: string) {
 
   const longitude = Number.parseFloat(match[1]);
   const latitude = Number.parseFloat(match[2]);
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) return null;
+  if (
+    !Number.isFinite(longitude)
+    || !Number.isFinite(latitude)
+    || longitude < -180
+    || longitude > 180
+    || latitude < -90
+    || latitude > 90
+  ) return null;
 
   return `${longitude.toFixed(6)},${latitude.toFixed(6)}`;
 }

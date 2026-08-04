@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
+import { parseFrontMatter } from '../utils/frontMatter';
 
 import Navbar from '../components/Navbar';
 import PageTransition from '../components/PageTransition';
@@ -14,6 +14,7 @@ import { ToastProvider } from '../components/ToastProvider';
 import HomePostStream from '../components/HomePostStream';
 import PhotoWallCarousel from '../components/PhotoWallCarousel';
 import WeatherWidget from '../components/WeatherWidget';
+import { getThumbnailPath } from '../utils/imageAssets';
 
 function formatUpdateTime(dateString: string) {
   if (!dateString || dateString === '1970-01-01') return '刚刚更新';
@@ -59,7 +60,7 @@ export default function Home() {
 
       allPosts = fileNames.map(fileName => {
         const fullPath = path.join(postsDirectory, fileName);
-        const { data, content } = matter(fs.readFileSync(fullPath, 'utf8'));
+        const { data, content } = parseFrontMatter(fs.readFileSync(fullPath, 'utf8'));
         const rawDate = data.date || '1970-01-01';
 
         return {
@@ -68,6 +69,7 @@ export default function Home() {
           title: data.title || '',
           description: data.description || '',
           cover: data.cover || siteConfig.defaultPostCover,
+          coverThumbnail: getThumbnailPath(data.cover || siteConfig.defaultPostCover),
           content: content || '',
           date: rawDate,
           pinned: data.pinned === true || String(data.pinned).toLowerCase() === 'true',
@@ -91,6 +93,7 @@ export default function Home() {
         title: '暂无文章',
         description: '快去写第一篇吧！',
         cover: siteConfig.defaultPostCover,
+        coverThumbnail: getThumbnailPath(siteConfig.defaultPostCover),
         date: '',
         pinned: false,
         formattedDate: ''

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
+import { parseFrontMatter } from '../../utils/frontMatter';
 import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
 import { siteConfig } from '../../siteConfig';
@@ -26,7 +26,7 @@ export default function Timeline() {
         const fullPath = path.join(postsDirectory, fileName);
 
         const fileContents = fs.readFileSync(fullPath, 'utf8');
-        const { data } = matter(fileContents);
+        const { data } = parseFrontMatter(fileContents);
 
         const postTags = data.tags && Array.isArray(data.tags) ? data.tags : ['未分类'];
 

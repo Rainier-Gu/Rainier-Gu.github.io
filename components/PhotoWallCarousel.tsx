@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
+import { getThumbnailPath } from '../utils/imageAssets';
 
 type Photo = {
   url: string;
@@ -75,10 +76,11 @@ export default function PhotoWallCarousel({ albums }: { albums: Album[] }) {
           className="absolute inset-0"
         >
           <img
-            src={current.url}
+            src={getThumbnailPath(current.url)}
             alt={current.caption || current.albumTitle}
             className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
             loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/10 dark:hidden" />
           <div className="absolute inset-0 hidden bg-gradient-to-t from-black/85 via-black/25 to-white/10 dark:block" />

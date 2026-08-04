@@ -1,18 +1,49 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
+
+const isDevelopment = process.env.NODE_ENV === 'development';
+const contentSecurityPolicy = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ''};
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob: https:;
+  font-src 'self' data:;
+  connect-src 'self';
+  media-src 'self' blob: https:;
+  worker-src 'self' blob:;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self' https://github.com;
+  frame-ancestors 'none';
+  upgrade-insecure-requests;
+`.replace(/\s{2,}/g, ' ').trim();
+
+const securityHeaders = [
+  { key: 'Content-Security-Policy', value: contentSecurityPolicy },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=(self), browsing-topics=()',
+  },
+  {
+    key: 'Strict-Transport-Security',
+    value: 'max-age=63072000; includeSubDomains; preload',
+  },
+];
 
 const nextConfig: NextConfig = {
-  // 🚨 核心修改 1：关掉纯静态导出，让 Vercel 帮你把 API 跑起来！
-  // output: 'export',
-
-  // 🚨 核心修改 2：Vercel 不需要强制加斜杠，关掉它能避免很多 API 路径匹配错误
-  // trailingSlash: true,
-
-  // 下面这些可以保留
   images: {
     unoptimized: true,
   },
-  typescript: {
-    ignoreBuildErrors: true, // 忽略 TS 错误，方便快速部署
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: securityHeaders,
+      },
+    ];
   },
 };
 

@@ -28,8 +28,8 @@ export const projectsData: Project[] = [
   },
   {
     id: "daily-hot-hole",
-    name: "每日热洞",
-    githubUrl: "https://github.com/Rainier-Gu/DailyHotHole",
+    name: "每日热洞（需要魔法访问）",
+    githubUrl: "https://daily-hot-hole.vercel.app/",
     description: "树洞洞友您好：基于《北大树洞管理规范》，我们删除了您的树洞，并禁言至 2099-12-31 23:59:59。希望您在未来的使用中，遵守各项行为规范和道德伦理，共同建设北大师生的网上家园。",
     icon: "🔥",
     tags: ["PKU", "hole"],

@@ -1,30 +1,68 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
+import { checkRateLimit } from '../../../utils/apiSecurity';
 
 const NET_EASE_HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+  'User-Agent': 'RainierGu-Music-Proxy/1.0',
   Referer: 'https://music.163.com/',
-}
+};
+const MAX_SONGS = 12;
+const SONG_ID_PATTERN = /^\d{1,20}$/;
 
 type SongResult = {
-  id: string
-  name?: string
-  artist?: string
-  author?: string
-  cover?: string
-  pic?: string
-  url?: string
-  lrc?: string
-  error?: string
+  id: string;
+  name?: string;
+  artist?: string;
+  author?: string;
+  cover?: string;
+  pic?: string;
+  url?: string;
+  lrc?: string;
+  error?: string;
+};
+
+function safeText(value: unknown, maxLength: number) {
+  return typeof value === 'string' ? value.slice(0, maxLength) : '';
 }
 
 export async function GET(request: NextRequest) {
-  const ids = request.nextUrl.searchParams.get('ids')
-  if (!ids) {
-    return NextResponse.json({ error: 'Missing ids parameter' }, { status: 400 })
+  const rateLimit = checkRateLimit(request, {
+    keyPrefix: 'music',
+    limit: 60,
+    windowMs: 60 * 1_000,
+  });
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      {
+        status: 429,
+        headers: {
+          ...rateLimit.headers,
+          'Retry-After': String(rateLimit.retryAfter),
+          'Cache-Control': 'no-store',
+        },
+      },
+    );
   }
 
-  const songIds = ids.split(',').map((id) => id.trim()).filter(Boolean)
+  const rawIds = request.nextUrl.searchParams.get('ids') || '';
+  if (!rawIds || rawIds.length > 300) {
+    return NextResponse.json(
+      { error: 'Invalid ids parameter' },
+      { status: 400, headers: { 'Cache-Control': 'no-store', ...rateLimit.headers } },
+    );
+  }
+
+  const songIds = [...new Set(rawIds.split(',').map((id) => id.trim()).filter(Boolean))];
+  if (
+    songIds.length === 0
+    || songIds.length > MAX_SONGS
+    || songIds.some((id) => !SONG_ID_PATTERN.test(id))
+  ) {
+    return NextResponse.json(
+      { error: `ids must contain 1–${MAX_SONGS} numeric song IDs` },
+      { status: 400, headers: { 'Cache-Control': 'no-store', ...rateLimit.headers } },
+    );
+  }
 
   const results: SongResult[] = await Promise.all(
     songIds.map(async (songId): Promise<SongResult> => {
@@ -32,49 +70,57 @@ export async function GET(request: NextRequest) {
         const [detailRes, lrcRes] = await Promise.all([
           fetch(
             `https://music.163.com/api/song/detail/?id=${songId}&ids=[${songId}]`,
-            { headers: NET_EASE_HEADERS, signal: AbortSignal.timeout(6000) },
+            {
+              headers: NET_EASE_HEADERS,
+              signal: AbortSignal.timeout(6_000),
+              next: { revalidate: 3_600 },
+            },
           ),
           fetch(
             `https://music.163.com/api/song/lyric?id=${songId}&lv=-1&kv=-1&tv=-1`,
-            { headers: NET_EASE_HEADERS, signal: AbortSignal.timeout(6000) },
+            {
+              headers: NET_EASE_HEADERS,
+              signal: AbortSignal.timeout(6_000),
+              next: { revalidate: 3_600 },
+            },
           ).catch(() => null),
-        ])
+        ]);
 
-        const detail = await detailRes.json()
-        const song = detail.songs?.[0]
+        if (!detailRes.ok) return { id: songId, error: 'upstream_error' };
+        const detail = await detailRes.json().catch(() => null);
+        const song = detail?.songs?.[0];
+        if (!song) return { id: songId, error: 'not_found' };
 
-        if (!song) {
-          return { id: songId, error: 'not_found' }
+        let lrcText = '';
+        if (lrcRes?.ok) {
+          const lrcData = await lrcRes.json().catch(() => null);
+          lrcText = safeText(lrcData?.lrc?.lyric, 100_000);
         }
 
-        let lrcText = ''
-        if (lrcRes && lrcRes.ok) {
-          try {
-            const lrcData = await lrcRes.json()
-            lrcText = lrcData.lrc?.lyric || ''
-          } catch {
-            /* 歌词可选，失败不影响主流程 */
-          }
-        }
-
-        const artistName = song.artists?.[0]?.name || '未知歌手'
+        const artistName = safeText(song.artists?.[0]?.name, 200) || '未知歌手';
+        const cover = safeText(song.album?.picUrl, 1_000);
 
         return {
           id: songId,
-          name: song.name,
+          name: safeText(song.name, 300),
           artist: artistName,
           author: artistName,
-          cover: song.album?.picUrl || '',
-          pic: song.album?.picUrl || '',
+          cover,
+          pic: cover,
           url: `https://music.163.com/song/media/outer/url?id=${songId}.mp3`,
           lrc: lrcText,
-        }
+        };
       } catch (error) {
-        console.error(`[api/music] 获取歌曲 ${songId} 失败:`, error)
-        return { id: songId, error: String(error) }
+        console.error(`[api/music] Upstream request failed for ${songId}:`, error instanceof Error ? error.name : 'unknown');
+        return { id: songId, error: 'upstream_error' };
       }
     }),
-  )
+  );
 
-  return NextResponse.json(results)
+  return NextResponse.json(results, {
+    headers: {
+      ...rateLimit.headers,
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+    },
+  });
 }

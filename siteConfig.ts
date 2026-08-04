@@ -19,7 +19,7 @@ export const siteConfig = {
   useGradient: true,
   themeColors: ["#48c6f0", "#fff0d6", "#ff8a3d"],
   bgImages: [
-    "/assets/img/posts/Homepage1.png",
+    "/assets/img/thumbnails/posts/Homepage1.webp",
   ],
 
   defaultPostCover: "/assets/img/posts/research-writing-cover.svg",
@@ -72,7 +72,6 @@ export const siteConfig = {
 
   gitalkConfig: {
     clientID: "",
-    clientSecret: "",
     repo: "Rainier-Gu.github.io",
     owner: "Rainier-Gu",
     admin: ["Rainier-Gu"],

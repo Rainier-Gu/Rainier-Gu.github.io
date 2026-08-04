@@ -1,134 +1,56 @@
 # GitHub 评论系统配置指南
 
-本站已经接入 Gitalk。Gitalk 会把每个页面的评论保存为 GitHub Issues：
+评论保存在 GitHub Issues 中。浏览器只接收公开的 OAuth `Client ID`；`Client Secret` 和用户访问令牌只在服务端使用，访问令牌保存在加密的 HttpOnly Cookie 中。
 
 - 评论仓库：`Rainier-Gu/Rainier-Gu.github.io`
 - 仓库拥有者：`Rainier-Gu`
 - 管理员：`Rainier-Gu`
-- 评论位置：文章页、杂谈页、关于页、友链页、音乐页、说说页
+- 兼容旧评论：继续使用 `Gitalk` 和页面 ID 两个 Issue 标签
 
-现在还差最后一步：在 GitHub 创建 OAuth App，并把 `Client ID` 和 `Client Secret` 填到 Vercel 环境变量里。
+## 1. 开启 Issues
 
-## 1. 确认 GitHub 仓库开启 Issues
-
-打开：
-
-```text
-https://github.com/Rainier-Gu/Rainier-Gu.github.io/settings
-```
-
-找到 `Features`，确认 `Issues` 已勾选。
-
-如果没开，Gitalk 无法为每篇文章创建评论 Issue。
+打开仓库 Settings，在 `Features` 中确认 `Issues` 已勾选。
 
 ## 2. 创建 GitHub OAuth App
 
-打开 GitHub OAuth Apps 页面：
-
-```text
-https://github.com/settings/developers
-```
-
-依次点击：
-
-```text
-OAuth Apps -> New OAuth App
-```
-
-填写：
+打开 `https://github.com/settings/developers`，选择 `OAuth Apps -> New OAuth App`：
 
 | 项目 | 填写内容 |
 | --- | --- |
 | Application name | `RainierGu Blog Comments` |
 | Homepage URL | `https://rainiergu.vercel.app` |
-| Application description | 可不填，或写 `Gitalk comments for RainierGu blog` |
 | Authorization callback URL | `https://rainiergu.vercel.app/` |
 
-注意：callback URL 建议带最后的 `/`。Gitalk 登录时会从文章页跳转回当前页面，GitHub 会按这个站点根路径做匹配。
+Callback URL 使用站点根路径。登录时应用会带上当前评论页面作为同域子路径，并使用随机 `state` 防止登录 CSRF。
 
-创建完成后，复制：
+## 3. 配置 Vercel 环境变量
 
-- `Client ID`
-- `Client Secret`
-
-## 3. 在 Vercel 配置环境变量
-
-打开 Vercel 项目：
-
-```text
-https://vercel.com/drizzlingrain/personal_page/settings/environment-variables
-```
-
-新增两个变量，环境选择 `Production`、`Preview`、`Development` 都勾上：
-
-```text
+```env
 NEXT_PUBLIC_GITALK_CLIENT_ID=你的 Client ID
-NEXT_PUBLIC_GITALK_CLIENT_SECRET=你的 Client Secret
-```
-
-可选变量已经有默认值，一般不用填：
-
-```text
+GITALK_CLIENT_SECRET=你的 Client Secret
 NEXT_PUBLIC_GITALK_OWNER=Rainier-Gu
 NEXT_PUBLIC_GITALK_REPO=Rainier-Gu.github.io
 NEXT_PUBLIC_GITALK_ADMIN=Rainier-Gu
 ```
 
-## 4. 重新部署
+只有 `Client ID`、仓库名和管理员名可以带 `NEXT_PUBLIC_`。`GITALK_CLIENT_SECRET` 绝不能带这个前缀，也不要写进 `siteConfig.ts` 或提交到 Git。
 
-环境变量保存后，需要重新部署一次。
+如果旧部署曾使用 `NEXT_PUBLIC_GITALK_CLIENT_SECRET`，请在 GitHub OAuth App 设置中立即生成新 Secret、删除旧 Secret，再把新值保存为 `GITALK_CLIENT_SECRET`。
 
-最简单做法：
+可选：配置只读或最小权限的服务端 GitHub Token，可提高匿名读取评论时的 API 限额。
 
-```powershell
-git commit --allow-empty -m "Redeploy with Gitalk env"
-git push
+```env
+GITHUB_COMMENTS_TOKEN=可选的服务端 Token
 ```
 
-也可以在 Vercel 的 Deployments 页面点击最新部署右侧菜单，选择 `Redeploy`。
+## 4. 重新部署并初始化
 
-## 5. 第一次初始化评论区
+保存环境变量后重新部署。打开任意评论页，用管理员 GitHub 账号登录并发表第一条评论；服务端会创建对应 Issue 和标签。非管理员不能创建新讨论，但可以在已经初始化的讨论中评论。
 
-部署完成后：
+## 5. 安全说明
 
-1. 打开任意文章页，例如：
-
-   ```text
-   https://rainiergu.vercel.app/posts/welcome
-   ```
-
-2. 滚到评论区，点击 GitHub 登录。
-3. 用 GitHub 账号授权。
-4. 如果页面提示初始化 Issue，点击初始化。
-
-之后每个页面都会对应一个 GitHub Issue，读者评论会保存在该 Issue 下。
-
-## 6. 常见问题
-
-### 评论区仍显示“尚未配置”
-
-说明 Vercel 没读到环境变量。检查：
-
-- 变量名是否完全一致。
-- 是否勾选了 Production。
-- 配置后是否重新部署。
-
-### 登录 GitHub 后跳回页面但评论没出现
-
-检查 OAuth App 的 `Authorization callback URL` 是否是：
-
-```text
-https://rainiergu.vercel.app/
-```
-
-如果你以后换主域名，也要同步修改这个 callback URL。
-
-### 第一次评论提示没有 Issue
-
-这是正常的。站长本人登录后，Gitalk 会为当前页面创建对应 Issue。
-
-### Client Secret 要不要保密？
-
-Gitalk 的工作方式决定了 OAuth App 的 `Client Secret` 最终会进入前端代码，所以它不适合作为高安全密钥使用。这里采用 Vercel 环境变量，是为了避免把它直接提交到 GitHub 仓库；但浏览器端仍可能看到它。
-
-如果你以后想要更少暴露凭证的方案，可以改用 Giscus（GitHub Discussions）或 Utterances（GitHub Issues App）。
+- OAuth `state` 会在服务端校验，有效期 10 分钟。
+- GitHub 用户令牌使用 AES-GCM 加密后存入 `HttpOnly`、`SameSite=Lax` Cookie，有效期 7 天。
+- 评论提交只接受同源 JSON 请求，并有长度限制和限流。
+- 评论正文按纯文本渲染，不执行 GitHub 评论中的 HTML。
+- 更换 `GITALK_CLIENT_SECRET` 会自动使已有登录会话失效。

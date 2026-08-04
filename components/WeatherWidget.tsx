@@ -58,6 +58,95 @@ type WeatherData = {
 };
 
 const SAVED_LOCATION_KEY = 'rainier-weather-location';
+const WEATHER_CACHE_KEY = 'rainier-weather-cache-v1';
+const WEATHER_CACHE_TTL = 10 * 60 * 1000;
+
+type WeatherCacheEntry = {
+  location: string;
+  weather: WeatherData;
+  cachedAt: number;
+};
+
+type FetchWeatherOptions = {
+  remember?: boolean;
+  silent?: boolean;
+};
+
+let memoryWeatherCache: WeatherCacheEntry | null = null;
+const pendingWeatherRequests = new Map<string, Promise<WeatherData>>();
+
+function normalizeLocation(location?: string) {
+  return location?.trim() || '__default__';
+}
+
+function readWeatherCache(location?: string) {
+  const normalizedLocation = normalizeLocation(location);
+
+  if (memoryWeatherCache?.location === normalizedLocation) {
+    return memoryWeatherCache;
+  }
+
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const rawCache = sessionStorage.getItem(WEATHER_CACHE_KEY);
+    if (!rawCache) return null;
+
+    const cached = JSON.parse(rawCache) as WeatherCacheEntry;
+    if (
+      cached.location !== normalizedLocation ||
+      cached.weather?.code !== '200' ||
+      !Number.isFinite(cached.cachedAt)
+    ) {
+      return null;
+    }
+
+    memoryWeatherCache = cached;
+    return cached;
+  } catch {
+    return null;
+  }
+}
+
+function writeWeatherCache(location: string | undefined, weather: WeatherData) {
+  const cacheEntry: WeatherCacheEntry = {
+    location: normalizeLocation(location),
+    weather,
+    cachedAt: Date.now(),
+  };
+
+  memoryWeatherCache = cacheEntry;
+
+  try {
+    sessionStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(cacheEntry));
+  } catch {
+    // 浏览器禁用存储或空间不足时，仍可继续使用当前页面内的内存缓存。
+  }
+}
+
+async function requestWeather(location?: string) {
+  const normalizedLocation = normalizeLocation(location);
+  const pendingRequest = pendingWeatherRequests.get(normalizedLocation);
+  if (pendingRequest) return pendingRequest;
+
+  const query = location ? `?location=${encodeURIComponent(location)}` : '';
+  const request = fetch(`/api/weather${query}`)
+    .then(async (response) => {
+      const data = await response.json();
+
+      if (!response.ok || data.code !== '200') {
+        throw new Error(data.message || '天气同步失败');
+      }
+
+      return data as WeatherData;
+    })
+    .finally(() => {
+      pendingWeatherRequests.delete(normalizedLocation);
+    });
+
+  pendingWeatherRequests.set(normalizedLocation, request);
+  return request;
+}
 
 function getWeatherIcon(iconCode: string, size = 42) {
   const code = Number.parseInt(iconCode, 10);
@@ -87,37 +176,37 @@ function formatHour(value: string, index: number) {
 }
 
 export default function WeatherWidget() {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [weather, setWeather] = useState<WeatherData | null>(() => memoryWeatherCache?.weather || null);
+  const [loading, setLoading] = useState(() => !memoryWeatherCache);
   const [locating, setLocating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
 
-  const fetchWeather = useCallback(async (location?: string, options?: { remember?: boolean }) => {
-    setLoading(true);
+  const fetchWeather = useCallback(async (location?: string, options?: FetchWeatherOptions) => {
+    if (!options?.silent) setLoading(true);
     setError('');
 
     try {
-      const query = location ? `?location=${encodeURIComponent(location)}` : '';
-      const res = await fetch(`/api/weather${query}`);
-      const data = await res.json();
-
-      if (!res.ok || data.code !== '200') {
-        throw new Error(data.message || '天气同步失败');
-      }
+      const data = await requestWeather(location);
 
       setWeather(data);
+      writeWeatherCache(location, data);
 
       if (location && options?.remember) {
         localStorage.setItem(SAVED_LOCATION_KEY, location);
       }
     } catch (err: any) {
       setError(err?.message || '天气同步失败');
-      const fallbackRes = await fetch('/api/weather').catch(() => null);
-      const fallback = await fallbackRes?.json().catch(() => null);
-      if (fallback?.code === '200') setWeather(fallback);
+
+      if (!memoryWeatherCache && location) {
+        const fallback = await requestWeather().catch(() => null);
+        if (fallback) {
+          setWeather(fallback);
+          writeWeatherCache(undefined, fallback);
+        }
+      }
     } finally {
-      setLoading(false);
+      if (!options?.silent) setLoading(false);
     }
   }, []);
 
@@ -134,7 +223,7 @@ export default function WeatherWidget() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { longitude, latitude } = position.coords;
-        fetchWeather(`${longitude.toFixed(4)},${latitude.toFixed(4)}`)
+        fetchWeather(`${longitude.toFixed(4)},${latitude.toFixed(4)}`, { remember: true })
           .finally(() => setLocating(false));
       },
       () => {
@@ -152,9 +241,22 @@ export default function WeatherWidget() {
 
   useEffect(() => {
     const savedLocation = localStorage.getItem(SAVED_LOCATION_KEY);
+    const cachedWeather = readWeatherCache(savedLocation || undefined);
+
+    if (cachedWeather) {
+      setWeather(cachedWeather.weather);
+      setLoading(false);
+
+      if (Date.now() - cachedWeather.cachedAt < WEATHER_CACHE_TTL) {
+        return;
+      }
+
+      void fetchWeather(savedLocation || undefined, { silent: true });
+      return;
+    }
 
     if (savedLocation) {
-      fetchWeather(savedLocation);
+      void fetchWeather(savedLocation);
       return;
     }
 
