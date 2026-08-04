@@ -10,6 +10,7 @@ import {
 
 const OAUTH_STATE_COOKIE = 'rainier_github_oauth_state';
 const SESSION_COOKIE = 'rainier_github_session';
+const OAUTH_CALLBACK_PATH = '/oauth/github';
 const GITHUB_API_VERSION = '2022-11-28';
 const MAX_COMMENT_LENGTH = 5_000;
 
@@ -39,6 +40,10 @@ type GitHubUser = {
 
 function getServerSecret() {
   return process.env.GITALK_CLIENT_SECRET?.trim() || '';
+}
+
+function oauthRedirectUri(request: NextRequest) {
+  return new URL(OAUTH_CALLBACK_PATH, request.nextUrl.origin).toString();
 }
 
 function getServerConfig() {
@@ -222,7 +227,7 @@ async function startLogin(request: NextRequest) {
 
   const returnTo = safeReturnTo(request.nextUrl.searchParams.get('returnTo'));
   const state = randomBytes(32).toString('base64url');
-  const redirectUri = new URL(returnTo, request.nextUrl.origin).toString();
+  const redirectUri = oauthRedirectUri(request);
   const authorizationUrl = new URL('https://github.com/login/oauth/authorize');
   authorizationUrl.searchParams.set('client_id', config.clientID);
   authorizationUrl.searchParams.set('redirect_uri', redirectUri);
@@ -367,7 +372,7 @@ async function exchangeCode(request: NextRequest, body: Record<string, unknown>)
     });
   }
 
-  const redirectUri = new URL(savedState.returnTo, request.nextUrl.origin).toString();
+  const redirectUri = oauthRedirectUri(request);
   const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
     method: 'POST',
     headers: {

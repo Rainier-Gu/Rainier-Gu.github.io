@@ -18,10 +18,10 @@
 | 项目 | 填写内容 |
 | --- | --- |
 | Application name | `RainierGu Blog Comments` |
-| Homepage URL | `https://rainiergu.vercel.app` |
-| Authorization callback URL | `https://rainiergu.vercel.app/` |
+| Homepage URL | `https://www.rainiergu.cn` |
+| Authorization callback URL | `https://www.rainiergu.cn/oauth/github` |
 
-Callback URL 使用站点根路径。登录时应用会带上当前评论页面作为同域子路径，并使用随机 `state` 防止登录 CSRF。
+Callback URL 使用固定路径 `/oauth/github`。所有评论页面都通过该路径接收 GitHub 回调，原页面地址只保存在经过加密的 HttpOnly Cookie 中；验证完成后会自动返回原文章，并使用随机 `state` 防止登录 CSRF。不要把某篇文章或 `/about` 单独填写为 Callback URL。
 
 ## 3. 配置 Vercel 环境变量
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { getGitalkIssueId } from './gitalkConfig';
 
@@ -60,7 +60,6 @@ export default function GitHubComments({ id, compact = false }: GitHubCommentsPr
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
-  const exchangeStarted = useRef(false);
 
   const loadComments = useCallback(async () => {
     setLoading(true);
@@ -81,34 +80,7 @@ export default function GitHubComments({ id, compact = false }: GitHubCommentsPr
   }, [issueId]);
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const code = url.searchParams.get('code');
-    const state = url.searchParams.get('state');
-
-    if (!code || !state || exchangeStarted.current) {
-      void loadComments();
-      return;
-    }
-
-    exchangeStarted.current = true;
-    setMessage('正在完成 GitHub 登录…');
-    void fetch('/api/github', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
-      body: JSON.stringify({ action: 'exchange', code, state }),
-    })
-      .then(async (response) => {
-        const result = await response.json() as { error?: string; returnTo?: string };
-        if (!response.ok) throw new Error(result.error || 'GitHub 登录失败');
-        window.history.replaceState({}, document.title, result.returnTo || currentReturnTo());
-        await loadComments();
-      })
-      .catch((error) => {
-        window.history.replaceState({}, document.title, currentReturnTo());
-        setMessage(error instanceof Error ? error.message : 'GitHub 登录失败');
-        setLoading(false);
-      });
+    void loadComments();
   }, [loadComments]);
 
   const logout = async () => {
