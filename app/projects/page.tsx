@@ -4,8 +4,8 @@ import ProjectsBoard from './ProjectsBoard';
 import {siteConfig} from "@/siteConfig";
 
 export const metadata = {
-  title: "项目矩阵 | " + siteConfig.title,
-  description: "开源项目与代码仓库展示",
+  title: "项目 | " + siteConfig.title,
+  description: "正在折腾的一些小东西",
 };
 
 export default function ProjectsPage() {

@@ -4,7 +4,15 @@ import { useRouter } from 'next/navigation';
 import { siteConfig } from '../siteConfig';
 import { useToast } from './ToastProvider';
 
-export default function ProfileCard({ postCount, chatterCount, photoCount }: { postCount: number, chatterCount: number, photoCount: number }) {
+export default function ProfileCard({
+  postCount,
+  momentCount,
+  photoCount,
+}: {
+  postCount: number;
+  momentCount: number;
+  photoCount: number;
+}) {
   const router = useRouter();
   const { showToast } = useToast();
 
@@ -39,10 +47,10 @@ export default function ProfileCard({ postCount, chatterCount, photoCount }: { p
       </div>
 
       <div className="flex flex-col items-center justify-between mt-7 gap-5 relative z-10">
-        <div className="flex w-full justify-around gap-2 px-1">
+        <div className="flex w-full items-center justify-around gap-2 px-1">
           <StatItem count={postCount} label="文章" color="text-indigo-600 dark:text-indigo-400" />
           <div className="w-px h-10 bg-slate-300/50 dark:bg-slate-700"></div>
-          <StatItem count={chatterCount} label="杂谈" color="text-purple-600 dark:text-purple-400" />
+          <StatItem count={momentCount} label="说说" color="text-violet-600 dark:text-violet-400" />
           <div className="w-px h-10 bg-slate-300/50 dark:bg-slate-700"></div>
           <StatItem count={photoCount} label="照片" color="text-pink-600 dark:text-pink-400" />
         </div>

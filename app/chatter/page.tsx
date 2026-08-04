@@ -6,6 +6,15 @@ import PageTransition from '../../components/PageTransition';
 import ChatterBoard from './ChatterBoard';
 import { siteConfig } from '@/siteConfig';
 
+type Chatter = {
+  slug: string;
+  title: string;
+  date: string;
+  tags: string[];
+  mood: string;
+  cover: string;
+  content: string;
+};
 
 export const metadata = {
   title: "杂谈 | "+ siteConfig.title,
@@ -15,7 +24,7 @@ export const metadata = {
 export default function ChatterPage() {
   // 注意：这里我们假设你的 md 文件放在根目录的 chatters 文件夹里
   const chattersDirectory = path.join(process.cwd(), 'chatters');
-  let chatters = [];
+  let chatters: Chatter[] = [];
 
   try {
     // 确保文件夹存在

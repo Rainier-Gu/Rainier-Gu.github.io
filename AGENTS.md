@@ -18,5 +18,4 @@ This repository is RainierGu's personal homepage.
 
 ## Deployment
 
-GitHub Pages is no longer the primary deployment target because this template uses Next.js API routes.
-Use Vercel for production.
+Use Vercel for production because this project uses Next.js API routes.

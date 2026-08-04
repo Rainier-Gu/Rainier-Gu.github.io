@@ -3,14 +3,34 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+type PanelAlignment = 'left' | 'center' | 'right';
+
+function getReplyDuration(text: string) {
+  return Math.min(30000, Math.max(10000, text.length * 70));
+}
+
 export default function CyberCat() {
   const [isPetted, setIsPetted] = useState(false);
   const [speech, setSpeech] = useState<string | null>(null);
   const [showInput, setShowInput] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [panelAlignment, setPanelAlignment] = useState<PanelAlignment>('right');
 
   const chatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const dragConstraintsRef = useRef<HTMLDivElement>(null);
+
+  const updatePanelAlignment = (pointerX: number) => {
+    const edgeThreshold = 280;
+
+    if (pointerX < edgeThreshold) {
+      setPanelAlignment('left');
+    } else if (pointerX > window.innerWidth - edgeThreshold) {
+      setPanelAlignment('right');
+    } else {
+      setPanelAlignment('center');
+    }
+  };
 
   // --- 💬 说话功能 ---
   const speak = (text: string, duration = 6000) => {
@@ -50,7 +70,8 @@ export default function CyberCat() {
       if (!res.ok) throw new Error('API Error');
 
       const data = await res.json();
-      speak(data.reply, 8000);
+      const reply = String(data.reply || '本喵一时不知道说什么喵。');
+      speak(reply, getReplyDuration(reply));
     } catch (error) {
       speak("吧唧吧唧... 鱼干好吃，但本喵卡壳了喵...", 4000);
     } finally {
@@ -79,7 +100,8 @@ export default function CyberCat() {
       if (!res.ok) throw new Error('API Error');
 
       const data = await res.json();
-      speak(data.reply, 8000);
+      const reply = String(data.reply || '本喵一时不知道说什么喵。');
+      speak(reply, getReplyDuration(reply));
     } catch (error) {
       speak("铲屎官的网线被老鼠咬断了吧？喵！", 4000);
     } finally {
@@ -108,13 +130,17 @@ export default function CyberCat() {
 
 
   return (
-    <motion.div
-      drag
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.1}
-      whileDrag={{ scale: 1.1, cursor: "grabbing" }}
-      className="fixed bottom-20 right-20 z-[9999] flex flex-col items-center group cursor-grab active:cursor-grabbing"
-    >
+    <>
+      <div ref={dragConstraintsRef} className="pointer-events-none fixed inset-4 z-[9998]" aria-hidden="true" />
+      <motion.div
+        drag
+        dragConstraints={dragConstraintsRef}
+        dragElastic={0.05}
+        dragMomentum={false}
+        onDrag={(_, info) => updatePanelAlignment(info.point.x)}
+        whileDrag={{ scale: 1.05, cursor: "grabbing" }}
+        className="group fixed bottom-20 right-20 z-[9999] flex touch-none cursor-grab flex-col items-center active:cursor-grabbing"
+      >
       {/* 💬 聊天气泡 */}
       <div className="relative w-full flex justify-center mb-6">
         <AnimatePresence>
@@ -123,11 +149,18 @@ export default function CyberCat() {
               initial={{ opacity: 0, y: 10, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-              className="absolute bottom-0 bg-white dark:bg-slate-800 text-slate-700 dark:text-gray-200 px-4 py-3 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 text-sm max-w-[240px] break-words text-center leading-relaxed"
-              style={{ pointerEvents: 'none', transformOrigin: 'bottom center' }}
+              onPointerDown={(event) => event.stopPropagation()}
+              className={`absolute bottom-0 w-[360px] max-w-[calc(100vw-2rem)] text-slate-700 dark:text-gray-200 ${
+                panelAlignment === 'left' ? 'left-0' : panelAlignment === 'right' ? 'right-0' : '-left-[120px]'
+              }`}
+              style={{ transformOrigin: 'bottom center' }}
             >
-              {speech}
-              <div className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-white dark:bg-slate-800 border-b border-r border-gray-100 dark:border-slate-700 transform rotate-45"></div>
+              <div className="max-h-[45vh] overflow-y-auto whitespace-pre-wrap break-words rounded-2xl border border-gray-100 bg-white px-5 py-4 text-left text-xs leading-5 shadow-xl dark:border-slate-700 dark:bg-slate-800">
+                {speech}
+              </div>
+              <div className={`absolute -bottom-[6px] h-3 w-3 rotate-45 border-b border-r border-gray-100 bg-white dark:border-slate-700 dark:bg-slate-800 ${
+                panelAlignment === 'left' ? 'left-[54px]' : panelAlignment === 'right' ? 'right-[54px]' : 'left-1/2 -translate-x-1/2'
+              }`} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -141,6 +174,7 @@ export default function CyberCat() {
 
             {/* 💬 聊天按钮 */}
             <button
+              onPointerDown={(event) => event.stopPropagation()}
               onClick={(e) => {
                  e.stopPropagation();
                  setShowInput(!showInput);
@@ -156,6 +190,7 @@ export default function CyberCat() {
 
             {/* 🐟 喂食按钮 */}
             <button
+              onPointerDown={(event) => event.stopPropagation()}
               onClick={handleFeed}
               disabled={isThinking}
               className={`bg-white/90 dark:bg-slate-700/90 p-2.5 rounded-full shadow-md hover:scale-110 active:scale-95 transition-transform border border-gray-100 dark:border-slate-600 flex items-center justify-center backdrop-blur-sm ${isThinking ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -213,14 +248,17 @@ export default function CyberCat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.9 }}
             onSubmit={handleChatSubmit}
-            className="absolute -bottom-14 bg-white dark:bg-slate-800 p-1.5 rounded-full shadow-lg flex items-center border border-gray-200 dark:border-slate-700 w-56 z-20"
+            onPointerDown={(event) => event.stopPropagation()}
+            className={`absolute -bottom-14 z-20 flex w-72 items-center rounded-full border border-gray-200 bg-white p-1.5 shadow-lg dark:border-slate-700 dark:bg-slate-800 ${
+              panelAlignment === 'left' ? 'left-0' : panelAlignment === 'right' ? 'right-0' : '-left-[84px]'
+            }`}
           >
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="跟煤球说点啥喵..."
-              className="bg-transparent border-none outline-none text-sm px-3 py-1 w-full dark:text-white placeholder-gray-400"
+              className="w-full border-none bg-transparent px-3 py-1 text-xs outline-none placeholder-gray-400 dark:text-white"
               disabled={isThinking}
               autoFocus
             />
@@ -238,6 +276,7 @@ export default function CyberCat() {
           </motion.form>
         )}
       </AnimatePresence>
-    </motion.div>
+      </motion.div>
+    </>
   );
 }

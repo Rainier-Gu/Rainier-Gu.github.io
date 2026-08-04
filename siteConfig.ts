@@ -7,9 +7,8 @@ export const siteConfig = {
   bio: "课程学习，科研心得，以及个人的碎碎念。",
 
   // 首页大图文案：这里单独控制，不再强制跟网站标题/简介绑定
-  heroEyebrow: "Blog",
-  heroTitle: "RainierGu's Blog",
-  heroSubtitle: "课程学习，科研心得，以及个人的碎碎念。",
+  heroTitle: "Hey! I'm RainierGu.",
+  heroSubtitle: "Per aspera ad astra.（循此苦旅 以达繁星）",
 
   navTitle: "RainierGu",
   navSuffix: "'s",
@@ -20,14 +19,25 @@ export const siteConfig = {
   useGradient: true,
   themeColors: ["#48c6f0", "#fff0d6", "#ff8a3d"],
   bgImages: [
-    "/assets/img/posts/welcome.webp",
-    "/assets/img/posts/research-writing-cover.svg",
-    "/assets/img/posts/computational-physics.webp",
-    "/assets/img/posts/general-physics-lab.webp",
+    "/assets/img/posts/Homepage1.png",
   ],
 
   defaultPostCover: "/assets/img/posts/research-writing-cover.svg",
   photoWallImage: "/assets/img/posts/general-physics-lab.webp",
+
+  // 本地音乐文件配置：音频、封面和 LRC 歌词都放在 public/assets/music/ 下。
+  // 访问路径不写 public，例如：/assets/music/tracks/example.mp3。
+  localMusicTracks: [
+     {
+       id: "风华正茂",
+       title: "风华正茂",
+       artist: "门尼",
+       album: "风华正茂",
+       cover: "/assets/music/covers/风华正茂-门尼.webp",
+       src: "/assets/music/tracks/风华正茂-门尼.m4a",
+       lrcUrl: "/assets/music/lyrics/风华正茂-门尼.lrc",
+     },
+  ],
 
   // 可在网易云音乐网页地址中复制歌曲 id 后填入，例如 ["1809646618"]。
   cloudMusicIds: ["2082326625", "1983714138"],
@@ -46,7 +56,7 @@ export const siteConfig = {
   },
 
   chatterTitle: "研究与生活札记",
-  chatterDescription: "课程、科研、代码、阅读和一些短想法的碎片记录。",
+  chatterDescription: "课程，科研，和一些短想法的碎片记录。",
 
   danmakuList: [
   ],

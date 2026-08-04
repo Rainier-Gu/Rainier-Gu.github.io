@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { friendsData } from '../../data/friends';
 import Comments from '../../components/Comments'; // 🌟 引入你的 Gitalk 组件
 import { siteConfig } from '../../siteConfig'; // 🌟 引入刚刚更新的全局配置文件
 
 // Framer Motion 动画变体：交错子元素
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -15,7 +15,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30, scale: 0.9 },
   show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
 };
@@ -40,10 +40,10 @@ export default function FriendsBoard() {
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">
-              云端引力
+              彼此引力
             </h1>
             <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
-              那些散落在赛博宇宙各处的有趣灵魂与神经节点。
+              与真诚而有趣的灵魂互相照亮。
             </p>
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function FriendsBoard() {
         className="mt-14 md:mt-20 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-2xl md:rounded-3xl p-5 md:p-8 max-w-3xl mx-auto text-center shadow-lg md:shadow-xl relative"
       >
         <h2 className="text-lg md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-wider">
-          ✨ 建立神经连接
+          ✨ 建立连接
         </h2>
         <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 font-serif mb-4 md:mb-6">
           欢迎各位大佬交换友链！请一键复制下方格式，并在底部的 Gitalk 留言板申请：
@@ -154,7 +154,7 @@ export default function FriendsBoard() {
         <div className="flex items-center justify-center gap-2 md:gap-3 mb-4 md:mb-6">
           <span className="w-8 md:w-12 h-[1px] bg-slate-300 dark:bg-slate-700"></span>
           <h3 className="text-sm md:text-xl font-bold text-slate-800 dark:text-gray-200 tracking-widest uppercase">
-            终端留言板
+            留言板
           </h3>
           <span className="w-8 md:w-12 h-[1px] bg-slate-300 dark:bg-slate-700"></span>
         </div>

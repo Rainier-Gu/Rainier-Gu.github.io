@@ -47,7 +47,7 @@ export default function ChatterBoard({ chatters }: { chatters: Chatter[] }) {
               {siteConfig.chatterTitle || "研究与生活札记"}
             </h1>
             <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
-              {siteConfig.chatterDescription || "日常碎片与灵感记录"}
+              {siteConfig.chatterDescription || "课程，科研，和一些短想法的碎片记录。"}
             </p>
           </div>
 
@@ -57,7 +57,7 @@ export default function ChatterBoard({ chatters }: { chatters: Chatter[] }) {
             </svg>
             <input
               type="text"
-              placeholder="搜索杂谈内容..."
+              placeholder="搜索杂谈..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-12 pl-12 pr-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md border border-white/50 dark:border-white/10 rounded-full text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all duration-700"

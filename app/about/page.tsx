@@ -21,10 +21,9 @@ import AboutClient from '../../components/AboutClient';
 import { Suspense } from 'react';
 
 const POSTS_DIR = path.join(process.cwd(), 'posts');
-const CHATTERS_DIR = path.join(process.cwd(), 'chatters');
 const MOMENTS_DIR = path.join(process.cwd(), 'moments');
 
-function getDirActivities(dirPath: string, dirId: string, typeLabel: '文章' | '杂谈' | '说说', linkPrefix: string) {
+function getDirActivities(dirPath: string, dirId: string, typeLabel: '文章' | '说说', linkPrefix: string) {
   if (!fs.existsSync(dirPath)) return [];
 
   const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.md'));
@@ -95,10 +94,9 @@ export default async function AboutPage() {
   }
 
   const posts = getDirActivities(POSTS_DIR, 'posts', '文章', 'posts');
-  const chatters = getDirActivities(CHATTERS_DIR, 'chatters', '杂谈', 'chatter');
   const moments = getDirActivities(MOMENTS_DIR, 'moments', '说说', 'moments');
 
-  const allActivities = [...posts, ...chatters, ...moments].sort((a, b) => {
+  const allActivities = [...posts, ...moments].sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 

@@ -29,7 +29,9 @@ export default function SiteDashboard({ latestUpdatedAt }: SiteDashboardProps) {
       const now = new Date();
 
       setTimeStr(now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-      setDateStr(now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' }));
+      const calendarDate = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const weekday = now.toLocaleDateString('zh-CN', { weekday: 'short' });
+      setDateStr(`${calendarDate} ${weekday}`);
 
       setUptimeStr(formatDuration(now.getTime() - startTime));
       setLatestUpdateStr(formatDuration(now.getTime() - latestUpdateTime, '前'));
@@ -57,7 +59,9 @@ export default function SiteDashboard({ latestUpdatedAt }: SiteDashboardProps) {
           <ClockUnit value={second} isMuted />
         </div>
 
-        <p className="mt-3 text-xs font-bold text-slate-500 dark:text-white/55">{dateStr || '同步时间中'}</p>
+        <p className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-indigo-500/10 px-3 py-2 text-sm font-black tracking-[0.08em] text-slate-800 ring-1 ring-inset ring-indigo-500/10 dark:bg-indigo-400/10 dark:text-white/90 dark:ring-indigo-300/10">
+          {dateStr || '同步时间中'}
+        </p>
       </div>
 
       <div className="space-y-4 p-4">
@@ -74,11 +78,11 @@ export default function SiteDashboard({ latestUpdatedAt }: SiteDashboardProps) {
         <div className="space-y-3 text-xs font-bold text-slate-600 dark:text-slate-300">
           <div className="flex items-baseline justify-between gap-3">
             <span>正常运行时间</span>
-            <span className="text-lg font-black text-indigo-600 dark:text-indigo-300">{uptimeStr || '计算中'}</span>
+            <span className="text-sm font-black text-indigo-600 dark:text-indigo-300">{uptimeStr || '计算中'}</span>
           </div>
           <div className="flex items-baseline justify-between gap-3 border-t border-slate-200/70 pt-3 dark:border-white/10">
             <span>最近更新时间</span>
-            <span className="text-lg font-black text-indigo-600 dark:text-indigo-300">{latestUpdateStr || '计算中'}</span>
+            <span className="text-sm font-black text-indigo-600 dark:text-indigo-300">{latestUpdateStr || '计算中'}</span>
           </div>
         </div>
       </div>

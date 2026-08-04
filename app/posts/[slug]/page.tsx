@@ -51,6 +51,14 @@ function extractToc(content: string) {
   return toc;
 }
 
+function decodePostSlug(slug: string) {
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
 async function getPostData(slug: string) {
   const fullPath = path.join(process.cwd(), 'posts', `${slug}.md`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -126,8 +134,9 @@ function getRecentPosts(currentSlug: string) {
 
 export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const postData = await getPostData(resolvedParams.slug);
-  const recentPosts = getRecentPosts(resolvedParams.slug);
+  const decodedSlug = decodePostSlug(resolvedParams.slug);
+  const postData = await getPostData(decodedSlug);
+  const recentPosts = getRecentPosts(decodedSlug);
 
   return (
     <div className="min-h-screen relative pb-20">

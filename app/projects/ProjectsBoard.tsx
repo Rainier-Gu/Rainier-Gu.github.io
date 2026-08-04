@@ -26,10 +26,10 @@ export default function ProjectsBoard() {
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">
-              Projects Matrix
+              正在折腾
             </h1>
             <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
-              开源项目、科研代码与实验室折腾记录。
+              一点一点慢慢地把小想法实现。
             </p>
           </div>
 
@@ -39,7 +39,7 @@ export default function ProjectsBoard() {
             </svg>
             <input
               type="text"
-              placeholder="搜索项目、描述或技术栈..."
+              placeholder="搜索项目..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-12 pl-12 pr-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md border border-white/50 dark:border-white/10 rounded-full text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all duration-700"

@@ -9,7 +9,7 @@ import TimelineClient from '../../components/TimelineClient';
 import { ToastProvider } from '../../components/ToastProvider';
 
 export const metadata = {
-  title: "归档与探索 | " + siteConfig.title,
+  title: "归档 | " + siteConfig.title,
 };
 
 export default function Timeline() {

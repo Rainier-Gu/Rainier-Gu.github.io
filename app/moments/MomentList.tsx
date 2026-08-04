@@ -1,228 +1,478 @@
 "use client";
 
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { MapPin, MessageSquare, Clock, Search, ArrowDownAZ, ArrowUpZA, ChevronLeft, ChevronRight, Ghost } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
+import {
+  ArrowDownAZ,
+  ArrowUpZA,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  Ghost,
+  MapPin,
+  MessageSquare,
+  Search,
+  X,
+} from 'lucide-react';
+
 import MomentComments from '../../components/MomentComments';
 
-function timeAgo(dateStr: string) {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  if (diffInSeconds < 60) return '刚刚';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} 分钟前`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} 小时前`;
-  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+type Moment = {
+  id: string;
+  date: string;
+  location?: string;
+  images?: string[];
+  content: string;
+};
+
+type MomentListProps = {
+  moments: Moment[];
+  authorName: string;
+  avatarUrl: string;
+};
+
+const PAPER_STYLES = [
+  {
+    paper: 'bg-[#e1f4ff] dark:bg-[#173548]',
+    border: 'border-sky-200/80 dark:border-sky-300/15',
+    pin: 'bg-sky-400',
+    accent: 'text-sky-700 dark:text-sky-200',
+  },
+  {
+    paper: 'bg-[#eee6ff] dark:bg-[#30294a]',
+    border: 'border-violet-200/80 dark:border-violet-300/15',
+    pin: 'bg-violet-500',
+    accent: 'text-violet-700 dark:text-violet-200',
+  },
+  {
+    paper: 'bg-[#fff3cf] dark:bg-[#473a22]',
+    border: 'border-amber-200/80 dark:border-amber-300/15',
+    pin: 'bg-amber-400',
+    accent: 'text-amber-700 dark:text-amber-200',
+  },
+  {
+    paper: 'bg-[#ffe3ea] dark:bg-[#472a36]',
+    border: 'border-rose-200/80 dark:border-rose-300/15',
+    pin: 'bg-rose-400',
+    accent: 'text-rose-700 dark:text-rose-200',
+  },
+  {
+    paper: 'bg-[#e4f7eb] dark:bg-[#203d34]',
+    border: 'border-emerald-200/80 dark:border-emerald-300/15',
+    pin: 'bg-emerald-400',
+    accent: 'text-emerald-700 dark:text-emerald-200',
+  },
+];
+
+const NOTE_ROTATIONS = [-1.4, 1.1, -0.7, 1.6, -1, 0.8];
+
+function stableNumber(value: string) {
+  return Array.from(value).reduce((total, character) => total + character.charCodeAt(0), 0);
 }
 
-export default function MomentList({ moments, authorName, avatarUrl }: any) {
+function parseMomentDate(value: string) {
+  const normalized = String(value || '').trim().replace('T', ' ');
+  const [rawDate = '', rawTime = ''] = normalized.split(/\s+/);
+  const dateLabel = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate.replace(/-/g, '.') : rawDate;
+  const timeLabel = /^\d{2}:\d{2}/.test(rawTime) ? rawTime.slice(0, 5) : '';
+
+  return { dateLabel: dateLabel || '日期待补充', timeLabel };
+}
+
+function momentTimestamp(value: string) {
+  const timestamp = new Date(String(value || '').replace(' ', 'T')).getTime();
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+export default function MomentList({ moments, authorName, avatarUrl }: MomentListProps) {
   const [openCommentId, setOpenCommentId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
-  const [lightbox, setLightbox] = useState<{ images: string[], index: number } | null>(null);
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
 
   const processedMoments = useMemo(() => {
-    let result = moments ? [...moments] : [];
-
-    if (searchQuery.trim()) {
-      const query = searchQuery.trim().toLowerCase();
-      result = result.filter(m =>
-        (m.content || '').toLowerCase().includes(query) ||
-        (m.location || '').toLowerCase().includes(query)
+    const query = searchQuery.trim().toLowerCase();
+    const result = (moments || []).filter((moment) => {
+      if (!query) return true;
+      return (
+        (moment.content || '').toLowerCase().includes(query) ||
+        (moment.location || '').toLowerCase().includes(query)
       );
-    }
-
-    result.sort((a, b) => {
-      const timeA = new Date(a.date).getTime();
-      const timeB = new Date(b.date).getTime();
-      return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
     });
-    return result;
+
+    return result.sort((a, b) => {
+      const difference = momentTimestamp(b.date) - momentTimestamp(a.date);
+      return sortOrder === 'desc' ? difference : -difference;
+    });
   }, [moments, searchQuery, sortOrder]);
 
-  const nextImg = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const activeCommentMoment = useMemo(
+    () => moments.find((moment) => moment.id === openCommentId) || null,
+    [moments, openCommentId]
+  );
+
+  useEffect(() => {
+    if (!lightbox && !openCommentId) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [lightbox, openCommentId]);
+
+  useEffect(() => {
+    const closeOverlay = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setLightbox(null);
+      setOpenCommentId(null);
+    };
+
+    window.addEventListener('keydown', closeOverlay);
+    return () => window.removeEventListener('keydown', closeOverlay);
+  }, []);
+
+  const showNextImage = (event: React.MouseEvent) => {
+    event.stopPropagation();
     if (!lightbox) return;
     setLightbox({ ...lightbox, index: (lightbox.index + 1) % lightbox.images.length });
   };
 
-  const prevImg = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const showPreviousImage = (event: React.MouseEvent) => {
+    event.stopPropagation();
     if (!lightbox) return;
-    setLightbox({ ...lightbox, index: (lightbox.index - 1 + lightbox.images.length) % lightbox.images.length });
+    setLightbox({
+      ...lightbox,
+      index: (lightbox.index - 1 + lightbox.images.length) % lightbox.images.length,
+    });
   };
 
-  const renderImages = (images: string[]) => {
-    if (!images || images.length === 0) return null;
-    const count = images.length;
+  const renderImages = (images: string[] = []) => {
+    if (images.length === 0) return null;
 
-    if (count === 1) {
+    if (images.length === 1) {
       return (
-        <div className="mt-4 md:mt-8 flex justify-start sm:justify-center w-full">
-          <div onClick={() => setLightbox({ images, index: 0 })} className="max-w-[80%] sm:max-w-[280px] overflow-hidden rounded-xl md:rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-lg md:shadow-xl cursor-zoom-in group">
-            <img src={images[0]} alt="moment" className="w-full h-auto max-h-[300px] md:max-h-[400px] object-contain group-hover:scale-105 transition-transform duration-500" />
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={() => setLightbox({ images, index: 0 })}
+          className="group/image relative z-10 mt-5 block w-full overflow-hidden rounded-xl border-4 border-white/65 bg-white/40 shadow-md"
+          aria-label="查看说说图片"
+        >
+          <img
+            src={images[0]}
+            alt="说说图片"
+            className="max-h-72 w-full object-cover transition duration-500 group-hover/image:scale-105"
+          />
+        </button>
       );
     }
 
-    const columns = count === 4 ? 2 : 3;
-    const maxWidth = count === 4 ? '210px' : '320px';
+    const columns = images.length === 4 ? 2 : 3;
 
     return (
-      <div className="w-full flex justify-start sm:justify-center mt-4 md:mt-8">
-        <div className="grid gap-1.5 md:gap-2 sm:mx-auto" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)`, width: '100%', maxWidth: maxWidth }}>
-          {images.slice(0, 9).map((src, idx) => {
-            const isLastVisible = idx === 8 && count > 9;
-            return (
-              <div key={idx} onClick={() => setLightbox({ images, index: idx })} className="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl bg-slate-200/20 dark:bg-slate-700/20 border border-slate-200/50 dark:border-white/10 cursor-zoom-in">
-                <img src={src} alt="moment" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                {isLastVisible && (
-                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white backdrop-blur-[2px]">
-                    <span className="text-lg md:text-xl font-black">+{count - 9}</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+      <div
+        className="relative z-10 mt-5 grid gap-1.5 overflow-hidden rounded-xl border-4 border-white/65 bg-white/55 p-1 shadow-md"
+        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+      >
+        {images.slice(0, 9).map((src, index) => {
+          const hasMore = index === 8 && images.length > 9;
+          return (
+            <button
+              type="button"
+              key={`${src}-${index}`}
+              onClick={() => setLightbox({ images, index })}
+              className="group/image relative aspect-square overflow-hidden rounded-md bg-slate-200/50"
+              aria-label={`查看第 ${index + 1} 张说说图片`}
+            >
+              <img
+                src={src}
+                alt={`说说图片 ${index + 1}`}
+                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover/image:scale-110"
+              />
+              {hasMore && (
+                <span className="absolute inset-0 flex items-center justify-center bg-slate-950/65 text-sm font-black text-white">
+                  +{images.length - 9}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
     );
   };
 
-  const renderMomentCard = (moment: any) => (
-    <motion.div
-      key={moment.id}
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.4, type: 'spring', stiffness: 100 }}
-      className="flex flex-col bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl md:rounded-[40px] shadow-lg md:shadow-xl border border-white/40 dark:border-white/10 p-5 md:p-10 transition-shadow hover:shadow-2xl overflow-hidden relative group w-full"
-    >
-      <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-8 pb-4 md:pb-6 border-b border-slate-200/50 dark:border-slate-700/50 relative">
-        <div className="w-10 h-10 md:w-14 md:h-14 shrink-0 rounded-xl md:rounded-2xl overflow-hidden shadow-sm md:shadow-md border-2 border-white dark:border-slate-700">
-          <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-        </div>
-        <div className="flex flex-col">
-          <h3 className="text-base md:text-lg font-black text-[#576b95] dark:text-[#7f99cc] tracking-wide">{authorName}</h3>
-          <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-[11px] text-slate-400 font-bold mt-0.5 md:mt-1"><Clock size={10} className="md:w-3 md:h-3" /> {timeAgo(moment.date)}</div>
-        </div>
-      </div>
+  const renderMomentCard = (moment: Moment, animationIndex: number) => {
+    const styleSeed = stableNumber(moment.id);
+    const paperStyle = PAPER_STYLES[styleSeed % PAPER_STYLES.length];
+    const noteRotation = NOTE_ROTATIONS[styleSeed % NOTE_ROTATIONS.length];
+    const { dateLabel, timeLabel } = parseMomentDate(moment.date);
 
-      <p className="text-slate-800 dark:text-slate-200 text-[14px] md:text-[16px] leading-relaxed whitespace-pre-wrap font-medium break-words">{moment.content}</p>
+    return (
+      <motion.article
+        key={moment.id}
+        layout
+        initial={{ opacity: 0, y: 28, rotate: noteRotation * 1.8 }}
+        animate={{ opacity: 1, y: 0, rotate: noteRotation }}
+        exit={{ opacity: 0, y: 20, scale: 0.92 }}
+        whileHover={{ y: -8, rotate: 0, scale: 1.015 }}
+        transition={{ duration: 0.38, delay: Math.min(animationIndex * 0.04, 0.28) }}
+        className="relative mb-8 inline-flex w-full break-inside-avoid flex-col align-top drop-shadow-[0_18px_18px_rgba(15,23,42,0.15)]"
+      >
+        <span aria-hidden="true" className="absolute left-1/2 top-0 z-30 -translate-x-1/2 -translate-y-1/2">
+          <span className={`block h-5 w-5 rounded-full border-2 border-white/70 shadow-[0_4px_7px_rgba(15,23,42,0.28)] ${paperStyle.pin}`} />
+          <span className="mx-auto -mt-0.5 block h-3 w-0.5 bg-slate-500/45" />
+        </span>
 
-      {renderImages(moment.images)}
+        <div className={`relative flex min-h-[260px] flex-col overflow-hidden rounded-[4px] border px-5 pb-5 pt-10 ${paperStyle.paper} ${paperStyle.border}`}>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-75"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(100, 116, 139, 0.16) 32px)',
+            }}
+          />
+          <span aria-hidden="true" className="absolute -right-5 -top-5 h-20 w-20 rounded-full bg-white/20 blur-xl" />
 
-      <div className="mt-5 md:mt-10 flex items-center justify-between">
-        <div className="min-w-0 flex-1 pr-2">
-          {moment.location && (
-            <span className="inline-flex items-center gap-1 md:gap-1.5 text-[9px] md:text-[11px] font-bold px-2 md:px-3 py-1 md:py-1.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 max-w-full truncate border border-indigo-500/10">
-              {/* 🌟 就是这里！shrink-0 已经乖乖放进 className 里面了 */}
-              <MapPin size={10} className="md:w-3 md:h-3 shrink-0" />
-              <span className="truncate">{moment.location}</span>
-            </span>
-          )}
-        </div>
-        <button onClick={() => setOpenCommentId(openCommentId === moment.id ? null : moment.id)} className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center shrink-0 rounded-full transition-all shadow-sm ${openCommentId === moment.id ? 'bg-indigo-500 text-white shadow-indigo-500/30 rotate-12' : 'bg-white/80 dark:bg-slate-800 text-slate-400 hover:text-indigo-500 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
-          <MessageSquare size={14} className="md:w-4 md:h-4" />
-        </button>
-      </div>
+          <p className="relative z-10 whitespace-pre-wrap break-words text-[15px] font-semibold leading-8 tracking-wide text-slate-800 dark:text-slate-100">
+            {moment.content}
+          </p>
 
-      <AnimatePresence>
-        {openCommentId === moment.id && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1, marginTop: 16 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-            <div className="bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl md:rounded-3xl p-4 md:p-6 border border-slate-200/50 dark:border-slate-700/50 relative shadow-inner">
-              <div className="absolute -top-2 right-6 md:right-8 w-4 h-4 bg-slate-50/50 dark:bg-slate-900/50 rotate-45 border-l border-t border-slate-200/50"></div>
-              <MomentComments id={`/moments/${moment.id}`} />
+          {renderImages(moment.images)}
+
+          <div className="relative z-10 mt-auto pt-7">
+            <div className="border-t border-slate-500/15 pt-3 text-[10px] font-bold text-slate-600/75 dark:text-slate-200/65">
+              <div className="flex items-center gap-2">
+                <img src={avatarUrl} alt="" className="h-5 w-5 rounded-full border border-white/70 object-cover shadow-sm" />
+                <span className={`truncate text-xs font-black ${paperStyle.accent}`}>{authorName}</span>
+              </div>
+
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                <span className="inline-flex items-center gap-1">
+                  <CalendarDays size={12} aria-hidden="true" />
+                  {dateLabel}
+                </span>
+                {timeLabel && (
+                  <span className="inline-flex items-center gap-1">
+                    <Clock3 size={12} aria-hidden="true" />
+                    {timeLabel}
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <span className="min-w-0 truncate">
+                  {moment.location && (
+                    <span className="inline-flex max-w-full items-center gap-1 truncate">
+                      <MapPin size={12} className="shrink-0" aria-hidden="true" />
+                      <span className="truncate">{moment.location}</span>
+                    </span>
+                  )}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setOpenCommentId(moment.id)}
+                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/55 text-slate-600 shadow-sm ring-1 ring-inset ring-white/65 transition hover:-translate-y-0.5 hover:bg-white hover:text-indigo-600 dark:bg-black/15 dark:text-slate-200 dark:ring-white/10 dark:hover:bg-black/30"
+                  aria-label="查看或发表留言"
+                  title="查看或发表留言"
+                >
+                  <MessageSquare size={14} aria-hidden="true" />
+                </button>
+              </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
+          </div>
+        </div>
+      </motion.article>
+    );
+  };
 
   return (
-    <div className="w-full max-w-7xl mx-auto mt-28 px-4 sm:px-10 relative z-10 flex-1 flex flex-col min-h-[85vh]">
-
+    <div className="relative z-10 mx-auto mt-28 flex min-h-[85vh] w-full max-w-7xl flex-1 flex-col px-4 sm:px-10">
       <div className="animate-fade-in-up">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
+        <div className="mb-12 flex flex-col items-center justify-between gap-6 md:flex-row">
           <div>
-            <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">生活动态</motion.h1>
-            <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
-              在代码之外捕捉瞬间的温度
+            <motion.h1
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-2 text-4xl font-black tracking-widest text-slate-900 transition-colors duration-700 dark:text-white md:text-5xl"
+            >
+              说说
+            </motion.h1>
+            <p className="font-medium tracking-wider text-slate-600 transition-colors duration-700 dark:text-slate-400">
+              把一闪而过的心情，钉在生活的软木板上。
             </p>
           </div>
 
-          <div className="relative w-full md:w-80 group">
-            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-slate-500 dark:text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-            <input type="text" placeholder="搜索说说内容..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full h-12 pl-12 pr-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md border border-white/50 dark:border-white/10 rounded-full text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all duration-700" />
-          </div>
-        </div>
-
-        <div className="mb-16 flex justify-center md:justify-end">
-          <div className="flex bg-white/50 dark:bg-slate-800/50 p-1 md:p-1.5 rounded-xl md:rounded-2xl border border-white/50 dark:border-white/10 shadow-sm relative z-10">
-          <button onClick={() => setSortOrder('desc')} className={`flex items-center gap-1.5 md:gap-2 px-4 md:px-6 py-1.5 md:py-2 rounded-lg md:rounded-xl text-[10px] md:text-xs font-black transition-all duration-300 ${sortOrder === 'desc' ? 'bg-indigo-500 text-white shadow-md md:shadow-lg scale-105' : 'text-slate-500 hover:text-indigo-500'}`}>
-            <ArrowDownAZ size={12} className="md:w-3.5 md:h-3.5"/> 最新
-          </button>
-          <button onClick={() => setSortOrder('asc')} className={`flex items-center gap-1.5 md:gap-2 px-4 md:px-6 py-1.5 md:py-2 rounded-lg md:rounded-xl text-[10px] md:text-xs font-black transition-all duration-300 ${sortOrder === 'asc' ? 'bg-indigo-500 text-white shadow-md md:shadow-lg scale-105' : 'text-slate-500 hover:text-indigo-500'}`}>
-            <ArrowUpZA size={12} className="md:w-3.5 md:h-3.5"/> 最早
-          </button>
+          <div className="group relative w-full md:w-80">
+            <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-indigo-500 dark:text-slate-400" />
+            <input
+              type="search"
+              placeholder="搜索说说内容或地点..."
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              className="h-12 w-full rounded-full border border-white/50 bg-white/40 pl-12 pr-4 text-sm text-slate-800 shadow-sm backdrop-blur-md transition-all duration-700 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:border-white/10 dark:bg-slate-800/40 dark:text-white dark:placeholder:text-slate-400"
+            />
           </div>
         </div>
       </div>
 
-      <LayoutGroup>
-        {processedMoments.length > 0 ? (
-          <div className="flex flex-col md:flex-row gap-5 md:gap-8 pb-32 w-full items-start">
-            <div className="flex-1 flex flex-col gap-5 md:gap-8 w-full min-w-0">
-              <AnimatePresence mode='popLayout'>
-                {processedMoments.filter((_, i) => i % 2 === 0).map(moment => renderMomentCard(moment))}
-              </AnimatePresence>
-            </div>
-            <div className="flex-1 flex flex-col gap-5 md:gap-8 w-full min-w-0">
-              <AnimatePresence mode='popLayout'>
-                {processedMoments.filter((_, i) => i % 2 === 1).map(moment => renderMomentCard(moment))}
-              </AnimatePresence>
-            </div>
+      <section className="relative mb-24 min-h-[430px] overflow-hidden rounded-[38px] border border-white/60 bg-white/45 p-5 shadow-[0_28px_70px_rgba(15,23,42,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/55 sm:p-8 md:p-10">
+        <div className="relative z-10 mb-8 flex justify-end">
+          <div className="flex w-fit rounded-xl border border-white/60 bg-white/55 p-1 shadow-sm dark:border-white/10 dark:bg-slate-800/60">
+            <button
+              type="button"
+              onClick={() => setSortOrder('desc')}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-black transition ${
+                sortOrder === 'desc'
+                  ? 'bg-indigo-500 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300'
+              }`}
+            >
+              <ArrowDownAZ size={13} aria-hidden="true" />
+              最新
+            </button>
+            <button
+              type="button"
+              onClick={() => setSortOrder('asc')}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-black transition ${
+                sortOrder === 'asc'
+                  ? 'bg-indigo-500 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300'
+              }`}
+            >
+              <ArrowUpZA size={13} aria-hidden="true" />
+              最早
+            </button>
           </div>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center py-12 md:py-24 min-h-[300px] md:min-h-[450px]">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center text-center px-6 md:px-10 py-12 md:py-20 bg-white/40 dark:bg-slate-800/30 backdrop-blur-3xl rounded-[32px] md:rounded-[50px] border border-white/30 dark:border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] max-w-lg w-full mx-auto">
-              <div className="w-16 h-16 md:w-24 md:h-24 bg-indigo-500/10 rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-8 relative">
-                <div className="absolute inset-0 bg-indigo-500/20 blur-2xl rounded-full animate-pulse"></div>
-                <Ghost size={32} className="md:w-12 md:h-12 text-indigo-500 relative z-10" strokeWidth={1.5} />
-              </div>
-              <h2 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight">{searchQuery ? "没找到相关记忆" : "朋友圈空空如也"}</h2>
-              <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-lg leading-relaxed px-2 md:px-4">{searchQuery ? `尝试精简你的搜索词，或者换个心情再次出发。` : `还没有记录下任何生活碎片呢。`}</p>
+        </div>
+
+        <LayoutGroup>
+          {processedMoments.length > 0 ? (
+            <div className="relative z-10 columns-1 gap-7 sm:columns-2 lg:columns-3 xl:columns-4">
+              <AnimatePresence mode="popLayout">
+                {processedMoments.map((moment, index) => renderMomentCard(moment, index))}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative z-10 flex min-h-[280px] flex-col items-center justify-center rounded-[28px] border border-dashed border-slate-300/70 bg-white/30 px-6 text-center dark:border-white/10 dark:bg-slate-800/25"
+            >
+              <span className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-500/10 text-indigo-500">
+                <Ghost size={38} strokeWidth={1.5} aria-hidden="true" />
+              </span>
+              <h2 className="text-xl font-black text-slate-900 dark:text-white">
+                {searchQuery ? '没有找到相关便利贴' : '便利贴墙还是空的'}
+              </h2>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                {searchQuery ? '换一个关键词再试试吧。' : '在 moments 目录中新建 Markdown 文件即可添加说说。'}
+              </p>
             </motion.div>
-          </div>
+          )}
+        </LayoutGroup>
+      </section>
+
+      <AnimatePresence>
+        {activeCommentMoment && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9990] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md"
+            onClick={() => setOpenCommentId(null)}
+          >
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="说说留言"
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.96 }}
+              onClick={(event) => event.stopPropagation()}
+              className="max-h-[86vh] w-full max-w-3xl overflow-y-auto rounded-[30px] border border-white/60 bg-slate-50 p-5 shadow-2xl dark:border-white/10 dark:bg-slate-900 sm:p-7"
+            >
+              <div className="mb-5 flex items-start justify-between gap-5 border-b border-slate-200 pb-5 dark:border-white/10">
+                <div className="min-w-0">
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-indigo-500">Moment Comments</p>
+                  <p className="mt-2 line-clamp-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">
+                    {activeCommentMoment.content}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOpenCommentId(null)}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-200/70 text-slate-600 transition hover:bg-indigo-500 hover:text-white dark:bg-white/10 dark:text-white"
+                  aria-label="关闭留言面板"
+                >
+                  <X size={17} aria-hidden="true" />
+                </button>
+              </div>
+              <MomentComments id={`/moments/${activeCommentMoment.id}`} />
+            </motion.div>
+          </motion.div>
         )}
-      </LayoutGroup>
+      </AnimatePresence>
 
       <AnimatePresence>
         {lightbox && (
           <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-slate-950/98 backdrop-blur-xl flex items-center justify-center cursor-pointer overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[10000] flex cursor-pointer items-center justify-center overflow-hidden bg-slate-950/95 backdrop-blur-xl"
             onClick={() => setLightbox(null)}
           >
+            <button
+              type="button"
+              onClick={() => setLightbox(null)}
+              className="absolute right-5 top-5 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+              aria-label="关闭图片预览"
+            >
+              <X size={20} aria-hidden="true" />
+            </button>
+
             {lightbox.images.length > 1 && (
               <>
-                <button className="absolute left-4 md:left-12 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-all z-50 border border-white/5 backdrop-blur-md" onClick={prevImg}><ChevronLeft size={24} className="md:w-9 md:h-9"/></button>
-                <button className="absolute right-4 md:right-12 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-all z-50 border border-white/5 backdrop-blur-md" onClick={nextImg}><ChevronRight size={24} className="md:w-9 md:h-9"/></button>
+                <button
+                  type="button"
+                  className="absolute left-4 z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white transition hover:bg-white/20 md:left-12 md:h-14 md:w-14"
+                  onClick={showPreviousImage}
+                  aria-label="上一张图片"
+                >
+                  <ChevronLeft size={28} aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className="absolute right-4 z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white transition hover:bg-white/20 md:right-12 md:h-14 md:w-14"
+                  onClick={showNextImage}
+                  aria-label="下一张图片"
+                >
+                  <ChevronRight size={28} aria-hidden="true" />
+                </button>
               </>
             )}
-            <motion.div key={lightbox.index} initial={{ opacity: 0, scale: 0.9, x: 50 }} animate={{ opacity: 1, scale: 1, x: 0 }} exit={{ opacity: 0, scale: 0.9, x: -50 }} className="relative w-full h-full flex flex-col items-center justify-center p-4 md:p-12 pointer-events-none">
-              <img src={lightbox.images[lightbox.index]} className="max-w-full max-h-[75vh] md:max-h-[85vh] object-contain rounded-2xl shadow-[0_0_80px_rgba(0,0,0,0.5)] border border-white/10 pointer-events-auto" alt="fullscreen" />
-              <div className="absolute bottom-8 md:bottom-10 px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/10 backdrop-blur-md text-white/90 text-[10px] md:text-xs font-black tracking-widest border border-white/10">
+
+            <motion.div
+              key={lightbox.index}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              className="pointer-events-none flex h-full w-full flex-col items-center justify-center p-5 md:p-14"
+            >
+              <img
+                src={lightbox.images[lightbox.index]}
+                className="pointer-events-auto max-h-[84vh] max-w-full rounded-2xl border border-white/10 object-contain shadow-[0_0_80px_rgba(0,0,0,0.55)]"
+                alt="说说图片预览"
+              />
+              <span className="absolute bottom-8 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black tracking-widest text-white/90 backdrop-blur-md">
                 {lightbox.index + 1} / {lightbox.images.length}
-              </div>
+              </span>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }

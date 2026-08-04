@@ -168,7 +168,7 @@ export default function WeatherWidget() {
   };
 
   const daily = weather?.daily?.[0];
-  const hourly = useMemo(() => weather?.hourly?.slice(0, 5) || [], [weather?.hourly]);
+  const hourly = useMemo(() => weather?.hourly?.slice(0, 4) || [], [weather?.hourly]);
 
   return (
     <div className="relative overflow-hidden rounded-[32px] bg-white/50 p-5 shadow-xl backdrop-blur-xl border border-white/50 transition-all duration-700 dark:bg-slate-800/60 dark:border-white/10">
@@ -257,10 +257,10 @@ export default function WeatherWidget() {
                   <span className="text-xs font-black text-slate-700 dark:text-slate-200">逐小时预报</span>
                   <RefreshCcw size={13} className="text-slate-400" />
                 </div>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-4 gap-2">
                   {hourly.map((item, index) => (
-                    <div key={`${item.fxTime}-${index}`} className="rounded-2xl bg-white/55 px-2 py-3 text-center dark:bg-slate-900/35">
-                      <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400">{formatHour(item.fxTime, index)}</p>
+                    <div key={`${item.fxTime}-${index}`} className="min-w-0 rounded-2xl bg-white/55 px-1 py-3 text-center dark:bg-slate-900/35">
+                      <p className="whitespace-nowrap text-[10px] font-bold leading-none tabular-nums text-slate-500 dark:text-slate-400">{formatHour(item.fxTime, index)}</p>
                       <div className="my-2 flex justify-center">{getWeatherIcon(item.icon, 24)}</div>
                       <p className="text-sm font-black text-slate-900 dark:text-white">{item.temp}°</p>
                       <p className="mt-1 text-[10px] font-bold text-sky-500">{item.pop || '0'}%</p>

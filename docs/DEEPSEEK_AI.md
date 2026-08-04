@@ -85,7 +85,7 @@ npm run dev
 打开：
 
 ```text
-http://localhost:3000
+http://localhost:4000
 ```
 
 点击右下角猫猫的聊天按钮，发送一句话测试。
@@ -93,7 +93,7 @@ http://localhost:3000
 也可以直接检查接口状态：
 
 ```text
-http://localhost:3000/api/chat
+http://localhost:4000/api/chat
 ```
 
 如果显示：

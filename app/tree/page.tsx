@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Clock3, FileText, FolderKanban, MessageCircle, Sparkles, Tags } from 'lucide-react';
+import { ArrowRight, BookOpen, Clock3, FileText, Sparkles, Tags } from 'lucide-react';
 
 import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
@@ -13,19 +13,18 @@ type KnowledgeItem = {
   description: string;
   date: string;
   href: string;
-  type: '文章' | '杂谈' | '说说';
+  type: '文章' | '说说';
   cover?: string;
   tags: string[];
   pdfCount: number;
 };
 
 const POSTS_DIR = path.join(process.cwd(), 'posts');
-const CHATTERS_DIR = path.join(process.cwd(), 'chatters');
 const MOMENTS_DIR = path.join(process.cwd(), 'moments');
 
 export const metadata = {
   title: `知识地图 | ${siteConfig.title}`,
-  description: '把博客文章、课程笔记、杂谈与说说整理成一张轻量的学习地图。',
+  description: '把文章、说说与 PDF 资料整理成一张轻量的学习地图。',
 };
 
 function normalizeDate(date: unknown) {
@@ -51,7 +50,7 @@ function excerptFromContent(content: string) {
 function readMarkdownItems(
   directoryPath: string,
   type: KnowledgeItem['type'],
-  hrefPrefix: '/posts' | '/chatter' | '/moments'
+  hrefPrefix: '/posts' | '/moments'
 ) {
   if (!fs.existsSync(directoryPath)) return [];
 
@@ -90,9 +89,8 @@ function sortByDate(items: KnowledgeItem[]) {
 
 export default function KnowledgeMapPage() {
   const posts = readMarkdownItems(POSTS_DIR, '文章', '/posts');
-  const chatters = readMarkdownItems(CHATTERS_DIR, '杂谈', '/chatter');
   const moments = readMarkdownItems(MOMENTS_DIR, '说说', '/moments');
-  const allItems = sortByDate([...posts, ...chatters, ...moments]);
+  const allItems = sortByDate([...posts, ...moments]);
   const recentItems = allItems.slice(0, 6);
   const pdfTotal = allItems.reduce((sum, item) => sum + item.pdfCount, 0);
 
@@ -114,13 +112,6 @@ export default function KnowledgeMapPage() {
       href: '/',
       icon: BookOpen,
       description: '集中整理课程笔记、PDF 资料、研究阅读和技术实践。',
-    },
-    {
-      title: '站点维护杂谈',
-      count: chatters.length,
-      href: '/chatter',
-      icon: MessageCircle,
-      description: '记录网站改版、工具配置和阶段性想法。',
     },
     {
       title: '日常说说',
@@ -150,13 +141,13 @@ export default function KnowledgeMapPage() {
                   知识地图
                 </h1>
                 <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">
-                  把博客文章、课程笔记、杂谈与说说整理成一张轻量的学习地图。
+                  把文章、说说与 PDF 资料整理成一张轻量的学习地图。
                 </p>
               </div>
             </div>
           </section>
 
-          <section className="grid md:grid-cols-4 gap-4">
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]">
             {sections.map((section) => {
               const Icon = section.icon;
               return (
@@ -177,9 +168,29 @@ export default function KnowledgeMapPage() {
                 </Link>
               );
             })}
+
+            <div className="rounded-3xl border border-white/50 bg-white/60 p-6 shadow-lg backdrop-blur-xl transition-colors duration-300 dark:border-white/10 dark:bg-slate-900/50">
+              <h2 className="flex items-center gap-2 text-lg font-black text-slate-950 dark:text-white">
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-300">
+                  <Tags size={20} />
+                </span>
+                常用标签
+              </h2>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {topTags.length > 0 ? (
+                  topTags.map(([tag, count]) => (
+                    <span key={tag} className="rounded-full border border-indigo-300/30 bg-indigo-500/10 px-3 py-1.5 text-sm font-bold text-indigo-700 dark:text-indigo-200">
+                      {tag} · {count}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-500 dark:text-slate-400">还没有标签。给文章 frontmatter 添加 tags 后会自动显示。</p>
+                )}
+              </div>
+            </div>
           </section>
 
-          <section className="grid lg:grid-cols-[1.5fr_0.8fr] gap-6 mt-8">
+          <section className="mt-8">
             <div className="rounded-[2rem] border border-white/50 dark:border-white/10 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-6 md:p-8 shadow-xl">
               <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
@@ -189,71 +200,43 @@ export default function KnowledgeMapPage() {
                   </h2>
                   <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">按发布时间自动排序，优先看到最新内容。</p>
                 </div>
-                <Link href="/timeline" className="text-sm font-bold text-indigo-600 dark:text-indigo-300 hover:underline">
-                  查看归档
-                </Link>
               </div>
 
-              <div className="space-y-4">
+              <div className="relative ml-2 space-y-5 border-l-2 border-indigo-200/80 pl-6 dark:border-indigo-400/25 md:pl-8">
                 {recentItems.map((item) => (
-                  <Link
+                  <div
                     key={`${item.type}-${item.href}-${item.date}`}
-                    href={item.href}
-                    className="group block rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white/65 dark:bg-slate-800/45 p-5 hover:border-indigo-300/70 hover:bg-white/90 dark:hover:bg-slate-800 transition-all"
+                    className="group relative"
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
-                          <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-indigo-600 dark:text-indigo-300">{item.type}</span>
-                          <span>{formatDate(item.date)}</span>
-                          {item.pdfCount > 0 && <span>{item.pdfCount} 个 PDF</span>}
+                    <span className="absolute -left-[33px] top-2 h-4 w-4 rounded-full border-[3px] border-white bg-indigo-500 shadow-[0_0_0_3px_rgba(99,102,241,0.16)] transition-transform duration-300 group-hover:scale-125 dark:border-slate-900 dark:bg-indigo-400 md:-left-[41px]" />
+                    <time
+                      dateTime={item.date}
+                      className="mb-2 inline-flex rounded-full bg-indigo-500/10 px-3 py-1.5 text-sm font-black tracking-wide text-indigo-700 ring-1 ring-inset ring-indigo-500/15 dark:bg-indigo-400/10 dark:text-indigo-200 dark:ring-indigo-300/15"
+                    >
+                      {formatDate(item.date)}
+                    </time>
+                    <Link
+                      href={item.href}
+                      className="block rounded-3xl border border-slate-200/70 bg-white/65 p-5 transition-all hover:border-indigo-300/70 hover:bg-white/90 dark:border-white/10 dark:bg-slate-800/45 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
+                            <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-indigo-600 dark:text-indigo-300">{item.type}</span>
+                            {item.pdfCount > 0 && <span>{item.pdfCount} 个 PDF</span>}
+                          </div>
+                          <h3 className="mt-3 text-lg font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
+                            {item.title}
+                          </h3>
+                          <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.description}</p>
                         </div>
-                        <h3 className="mt-3 text-lg font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
-                          {item.title}
-                        </h3>
-                        <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.description}</p>
+                        <ArrowRight size={18} className="mt-1 shrink-0 text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
                       </div>
-                      <ArrowRight size={18} className="mt-1 shrink-0 text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </Link>
+                    </Link>
+                  </div>
                 ))}
               </div>
             </div>
-
-            <aside className="space-y-6">
-              <div className="rounded-[2rem] border border-white/50 dark:border-white/10 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-6 shadow-xl">
-                <h2 className="text-xl font-black text-slate-950 dark:text-white flex items-center gap-2">
-                  <Tags size={20} className="text-indigo-500" />
-                  常用标签
-                </h2>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {topTags.length > 0 ? (
-                    topTags.map(([tag, count]) => (
-                      <span key={tag} className="rounded-full border border-indigo-300/30 bg-indigo-500/10 px-3 py-1.5 text-sm font-bold text-indigo-700 dark:text-indigo-200">
-                        {tag} · {count}
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-500 dark:text-slate-400">还没有标签。给文章 frontmatter 添加 tags 后会自动显示。</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-[2rem] border border-white/50 dark:border-white/10 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-6 shadow-xl">
-                <h2 className="text-xl font-black text-slate-950 dark:text-white flex items-center gap-2">
-                  <FolderKanban size={20} className="text-indigo-500" />
-                  维护提示
-                </h2>
-                <p className="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400">
-                  新文章放到 <code className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800">posts/</code>，
-                  PDF 放到 <code className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800">public/assets/files/</code>。
-                  构建时页面会自动扫描 Markdown 并刷新统计。
-                </p>
-                <Link href="/about" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-300 hover:underline">
-                  查看站点说明 <ArrowRight size={16} />
-                </Link>
-              </div>
-            </aside>
           </section>
         </main>
       </PageTransition>

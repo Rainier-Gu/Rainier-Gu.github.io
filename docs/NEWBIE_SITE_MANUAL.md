@@ -1,5 +1,7 @@
 # RainierGu 个人网站新手设置手册
 
+> 最后核对日期：2026-08-03。本文以当前 Next.js 版本、4000 本地端口、Vercel 部署和现有页面结构为准。
+
 这份手册面向“刚开始自己动手维护网站”的你。它的目标不是教你一次性记住所有代码，而是让你知道：
 
 - 页面上每个主要元素在哪里改；
@@ -11,7 +13,7 @@
 
 | 层级 | 主要文件 | 你通常做什么 |
 | --- | --- | --- |
-| 内容层 | `posts/`、`chatters/`、`moments/`、`data/`、`public/assets/` | 写文章、传 PDF、传图片、加项目、加相册、加友链 |
+| 内容层 | `posts/`、`moments/`、`data/`、`public/assets/` | 写文章、传 PDF、传图片、加项目、加相册、加友链；`chatters/` 是当前隐藏的旧内容源 |
 | 配置层 | `siteConfig.ts`、`.env.local`、Vercel 环境变量 | 改站点名称、头像、背景、音乐、AI、评论、天气等 |
 | 页面层 | `app/`、`components/`、`app/globals.css` | 改页面布局、组件样式、导航、特效、字体 |
 
@@ -42,7 +44,7 @@ npm run dev
 然后打开：
 
 ```text
-http://localhost:3000
+http://localhost:4000
 ```
 
 修改完成后，至少运行一次构建检查：
@@ -80,20 +82,22 @@ https://rainiergu.vercel.app
 
 | 你想改什么 | 文件或目录 |
 | --- | --- |
-| 全站标题、头像、背景、音乐、AI、评论、页脚 | `siteConfig.ts` |
+| 全站标题、首页大图文案、头像、背景、音乐、AI、评论 | `siteConfig.ts` |
 | 首页布局 | `app/page.tsx` |
 | 全站外壳、字体、背景、全局特效 | `app/layout.tsx`、`app/globals.css` |
 | 导航栏 | `components/Navbar.tsx` |
 | 首页个人卡片 | `components/ProfileCard.tsx` |
+| 首页照片墙轮播 | `components/PhotoWallCarousel.tsx`、`data/albums.ts` |
+| 首页时钟与站点状态 | `components/SiteDashboard.tsx`、`siteConfig.buildDate` |
+| 首页天气和地点查询 | `components/WeatherWidget.tsx`、`app/api/weather/route.ts` |
 | 首页搜索框 | `components/SearchBar.tsx` |
 | 首页文章流 | `components/HomePostStream.tsx` |
-| 首页杂谈轮播 | `components/LatestChatterCarousel.tsx` |
 | 首页音乐卡片 | `components/CloudPlayer.tsx` |
 | 全局音乐播放器 | `components/MusicProvider.tsx`、`components/FloatingPlayer.tsx`、`app/music/MusicClient.tsx` |
 | AI 小猫助手 | `components/CyberCat.tsx`、`app/api/chat/route.ts` |
 | GitHub 评论 | `components/Comments.tsx`、`components/MomentComments.tsx`、`components/LabComments.tsx`、`components/gitalkConfig.ts` |
 | 文章 | `posts/` |
-| 杂谈 | `chatters/` |
+| 隐藏的杂谈源码 | `chatters/`、`app/chatter/`、`components/LatestChatterCarousel.tsx` |
 | 说说/动态 | `moments/` |
 | 关于我正文 | `app/about/about.md` |
 | 项目页数据 | `data/projects.ts` |
@@ -102,6 +106,7 @@ https://rainiergu.vercel.app
 | 图片、PDF 等静态资源 | `public/assets/` |
 | DeepSeek AI 详细说明 | `docs/DEEPSEEK_AI.md` |
 | GitHub 评论详细说明 | `docs/GITHUB_COMMENTS.md` |
+| Vercel 访问统计 | `app/layout.tsx` 中的 `/_vercel/insights/script.js` |
 
 ## 4. `siteConfig.ts` 全站配置详解
 
@@ -110,10 +115,13 @@ https://rainiergu.vercel.app
 ### 4.1 网站基本信息
 
 ```ts
-title: "RainierGu 的学习档案馆",
+title: "RainierGu's Blog",
 faviconUrl: "/assets/img/avatar/avatar.jpg",
 authorName: "RainierGu",
-bio: "记录物理课程、经济学笔记、科研学习、技术实践与项目进展。",
+bio: "课程学习，科研心得，以及个人的碎碎念。",
+
+heroTitle: "Hey! I'm RainierGu.",
+heroSubtitle: "Per aspera ad astra.（循此苦旅 以达繁星）",
 ```
 
 | 字段 | 影响哪里 | 怎么改 |
@@ -122,19 +130,21 @@ bio: "记录物理课程、经济学笔记、科研学习、技术实践与项�
 | `faviconUrl` | 浏览器标签页小图标 | 推荐用正方形图片 |
 | `authorName` | 首页卡片、关于页、文章侧栏、说说头像名称 | 改成你的名字或昵称 |
 | `bio` | 首页个人简介、文章侧栏、SEO 描述 | 写 1 到 2 句话 |
+| `heroTitle` | 首页大图主标题 | 可独立于网站标题修改 |
+| `heroSubtitle` | 首页大图副标题 | 支持中英文普通文本 |
 
 ### 4.2 导航栏标题
 
 ```ts
 navTitle: "RainierGu",
-navSuffix: "·",
-navAfter: "Learning Archive",
+navSuffix: "'s",
+navAfter: "Blog",
 ```
 
 页面顶部会显示类似：
 
 ```text
-RainierGu · Learning Archive
+RainierGu 's Blog
 ```
 
 如果想改成中文，比如：
@@ -175,19 +185,18 @@ faviconUrl: "/assets/img/avatar/new-avatar.jpg",
 ### 4.4 背景图与主题色
 
 ```ts
-useGradient: false,
-themeColors: ["#0f172a", "#312e81", "#0f766e", "#0369a1"],
+useGradient: true,
+themeColors: ["#48c6f0", "#fff0d6", "#ff8a3d"],
 bgImages: [
-  "/assets/img/posts/welcome.webp",
-  "/assets/img/posts/research-writing-cover.svg",
+  "/assets/img/posts/Homepage1.png",
 ],
 ```
 
 | 字段 | 作用 |
 | --- | --- |
-| `useGradient` | `false` 时使用背景图轮播；`true` 时主要使用渐变背景 |
+| `useGradient` | `true` 时全站背景使用渐变；`false` 时启用背景图轮播 |
 | `themeColors` | 背景渐变、光晕、主题色氛围 |
-| `bgImages` | 全站背景轮播图片 |
+| `bgImages` | 首页大图始终优先使用第一张；关闭渐变后也作为全站背景轮播图 |
 
 上传背景图：
 
@@ -214,31 +223,56 @@ photoWallImage: "/assets/img/posts/general-physics-lab.webp",
 | `defaultPostCover` | 文章或杂谈没有写 `cover` 时使用的默认封面 |
 | `photoWallImage` | 没有相册数据时首页照片墙入口的备用图 |
 
-### 4.6 网易云音乐
+### 4.6 音乐配置：本地音乐优先，网易云备用
+
+音乐播放器现在支持两种来源：
+
+| 来源 | 配置字段 | 适合场景 |
+| --- | --- | --- |
+| 本地音频文件 | `localMusicTracks` | 最稳定，推荐优先使用，适合上传自己有权使用的音频和 LRC 歌词 |
+| 网易云歌曲 ID | `cloudMusicIds` | 作为补充歌源，但可能因为版权、地区或外链限制无法播放 |
+
+本地音乐配置示例：
 
 ```ts
-cloudMusicIds: [],
+localMusicTracks: [
+  {
+    id: "blue-night",
+    title: "Blue Night",
+    artist: "RainierGu",
+    album: "Demo",
+    cover: "/assets/music/covers/blue-night.webp",
+    src: "/assets/music/tracks/blue-night.mp3",
+    lrcUrl: "/assets/music/lyrics/blue-night.lrc",
+  },
+],
 ```
 
-填网易云歌曲 ID，例如：
+注意：路径从 `/assets/music/` 开始，不要写 `public`。
+
+对应文件放在：
+
+```text
+public/assets/music/tracks/blue-night.mp3
+public/assets/music/lyrics/blue-night.lrc
+public/assets/music/covers/blue-night.webp
+```
+
+LRC 歌词示例：
+
+```lrc
+[00:00.00]歌曲名
+[00:12.30]第一句歌词
+[00:16.80]第二句歌词
+```
+
+网易云备用配置仍然保留：
 
 ```ts
 cloudMusicIds: ["1809646618", "1974443814"],
 ```
 
-获取歌曲 ID 的方法：
-
-1. 打开网易云音乐网页版。
-2. 进入某首歌页面。
-3. 地址通常类似：
-
-```text
-https://music.163.com/#/song?id=1809646618
-```
-
-4. `id=` 后面的数字就是歌曲 ID。
-
-网站会通过 `app/api/music/route.ts` 获取歌曲信息、封面、歌词和播放地址。注意：网易云外链有时会因为版权或地区问题无法播放，这是正常现象。
+网站会优先加载 `localMusicTracks`，然后再尝试通过 `app/api/music/route.ts` 获取网易云歌曲信息。本地音乐不会受网易云外链限制影响。
 
 ### 4.7 社交链接
 
@@ -262,27 +296,24 @@ social: {
 | `qq` | 点击复制 QQ |
 | `wechat` | 点击复制微信号 |
 
-空字符串表示不显示。
+首页个人卡片和文章详情页右侧个人信息栏共用这组配置；空字符串表示两处都不显示对应图标。
 
 ### 4.8 杂谈页标题
 
 ```ts
 chatterTitle: "研究与生活札记",
-chatterDescription: "课程、科研、代码、阅读和一些短想法的碎片记录。",
+chatterDescription: "课程，科研，和一些短想法的碎片记录。",
 ```
 
-影响 `/chatter` 页面顶部标题和说明。
+影响保留的 `/chatter` 页面顶部标题和说明。该页面当前已从导航和其它公开页面入口隐藏，普通维护可以暂时忽略。
 
 ### 4.9 首页弹幕
 
 ```ts
-danmakuList: [
-  "今天也要认真推导",
-  "PDF 资料库加载中",
-],
+danmakuList: [],
 ```
 
-这些文字会在桌面端背景里飘过。手机端为了性能默认隐藏。
+数组为空时不显示弹幕。添加字符串后，文字会在桌面端背景里飘过；手机端为了性能默认隐藏。
 
 ### 4.10 GitHub 评论
 
@@ -312,10 +343,10 @@ NEXT_PUBLIC_GITALK_ADMIN=Rainier-Gu
 docs/GITHUB_COMMENTS.md
 ```
 
-### 4.11 页脚运行时间与技术徽章
+### 4.11 首页时钟、站点状态与预留技术徽章
 
 ```ts
-buildDate: "2026-07-08T00:00:00+08:00",
+buildDate: "2026-08-01T00:00:00+08:00",
 footerBadges: [
   { name: "Next.js", color: "text-sky-500", svg: "..." },
 ],
@@ -323,10 +354,10 @@ footerBadges: [
 
 | 字段 | 作用 |
 | --- | --- |
-| `buildDate` | 首页底部运行天数从这个日期开始计算 |
-| `footerBadges` | 首页底部显示的技术徽章 |
+| `buildDate` | 首页左栏“正常运行时间”的起算时间；也参与“最近更新时间”计算 |
+| `footerBadges` | 当前保留的技术徽章配置，现有首页状态面板暂未渲染它 |
 
-如果你不熟 SVG，先只改 `name` 和 `color`，不要轻易改 `svg`。
+时钟和状态面板的具体布局在 `components/SiteDashboard.tsx`。日期会以较醒目的色块显示，下面的运行时长和最近更新时间使用更小的字号，避免左栏拥挤。如果你不熟 SVG，先不要修改 `footerBadges.svg`。
 
 ### 4.12 备案信息
 
@@ -380,7 +411,7 @@ docs/DEEPSEEK_AI.md
 ### 4.14 友链申请格式
 
 ```ts
-friendLinkApplyFormat: "名称：RainierGu 的学习档案馆\n简介：...",
+friendLinkApplyFormat: "名称：RainierGu's Blog\n简介：...",
 ```
 
 显示在 `/friends` 页面，方便别人复制你的友链信息。
@@ -388,16 +419,14 @@ friendLinkApplyFormat: "名称：RainierGu 的学习档案馆\n简介：...",
 ### 4.15 知识地图等级系统
 
 ```ts
-enableLevelSystem: false,
+enableLevelSystem: true,
 ```
 
-影响 `/tree` 页面里的等级/成就系统。如果你想开启更游戏化的等级统计，可以改成：
+这是知识地图实验组件使用的等级/成就开关。当前配置为开启：
 
 ```ts
 enableLevelSystem: true,
 ```
-
-如果只是普通博客，保持 `false` 更清爽。
 
 ## 5. 页面逐个说明：看见什么，改哪里
 
@@ -405,13 +434,13 @@ enableLevelSystem: true,
 
 | 页面元素 | 文件 | 怎么改 |
 | --- | --- | --- |
-| 全站字体 | `app/layout.tsx`、`app/globals.css` | 改 `next/font/google` 引入和 `body` class |
+| 全站字体 | `app/layout.tsx`、`app/globals.css` | 当前 `body` 使用 `font-serif`；在全局 CSS 中调整字体栈并保留回退字体 |
 | 背景图片轮播 | `components/BackgroundSlider.tsx`、`siteConfig.bgImages` | 在 `siteConfig.ts` 改背景图数组 |
 | 背景粒子/光效 | `components/BackgroundEffects.tsx` | 想关掉可在 `app/layout.tsx` 注释组件 |
 | 顶部启动动画 | `components/SplashScreen.tsx` | 改头像、文案、动画逻辑 |
 | 顶部导航栏 | `components/Navbar.tsx` | 改 `navLinks` 数组 |
 | 左下主题按钮 | `components/FloatingThemeToggle.tsx` | 改悬浮位置、图标和明暗模式切换样式 |
-| 右下 AI 小猫 | `components/CyberCat.tsx` | 改猫猫文案、按钮、位置、大小 |
+| 可拖动 AI 小猫 | `components/CyberCat.tsx` | 桌面端可在视口内拖动；这里也控制回复框宽度、字号和位置 |
 | 桌面悬浮音乐条 | `components/FloatingPlayer.tsx` | 改样式或隐藏 |
 | 点击粒子 | `components/ClickEffect.tsx` | 改点击动效 |
 | 手机返回按钮 | `components/MobileBackButton.tsx` | 改移动端返回按钮 |
@@ -439,19 +468,19 @@ components/Navbar.tsx
 ```ts
 const navLinks = [
   { name: '首页', href: '/' },
-  { name: '项目', href: '/projects' },
-  { name: '归档', href: '/timeline' },
+  { name: '开源项目', href: '/projects' },
+  { name: '说说', href: '/moments' },
   { name: '照片墙', href: '/photowall' },
   { name: '音乐', href: '/music' },
   { name: '知识地图', href: '/tree' },
-  { name: '说说', href: '/moments' },
-  { name: '杂谈', href: '/chatter' },
   { name: '友链', href: '/friends' },
   { name: '关于', href: '/about' },
 ];
 ```
 
 想隐藏某个导航项，就删除或注释那一行。
+
+当前“杂谈”和“归档”页都没有出现在导航栏及首页入口中。`app/chatter/`、`chatters/` 和 `app/timeline/` 的源码仍保留，仅用于以后需要时恢复；普通维护不需要修改。
 
 想新增页面，例如 `/notes`：
 
@@ -474,16 +503,17 @@ app/page.tsx
 
 | 首页元素 | 组件/数据来源 | 修改方法 |
 | --- | --- | --- |
-| 搜索框 | `components/SearchBar.tsx`，数据来自 `posts/` | 自动搜索文章标题、描述、标签 |
-| 个人信息卡片 | `components/ProfileCard.tsx`，数据来自 `siteConfig.ts` | 改头像、昵称、简介、社交链接 |
-| 音乐卡片 | `components/CloudPlayer.tsx`，歌曲来自 `cloudMusicIds` | 在 `siteConfig.ts` 填网易云歌曲 ID |
-| 文章流 | `components/HomePostStream.tsx`，数据来自 `posts/` | 新文章会自动出现在这里 |
-| 照片墙入口 | `data/albums.ts` 第一个相册 | 改第一个相册会影响首页大海报 |
-| 杂谈轮播 | `components/LatestChatterCarousel.tsx`，数据来自 `chatters/` | 新杂谈会自动出现 |
-| 主题切换 | `components/FloatingThemeToggle.tsx` | 左下悬浮按钮控制明暗主题 |
-| 底部数据面板 | `components/SiteDashboard.tsx` | 显示运行时间、徽章、备案 |
+| 顶部大图 | `app/page.tsx`、`siteConfig.heroTitle`、`siteConfig.heroSubtitle`、`siteConfig.bgImages[0]` | 主副标题和图片可分别修改；标题上方不显示额外标签 |
+| 右上搜索框 | `components/SearchBar.tsx`，数据来自 `posts/` | 自动搜索文章标题、描述和标签 |
+| 个人信息卡片 | `components/ProfileCard.tsx`，数据来自 `siteConfig.ts`、`posts/`、`moments/` 和 `data/albums.ts` | 改头像、昵称、简介、社交链接；文章、说说和照片数量会自动统计 |
+| 左栏照片墙轮播 | `components/PhotoWallCarousel.tsx`、`data/albums.ts` | 修改相册和图片数据 |
+| 左栏时钟与站点状态 | `components/SiteDashboard.tsx` | 醒目显示年月日和星期，并显示运行时长、最近更新时间 |
+| 中栏所有文章 | `components/HomePostStream.tsx`，数据来自 `posts/` | 每页显示 5 篇，超出后在底部自动生成分页按钮；仅第一页第一篇使用大卡片 |
+| 右栏音乐卡片 | `components/CloudPlayer.tsx`，歌曲来自 `localMusicTracks` 和 `cloudMusicIds` | 推荐配置本地音频、LRC 和封面 |
+| 右栏天气 | `components/WeatherWidget.tsx`、`app/api/weather/route.ts` | 自动定位，也可手动输入城市 |
+| 明暗主题 | `components/FloatingThemeToggle.tsx` | 任意页面左下角悬浮按钮 |
 
-首页文章顺序按 `date` 从新到旧排序。
+宽屏首页最大版心约 1440px，左右内边距约 40px，左右栏固定为约 288px，中栏自动占据剩余空间。第一页第一篇使用大封面，其余文章（包括后续页第一篇）统一使用约 156px 高的紧凑卡片；小屏幕会自动变为单栏。全部文章按 `date` 从新到旧排序。
 
 ### 5.4 文章列表与文章详情 `/posts/[slug]`
 
@@ -533,7 +563,11 @@ posts/
 
 标签统计也来自文章 front matter 里的 `tags`。
 
+注意：此页当前处于隐藏状态，导航栏和首页都没有入口。保留本节只是为了以后恢复时能找到相关源码。
+
 ### 5.6 杂谈页 `/chatter`
+
+该页当前处于隐藏状态：导航、首页、关于动态和知识地图均不再显示杂谈入口，但源码与 Markdown 文件没有删除，未来可以恢复。
 
 内容目录：
 
@@ -577,7 +611,7 @@ app/moments/page.tsx
 app/moments/MomentList.tsx
 ```
 
-适合写很短的动态，类似朋友圈/微博。
+适合写很短的动态。当前页面采用简洁的“便利贴墙”布局：留言板内部没有额外标题或方格底纹，每条说说会自动获得稳定的淡色纸张、轻微旋转角度、顶部图钉和横线纸纹；桌面端按多列错落排列，手机端自动变为单列。图片仍可点击放大，便利贴右下角的留言按钮会打开独立评论面板。
 
 ### 5.8 项目页 `/projects`
 
@@ -623,6 +657,7 @@ app/photowall/PhotoWallClient.tsx
 配置入口：
 
 ```text
+siteConfig.ts -> localMusicTracks
 siteConfig.ts -> cloudMusicIds
 ```
 
@@ -635,7 +670,7 @@ components/MusicProvider.tsx
 app/api/music/route.ts
 ```
 
-当前音乐功能主要依赖网易云歌曲 ID。
+当前音乐功能优先使用本地音频文件和 LRC 歌词文件，网易云歌曲 ID 作为可选补充。
 
 ### 5.11 友链页 `/friends`
 
@@ -673,25 +708,20 @@ components/AboutClient.tsx
 
 ### 5.13 知识地图 `/tree`
 
-页面文件：
+当前实际页面文件：
 
 ```text
 app/tree/page.tsx
-app/tree/CreativeWorkshopClient.tsx
-app/tree/AlchemyLab.tsx
-app/tree/DijiangModel.tsx
 ```
 
 数据来源：
 
 - `posts/`
-- `chatters/`
 - `moments/`
-- `data/albums.ts`
-- `data/friends.ts`
-- GitHub Issues 评论数据
+- Markdown 正文中引用的 PDF 数量
+- Markdown front matter 中的 `tags`
 
-这个页面偏“可视化/游戏化”。如果你只是写博客，不需要频繁改它。
+页面顶部显示文章、说说、PDF 和常用标签，下面用时间线展示最近更新。时间位于每条内容卡片外侧，并与时间线节点对齐；内容类型、标题和摘要仍在卡片内。`CreativeWorkshopClient.tsx`、`AlchemyLab.tsx`、`DijiangModel.tsx` 是保留的实验组件，当前 `/tree` 主页面没有加载它们；普通维护不需要修改。
 
 ## 6. 如何写一篇正式文章
 
@@ -714,15 +744,16 @@ posts/my-first-note.md
 - 不要用空格；
 - 不建议用中文文件名。
 
-文章模板：
+文章示例格式：
 
 ```markdown
 ---
 title: "文章标题"
 date: "2026-08-03 20:00:00"
-description: "一句话摘要，会出现在首页、搜索和归档里。"
-cover: "/assets/img/posts/welcome.webp"
+description: "一句话摘要，会出现在首页、搜索和知识地图里。"
+cover: "/assets/img/posts/research-writing-cover.svg"
 tags: ["物理", "笔记", "PDF"]
+pinned: false
 ---
 
 这里开始写正文。
@@ -742,9 +773,18 @@ tags: ["物理", "笔记", "PDF"]
 | --- | --- | --- |
 | `title` | 建议写 | 文章标题 |
 | `date` | 建议写 | 排序依据 |
-| `description` | 建议写 | 首页、搜索、归档摘要 |
+| `description` | 建议写 | 首页、搜索、知识地图摘要 |
 | `cover` | 可选 | 文章封面，不写则用默认封面 |
-| `tags` | 可选 | 标签，会影响搜索和归档 |
+| `tags` | 可选 | 标签，会影响搜索、知识地图和隐藏的归档页 |
+| `pinned` | 可选 | `true` 表示首页置顶，`false` 或不写表示正常按日期排序 |
+
+如果需要置顶某篇文章，把该文章的 front matter 改为：
+
+```yaml
+pinned: true
+```
+
+置顶文章会优先出现在首页第一页，并在文章卡片右上角显示大头针图标，不再显示“置顶”文字。多篇文章同时设置为 `true` 时，它们之间继续按 `date` 从新到旧排列。取消置顶时删除这一行，或改为 `pinned: false`。布尔值不要加引号。
 
 ## 7. Markdown 常用写法
 
@@ -891,13 +931,15 @@ public/assets/files/computational-physics/computational-physics.pdf
 
 ## 9. 如何写杂谈
 
+注意：杂谈功能当前处于隐藏状态。下面内容仅供以后恢复该页面时使用；现在新增杂谈不会出现在首页、导航、关于动态或知识地图中。
+
 在 `chatters/` 里新建：
 
 ```text
 chatters/2026-08-03-my-chatter.md
 ```
 
-模板：
+杂谈示例格式：
 
 ```markdown
 ---
@@ -918,7 +960,7 @@ mood: "慢慢折腾"
 | --- | --- |
 | `title` | 杂谈标题 |
 | `date` | 排序和详情页日期 |
-| `description` | 首页杂谈轮播摘要 |
+| `description` | 恢复杂谈列表或轮播后使用的摘要 |
 | `cover` | 杂谈封面 |
 | `tags` | 标签 |
 | `mood` | 详情页展示心情 |
@@ -931,7 +973,7 @@ mood: "慢慢折腾"
 moments/moment-20260803.md
 ```
 
-最简单模板：
+最简单示例格式：
 
 ```markdown
 ---
@@ -941,7 +983,7 @@ date: "2026-08-03 21:30:00"
 今天更新了网站手册，感觉终于能自己慢慢维护这个小宇宙了。
 ```
 
-带地点和图片的模板：
+带地点和图片的示例格式：
 
 ```markdown
 ---
@@ -1141,17 +1183,77 @@ public/assets/img/posts/a.webp
 siteConfig.ts
 ```
 
-找到：
+### 16.1 推荐方式：上传本地音频和 LRC 歌词
 
-```ts
-cloudMusicIds: [],
+把文件放到下面三个目录：
+
+```text
+public/assets/music/tracks/   音频文件，例如 blue-night.mp3
+public/assets/music/lyrics/   LRC 歌词，例如 blue-night.lrc
+public/assets/music/covers/   歌曲封面，例如 blue-night.webp
 ```
 
-改成：
+然后在 `siteConfig.ts` 里找到：
+
+```ts
+localMusicTracks: [
+  // ...
+],
+```
+
+添加一首歌：
+
+```ts
+localMusicTracks: [
+  {
+    id: "blue-night",
+    title: "Blue Night",
+    artist: "RainierGu",
+    album: "Demo",
+    cover: "/assets/music/covers/blue-night.webp",
+    src: "/assets/music/tracks/blue-night.mp3",
+    lrcUrl: "/assets/music/lyrics/blue-night.lrc",
+  },
+],
+```
+
+每个字段的意思：
+
+| 字段 | 说明 |
+| --- | --- |
+| `id` | 歌曲唯一标识，建议英文小写，例如 `blue-night` |
+| `title` | 歌曲名 |
+| `artist` | 歌手名 |
+| `album` | 专辑名，可不填 |
+| `cover` | 歌曲封面路径 |
+| `src` | 音频文件路径 |
+| `lrcUrl` | LRC 歌词文件路径，可不填；不填就只播放音乐不滚动歌词 |
+
+LRC 歌词文件长这样：
+
+```lrc
+[00:00.00]歌曲名
+[00:12.30]第一句歌词
+[00:16.80]第二句歌词
+```
+
+小提醒：
+
+- 路径不要写 `public`，要从 `/assets/music/` 开始。
+- 文件名建议用英文小写和短横线，例如 `blue-night.mp3`。
+- 音频推荐 `mp3` 或 `m4a`。
+- 封面推荐 `webp`、`jpg` 或 `png`。
+- 请只上传自己有权使用的音频文件。
+
+### 16.2 可选方式：继续使用网易云歌曲 ID
+
+如果你还想补充网易云歌曲，可以继续配置：
 
 ```ts
 cloudMusicIds: ["1809646618", "1974443814"],
 ```
+
+但网易云外链可能因为版权、地区或接口限制无法播放，所以更推荐把重要歌曲放到本地音乐目录。
 
 音乐会影响：
 
@@ -1160,7 +1262,7 @@ cloudMusicIds: ["1809646618", "1974443814"],
 - 桌面端右下/底部悬浮音乐播放器；
 - `/music` 音乐馆页面。
 
-如果没有配置歌曲，音乐组件会显示“请配置 cloudMusicIds”。
+如果没有配置任何本地音乐或网易云歌曲，音乐组件会提示你到 `siteConfig.ts` 配置 `localMusicTracks` 或 `cloudMusicIds`。
 
 ## 17. 如何配置 AI 小猫助手
 
@@ -1172,6 +1274,8 @@ app/api/chat/route.ts
 siteConfig.ts
 docs/DEEPSEEK_AI.md
 ```
+
+桌面端可以直接拖动猫咪本体改变位置。聊天、喂食和输入区域不会误触拖拽；回复框会根据猫咪靠近屏幕左侧、中央或右侧自动调整对齐。长回复使用较宽的小字号文本框，内容过长时只在回复框内部滚动。手机端目前为了性能默认隐藏 AI 小猫。
 
 ### 17.1 改小猫的性格
 
@@ -1189,23 +1293,19 @@ systemPrompt: "你是一个温柔、活泼、喜欢用简短比喻解释问题�
 
 ### 17.2 改模型
 
-默认：
+代码中的默认模型来自：
 
 ```ts
 modelId: "deepseek-v4-flash",
 ```
 
-更强但可能更贵：
-
-```ts
-modelId: "deepseek-v4-pro",
-```
-
-也可以在 Vercel 环境变量里设置：
+线上也可以用环境变量覆盖，不必修改代码：
 
 ```env
-DEEPSEEK_MODEL=deepseek-v4-pro
+DEEPSEEK_MODEL=你的 DeepSeek 账户当前支持的模型 ID
 ```
+
+模型名称以 DeepSeek 控制台/API 实际支持的值为准。如果聊天接口提示 `model not found`，优先检查这个变量；修改 Vercel 环境变量后必须重新部署。
 
 ### 17.3 必需密钥
 
@@ -1268,25 +1368,27 @@ components/WeatherWidget.tsx
 app/api/weather/route.ts
 ```
 
-Vercel 环境变量：
+当前天气有三种使用方式：
+
+1. 第一次进入首页时请求浏览器定位；
+2. 点击天气卡片右上角“定位”重新定位；
+3. 在输入框中手动输入“北京”“上海”等城市并查询，成功后会保存在浏览器本地。
+
+逐小时预报当前最多显示接下来的 4 个时段，使用固定四列布局，不会出现横向滑动。
+
+天气接口按下面顺序工作：
+
+1. 配置了 `QWEATHER_KEY` 时优先使用和风天气；
+2. 未配置或请求失败时尝试 Open-Meteo；
+3. 外部服务都不可用时返回模拟天气，保证首页仍能显示。
+
+可选的 Vercel 环境变量：
 
 ```env
 QWEATHER_KEY=你的和风天气 Token
 ```
 
-当前城市写死为北京：
-
-```ts
-const locationId = "101010100"; // 北京
-```
-
-如果要换城市：
-
-1. 查和风天气 Location ID。
-2. 修改 `app/api/weather/route.ts` 里的 `locationId`。
-3. 修改 `components/WeatherWidget.tsx` 里的城市显示文字，比如把 `北京市` 改成你的城市。
-
-如果没有配置天气 key，组件会进入“模拟天气”模式，不影响网站访问。
+因此城市不再写死，不需要为了换城市修改代码。浏览器定位必须在 `localhost` 或 HTTPS 页面使用；如果用户拒绝定位，直接手动输入城市即可。
 
 ## 20. 如何修改字体
 
@@ -1297,26 +1399,40 @@ app/layout.tsx
 app/globals.css
 ```
 
-现在 `app/layout.tsx` 里引入了：
-
-```ts
-import { Geist, Geist_Mono, Noto_Serif_SC } from "next/font/google";
-```
-
-`body` 使用了：
+当前 `app/layout.tsx` 的 `body` 使用：
 
 ```tsx
 className="... font-serif"
 ```
 
-如果你只想改正文为无衬线字体，可以在 `app/globals.css` 里调整全局样式；如果要换 Google Font，需要：
+`app/globals.css` 当前已经定义了完整的回退字体栈：
+
+```css
+:root {
+  --font-serif: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+}
+```
+
+`body` 通过 `font-family: var(--font-serif)` 使用衬线字体。修改网站字体时，只需调整 `--font-serif` 中的顺序，例如把你喜欢的字体放在最前面。最后的 `serif` 就是最终回退选项，建议始终保留。
+
+如果你想将全站改成无衬线字体，可以把 `body` 改成：
+
+```css
+body {
+  font-family: var(--font-sans);
+}
+```
+
+如果以后通过 `next/font` 引入在线或本地字体，需要：
 
 1. 在 `app/layout.tsx` 引入新字体；
 2. 定义字体变量；
 3. 把变量加入 `<html className=...>`；
 4. 在 `body` 或 CSS 中使用。
 
-建议新手先保留当前字体，不要一次改太多。
+不要删除字体栈末尾的 `serif` 或 `sans-serif`，否则字体加载失败时可能出现不可控差异。
 
 ## 21. 如何修改颜色和毛玻璃风格
 
@@ -1393,7 +1509,7 @@ npm run dev
 打开：
 
 ```text
-http://localhost:3000/reading
+http://localhost:4000/reading
 ```
 
 ## 23. 环境变量与密钥清单
@@ -1411,6 +1527,8 @@ http://localhost:3000/reading
 | `NEXT_PUBLIC_GITALK_REPO` | 评论仓库 repo | 需要 |
 | `NEXT_PUBLIC_GITALK_ADMIN` | 评论管理员 | 需要 |
 
+说明：`QWEATHER_KEY` 是可选项；不配置时会自动尝试 Open-Meteo。Vercel Web Analytics 不需要环境变量，线上部署时 `app/layout.tsx` 会加载 `/_vercel/insights/script.js`，同时还要在 Vercel 项目的 Analytics 页面确认功能已启用。
+
 本地 `.env.local` 示例：
 
 ```env
@@ -1424,7 +1542,7 @@ Vercel 也要配置同样的线上变量。
 
 ## 24. 常见修改任务速查
 
-### 25.1 改网站名称
+### 24.1 改网站名称
 
 改：
 
@@ -1440,7 +1558,7 @@ navTitle
 navAfter
 ```
 
-### 25.2 改头像
+### 24.2 改头像
 
 1. 上传图片到 `public/assets/img/avatar/`。
 2. 修改 `siteConfig.ts`：
@@ -1450,7 +1568,7 @@ avatarUrl: "/assets/img/avatar/new-avatar.jpg",
 faviconUrl: "/assets/img/avatar/new-avatar.jpg",
 ```
 
-### 25.3 改首页背景
+### 24.3 改首页背景
 
 1. 上传图片到 `public/assets/img/backgrounds/`。
 2. 修改：
@@ -1461,7 +1579,7 @@ bgImages: [
 ],
 ```
 
-### 25.4 添加文章
+### 24.4 添加文章
 
 1. 在 `posts/` 新建 `.md`。
 2. 写 front matter。
@@ -1469,12 +1587,14 @@ bgImages: [
 4. `npm run build` 检查。
 5. 提交、推送。
 
-### 25.5 添加 PDF
+需要置顶时，在文章 front matter 中添加 `pinned: true`；取消置顶则删除该字段或改成 `false`。
+
+### 24.5 添加 PDF
 
 1. 放到 `public/assets/files/某个目录/`。
 2. 在文章里写下载链接或 `<iframe>`。
 
-### 25.6 添加项目
+### 24.6 添加项目
 
 改：
 
@@ -1482,7 +1602,7 @@ bgImages: [
 data/projects.ts
 ```
 
-### 25.7 添加友链
+### 24.7 添加友链
 
 改：
 
@@ -1490,20 +1610,29 @@ data/projects.ts
 data/friends.ts
 ```
 
-### 25.8 添加照片墙图片
+### 24.8 添加照片墙图片
 
 1. 图片放 `public/assets/img/albums/`。
 2. 改 `data/albums.ts`。
 
-### 25.9 添加音乐
+### 24.9 添加音乐
 
-改：
+1. 音频放到 `public/assets/music/tracks/`。
+2. LRC 歌词放到 `public/assets/music/lyrics/`。
+3. 封面放到 `public/assets/music/covers/`。
+4. 改：
+
+```text
+siteConfig.ts -> localMusicTracks
+```
+
+网易云歌曲 ID 仍可作为备用，改：
 
 ```text
 siteConfig.ts -> cloudMusicIds
 ```
 
-### 25.10 改 AI 助手回答风格
+### 24.10 改 AI 助手回答风格
 
 改：
 
@@ -1511,7 +1640,7 @@ siteConfig.ts -> cloudMusicIds
 siteConfig.ts -> geminiConfig.systemPrompt
 ```
 
-### 25.11 改导航菜单
+### 24.11 改导航菜单
 
 改：
 
@@ -1519,7 +1648,7 @@ siteConfig.ts -> geminiConfig.systemPrompt
 components/Navbar.tsx -> navLinks
 ```
 
-### 25.12 改页面整体布局
+### 24.12 改页面整体布局
 
 优先看：
 
@@ -1531,7 +1660,7 @@ components/
 
 ## 25. 新手最容易踩的坑
 
-### 26.1 图片路径写错
+### 25.1 图片路径写错
 
 错误：
 
@@ -1545,7 +1674,7 @@ public/assets/img/avatar/avatar.jpg
 /assets/img/avatar/avatar.jpg
 ```
 
-### 26.2 Markdown front matter 格式错
+### 25.2 Markdown front matter 格式错
 
 开头和结尾都要有 `---`：
 
@@ -1556,7 +1685,7 @@ date: "2026-08-03"
 ---
 ```
 
-### 26.3 数组末尾漏逗号
+### 25.3 数组末尾漏逗号
 
 在 `.ts` 数据文件里，对象之间要用逗号：
 
@@ -1571,14 +1700,14 @@ date: "2026-08-03"
 },
 ```
 
-### 26.4 密钥写进代码
+### 25.4 密钥写进代码
 
 不要把 DeepSeek、天气、GitHub OAuth 密钥写进公开仓库。应该写在：
 
 - 本地 `.env.local`
 - Vercel Environment Variables
 
-### 26.5 只改了本地，忘记部署
+### 25.5 只改了本地，忘记部署
 
 本地看到效果不代表线上已经更新。需要：
 
@@ -1594,7 +1723,7 @@ git push origin main
 vercel --prod
 ```
 
-### 26.6 改完没有重启开发服务器
+### 25.6 改完没有重启开发服务器
 
 大部分修改会自动热更新，但环境变量、依赖、配置变化有时需要重启：
 
@@ -1694,7 +1823,7 @@ PDF：
 public/assets/files/computational-physics/computational-physics.pdf
 ```
 
-这样命名的好处是：链接稳定、跨系统不容易乱码、以后迁移也省心。
+这样命名的好处是：链接稳定、跨系统不容易乱码，后续长期维护也更省心。
 
 ## 29. 你真正需要记住的三句话
 

@@ -143,15 +143,15 @@ export default function MusicClient() {
           <div className="animate-fade-in-up">
             <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
               <div>
-                <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">云端乐律</h1>
-                <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">在代码的缝隙中寻找灵魂的共鸣</p>
+                <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">共鸣时刻</h1>
+                <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">在旋律中与世界同频。</p>
               </div>
 
               <div className="relative w-full md:w-80 group">
                 <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-slate-500 dark:text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
                 <input
                   type="text"
-                  placeholder="搜索音轨..."
+                  placeholder="搜索音乐..."
                   value={searchQuery}
                   onFocus={() => setActiveTab('playlist')}
                   onChange={(e) => {

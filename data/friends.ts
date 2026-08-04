@@ -9,14 +9,6 @@ export interface Friend {
 
 export const friendsData: Friend[] = [
   {
-    id: "xhblogs-template",
-    name: "XHBlogs 模板",
-    description: "当前主页使用的 Next.js 毛玻璃风格博客模板。",
-    avatar: "/assets/img/posts/research-writing-cover.svg",
-    url: "https://github.com/heiehiehi/XinghuisamaBlogs",
-    themeColor: "rgba(99, 102, 241, 0.45)",
-  },
-  {
     id: "vercel",
     name: "Vercel",
     description: "当前 Next.js 主页的主要部署平台，并提供 Web Analytics 统计。",
