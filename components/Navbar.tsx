@@ -6,6 +6,11 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, PanInfo } from 'framer-motion';
 import { siteConfig } from '../siteConfig';
 
+type NavLink = {
+  name: string;
+  href: string;
+};
+
 export default function Navbar() {
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -68,7 +73,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  const navLinks = [
+  const navLinks: NavLink[] = [
     { name: '首页', href: '/' },
     { name: '项目', href: '/projects' },
     { name: '说说', href: '/moments' },
@@ -86,23 +91,41 @@ export default function Navbar() {
     <>
       {/* PC端导航栏 */}
       <header className={`hidden md:block w-full fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${showNav ? 'translate-y-0' : '-translate-y-full'} bg-white/40 dark:bg-slate-900/50 backdrop-blur-xl border-white/20 dark:border-white/5 shadow-sm`}>
-        <div className="w-[90%] max-w-6xl mx-auto h-16 flex items-center justify-between px-4 sm:px-[30px] box-border">
-          <Link href="/" className="title-font-black text-xl text-slate-800 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300">
+        <div className="w-[90%] max-w-6xl mx-auto h-16 flex items-center justify-between px-3 lg:px-[30px] box-border">
+          <Link href="/" className="title-font-black text-lg lg:text-xl text-slate-800 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300">
             {siteConfig.navTitle || siteConfig.authorName}
             <span className="text-indigo-500 mx-1">{siteConfig.navSuffix || 'の'}</span>
             {siteConfig.navAfter || '宝藏之地'}
           </Link>
-          <nav className="flex gap-8 text-sm font-bold">
-            {visibleNavLinks.map((link) => {
-              const isActive = pathname === link.href || pathname === `${link.href}/`;
-              return (
-                <Link key={link.href} href={link.href} className={`relative py-1 transition-colors ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-200 hover:text-indigo-600'}`}>
-                  {link.name}
-                  {isActive && <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-indigo-500 rounded-full animate-pulse"></span>}
-                </Link>
-              );
-            })}
-          </nav>
+          <div className="flex items-center gap-3 lg:gap-5">
+            <nav className="flex gap-3 text-xs font-bold lg:gap-5 lg:text-sm xl:gap-8">
+              {visibleNavLinks.map((link) => {
+                const isActive = pathname === link.href || pathname === `${link.href}/`;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`relative py-1 transition-colors ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-200 hover:text-indigo-600'}`}
+                  >
+                    {link.name}
+                    {isActive && <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-indigo-500 rounded-full animate-pulse"></span>}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <Link
+              href="/feed.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              prefetch={false}
+              aria-label="RSS 订阅"
+              className="group inline-flex flex-shrink-0 items-center gap-1.5 rounded-2xl border border-white/60 bg-white/45 px-3 py-2 text-xs font-black tracking-[0.04em] text-orange-600 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-300/70 hover:bg-white/70 hover:shadow-[0_10px_28px_rgba(249,115,22,0.16)] dark:border-white/10 dark:bg-slate-800/55 dark:text-orange-300 dark:hover:border-orange-400/40 dark:hover:bg-slate-800/80 lg:gap-2 lg:px-4 lg:text-sm"
+            >
+              <RssIcon />
+              <span>RSS订阅</span>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -191,10 +214,35 @@ export default function Navbar() {
                   })}
                 </motion.div>
               </motion.div>
+
+              <div className="fixed bottom-6 left-1/2 z-[70] -translate-x-1/2">
+                <Link
+                  href="/feed.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  prefetch={false}
+                  aria-label="RSS 订阅"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="inline-flex items-center gap-2 whitespace-nowrap rounded-2xl border border-white/50 bg-white/65 px-5 py-3 text-sm font-black tracking-[0.04em] text-orange-600 shadow-2xl backdrop-blur-2xl transition-transform active:scale-95 dark:border-white/10 dark:bg-slate-800/75 dark:text-orange-300"
+                >
+                  <RssIcon />
+                  <span>RSS订阅</span>
+                </Link>
+              </div>
             </>
           )}
         </AnimatePresence>
       </div>
     </>
+  );
+}
+
+function RssIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+      <circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none" />
+      <path d="M4 11a9 9 0 0 1 9 9" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M4 4a16 16 0 0 1 16 16" strokeWidth="2.2" strokeLinecap="round" />
+    </svg>
   );
 }

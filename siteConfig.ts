@@ -108,7 +108,7 @@ export const siteConfig = {
   },
 
   friendLinkApplyFormat:
-    "名称：RainierGu's Blog\n简介：课程学习，科研心得，以及个人的碎碎念。\n链接：https://rainiergu.vercel.app\n头像：https://rainiergu.vercel.app/assets/img/avatar/avatar.jpg",
+    "name: RainierGu's Blog\ndescription: 课程学习，科研心得，以及个人的碎碎念。\navatar: https://www.rainiergu.cn/assets/img/avatar/avatar.jpg\nurl: https://www.rainiergu.cn/",
 
   enableLevelSystem: true,
 };

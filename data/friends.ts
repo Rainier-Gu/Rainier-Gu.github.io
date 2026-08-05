@@ -27,4 +27,13 @@ export const friendsData: Friend[] = [
     themeColor: "rgba(99, 102, 241, 0.45)",
     badge: "基础模板",
   },
+  {
+    id: "fuquan99666",
+    name: "zzz~",
+    description: "not one, not two, not seven ~~",
+    avatar: "https://fuquan99666.github.io/avatar.png",
+    url: "https://fuquan99666.github.io",
+    themeColor: "",
+    badge: "",
+  },
 ];

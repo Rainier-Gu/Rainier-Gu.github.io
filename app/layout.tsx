@@ -16,8 +16,14 @@ import FloatingThemeToggle from '../components/FloatingThemeToggle';
 import MobileBackButton from '../components/MobileBackButton';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.rainiergu.cn'),
   title: siteConfig.title,
   description: siteConfig.bio,
+  alternates: {
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
+  },
   icons: {
     icon: siteConfig.faviconUrl,
     apple: siteConfig.faviconUrl,

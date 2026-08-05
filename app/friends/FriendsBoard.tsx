@@ -110,7 +110,7 @@ export default function FriendsBoard() {
         </p>
 
         {/* 代码展示框 & 一键复制按钮 */}
-        <div className="relative bg-slate-100/60 dark:bg-slate-900/60 rounded-xl md:rounded-2xl p-4 md:p-5 text-left inline-block w-full max-w-md border border-slate-200/50 dark:border-slate-700/50 group overflow-hidden">
+        <div className="relative bg-slate-100/60 dark:bg-slate-900/60 rounded-xl md:rounded-2xl p-4 md:p-5 text-left inline-block w-full max-w-2xl border border-slate-200/50 dark:border-slate-700/50 group overflow-hidden">
           <pre className="font-mono text-[10px] md:text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-all pr-8 md:pr-10">
             {applyFormat}
           </pre>
