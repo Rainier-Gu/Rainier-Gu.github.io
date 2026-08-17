@@ -8,6 +8,7 @@ import rehypeSanitize, { defaultSchema, type Options } from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import rehypeStringify from 'rehype-stringify';
+import katex from 'katex';
 
 type MarkdownAstNode = {
   type: string;
@@ -29,6 +30,7 @@ type RenderMarkdownOptions = {
 export type MarkdownTocItem = {
   level: number;
   text: string;
+  html: string;
   id: string;
 };
 
@@ -66,6 +68,35 @@ function getHeadingText(node: MarkdownAstNode): string {
   }
 
   return node.children?.map(getHeadingText).join('') || '';
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getHeadingHtml(node: MarkdownAstNode): string {
+  if (node.type === 'image') return escapeHtml(node.alt || '');
+  if (node.type === 'inlineMath') {
+    return katex.renderToString(node.value || '', {
+      displayMode: false,
+      throwOnError: false,
+      strict: 'ignore',
+      trust: false,
+    });
+  }
+  if (typeof node.value === 'string') {
+    const value = node.type === 'html'
+      ? node.value.replace(/<\/?[^>]+(>|$)/g, '')
+      : node.value;
+    return escapeHtml(value);
+  }
+
+  return node.children?.map(getHeadingHtml).join('') || '';
 }
 
 function createHeadingNumberer() {
@@ -221,9 +252,11 @@ export function extractMarkdownToc(
     if (heading.depth > maxDepth) return;
 
     const rawText = getHeadingText(heading).trim();
+    const headingHtml = getHeadingHtml(heading).trim();
     toc.push({
       level: heading.depth,
       text: number ? `${number} ${rawText}` : rawText,
+      html: number ? `${escapeHtml(number)} ${headingHtml}` : headingHtml,
       id: `toc-heading-${toc.length + 1}`,
     });
   });

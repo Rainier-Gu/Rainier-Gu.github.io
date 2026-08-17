@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 type TocItem = {
   level: number;
   text: string;
+  html: string;
   id: string;
 };
 
@@ -31,12 +32,6 @@ const getSafeId = (rawText: string) => {
   return 'toc-' + cleanText
     .replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '')
     .toLowerCase();
-};
-
-// 🌟 侧边栏视觉净化器
-const getDisplayText = (rawText: string) => {
-  // 直接调用终极净化器，展示纯洁无瑕的标题名！
-  return cleanMarkdownHeading(rawText);
 };
 
 export default function ClientTOC({ toc }: { toc: TocItem[] }) {
@@ -129,9 +124,6 @@ export default function ClientTOC({ toc }: { toc: TocItem[] }) {
         <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-slate-200 dark:bg-slate-700/50 rounded-full"></div>
 
         {toc.map((item, index) => {
-          // 视觉上：扒掉超链接，完美展示 "3.万度"
-          const displayText = getDisplayText(item.text);
-
           // 底层跳转：生成纯净版的 ID "toc-3万度"，绝对不会找错目标！
           const safeId = item.id || getSafeId(item.text);
           const isActive = activeId === safeId;
@@ -150,7 +142,10 @@ export default function ClientTOC({ toc }: { toc: TocItem[] }) {
               {isActive && (
                 <span className="absolute left-[-5px] top-[50%] -translate-y-[50%] w-[6px] h-[6px] rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></span>
               )}
-              {displayText}
+              <span
+                className="toc-label"
+                dangerouslySetInnerHTML={{ __html: item.html }}
+              />
             </button>
           );
         })}

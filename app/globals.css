@@ -219,6 +219,17 @@
   white-space: nowrap;
 }
 
+/* Keep inline formulas in the article TOC aligned with its compact text. */
+.toc-label .katex {
+  font-size: 1em;
+  line-height: 1;
+  vertical-align: -0.08em;
+}
+
+.toc-label .katex-html {
+  white-space: nowrap;
+}
+
 .prose.article-prose :where(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-serif) !important;
   font-synthesis: weight;
