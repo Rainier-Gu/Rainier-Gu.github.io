@@ -3,7 +3,7 @@ import path from 'path';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { parseFrontMatter } from '../../../utils/frontMatter';
-import { renderMarkdown } from '../../../utils/markdown';
+import { extractMarkdownToc, renderMarkdown } from '../../../utils/markdown';
 import { decodeRouteSlug, resolveMarkdownPath } from '../../../utils/contentFiles';
 
 // 引入高亮主题
@@ -29,20 +29,6 @@ export async function generateStaticParams() {
     .map((name) => ({
       slug: name.replace(/\.md$/, ''),
     }));
-}
-
-function extractToc(content: string) {
-  const headingRegex = /^(#{1,3})\s+(.+)$/gm;
-  const toc = [];
-  let match;
-  while ((match = headingRegex.exec(content)) !== null) {
-    toc.push({
-      level: match[1].length,
-      text: match[2].trim(),
-      id: match[2].trim().toLowerCase().replace(/\s+/g, '-')
-    });
-  }
-  return toc;
 }
 
 async function getPostData(slug: string) {
@@ -78,12 +64,14 @@ async function getPostData(slug: string) {
 
   // ==========================================
 
-  const contentHtml = await renderMarkdown(content);
+  const numberHeadings = data.numberHeadings === true
+    || String(data.numberHeadings).toLowerCase() === 'true';
+  const contentHtml = await renderMarkdown(content, { numberHeadings });
 
   return {
     slug,
     contentHtml,
-    toc: extractToc(content),
+    toc: extractMarkdownToc(content, { numberHeadings, maxDepth: 3 }),
     title: data.title,
     date: data.date,
     tags: data.tags && Array.isArray(data.tags) ? data.tags : [],

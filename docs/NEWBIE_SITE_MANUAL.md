@@ -753,6 +753,7 @@ description: "一句话摘要，会出现在首页、搜索和知识地图里。
 cover: "/assets/img/posts/research-writing-cover.svg"
 tags: ["物理", "笔记", "PDF"]
 pinned: false
+numberHeadings: false
 ---
 
 这里开始写正文。
@@ -776,6 +777,7 @@ pinned: false
 | `cover` | 可选 | 文章封面，不写则用默认封面 |
 | `tags` | 可选 | 标签，会影响搜索、知识地图和隐藏的归档页 |
 | `pinned` | 可选 | `true` 表示首页置顶，`false` 或不写表示正常按日期排序 |
+| `numberHeadings` | 可选 | `true` 表示自动给正文二级到六级标题编号，`false` 或不写表示不编号 |
 
 如果需要置顶某篇文章，把该文章的 front matter 改为：
 
@@ -784,6 +786,14 @@ pinned: true
 ```
 
 置顶文章会优先出现在首页第一页，并在文章卡片右上角显示大头针图标，不再显示“置顶”文字。多篇文章同时设置为 `true` 时，它们之间继续按 `date` 从新到旧排列。取消置顶时删除这一行，或改为 `pinned: false`。布尔值不要加引号。
+
+如果需要自动显示章节编号，在文章 front matter 中添加：
+
+```yaml
+numberHeadings: true
+```
+
+启用后，文章主标题保持不变，正文标题会依次显示为 `1.`、`1.1`、`1.1.1` 等形式，右侧目录使用相同编号。取消时删除这一行，或改为 `numberHeadings: false`。
 
 ## 7. Markdown 常用写法
 
@@ -795,7 +805,7 @@ pinned: true
 ### 三级标题
 ```
 
-文章目录会读取 1 到 3 级标题。
+文章目录会读取 1 到 3 级标题；启用 `numberHeadings: true` 后，正文 2 到 6 级标题会自动编号。
 
 ### 7.2 加粗、斜体、删除线
 

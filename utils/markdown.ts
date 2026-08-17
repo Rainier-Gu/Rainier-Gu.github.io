@@ -9,6 +9,24 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import rehypeStringify from 'rehype-stringify';
 
+type MarkdownAstNode = {
+  type: string;
+  depth?: number;
+  value?: string;
+  alt?: string;
+  children?: MarkdownAstNode[];
+};
+
+type RenderMarkdownOptions = {
+  numberHeadings?: boolean;
+};
+
+export type MarkdownTocItem = {
+  level: number;
+  text: string;
+  id: string;
+};
+
 const codeAttributes = defaultSchema.attributes?.code || [];
 
 const markdownSchema = {
@@ -22,11 +40,108 @@ const markdownSchema = {
   },
 } as Options;
 
-export async function renderMarkdown(content: string) {
+function visitHeadings(
+  node: MarkdownAstNode,
+  visitor: (heading: MarkdownAstNode & { depth: number }) => void,
+) {
+  if (node.type === 'heading' && typeof node.depth === 'number') {
+    visitor(node as MarkdownAstNode & { depth: number });
+  }
+
+  node.children?.forEach((child) => visitHeadings(child, visitor));
+}
+
+function getHeadingText(node: MarkdownAstNode): string {
+  if (node.type === 'image') return node.alt || '';
+  if (node.type === 'inlineMath') return node.value ? `$${node.value}$` : '';
+  if (typeof node.value === 'string') {
+    return node.type === 'html'
+      ? node.value.replace(/<\/?[^>]+(>|$)/g, '')
+      : node.value;
+  }
+
+  return node.children?.map(getHeadingText).join('') || '';
+}
+
+function createHeadingNumberer() {
+  const counters = Array<number>(7).fill(0);
+
+  return (depth: number) => {
+    if (depth <= 1) {
+      counters.fill(0);
+      return '';
+    }
+
+    // If a document jumps from h2 directly to h4, fill the skipped level so
+    // the result remains readable (for example 1.1.1 instead of 1.0.1).
+    for (let level = 2; level < depth; level += 1) {
+      if (counters[level] === 0) counters[level] = 1;
+    }
+
+    counters[depth] += 1;
+    for (let level = depth + 1; level < counters.length; level += 1) {
+      counters[level] = 0;
+    }
+
+    const path = counters.slice(2, depth + 1).join('.');
+    return depth === 2 ? `${path}.` : path;
+  };
+}
+
+function remarkNumberHeadings(options: RenderMarkdownOptions = {}) {
+  return (tree: unknown) => {
+    if (!options.numberHeadings) return;
+
+    const nextNumber = createHeadingNumberer();
+    visitHeadings(tree as MarkdownAstNode, (heading) => {
+      const number = nextNumber(heading.depth);
+      if (!number) return;
+
+      heading.children = [
+        { type: 'text', value: `${number} ` },
+        ...(heading.children || []),
+      ];
+    });
+  };
+}
+
+export function extractMarkdownToc(
+  content: string,
+  options: RenderMarkdownOptions & { maxDepth?: number } = {},
+): MarkdownTocItem[] {
+  const tree = unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkMath)
+    .parse(content) as unknown as MarkdownAstNode;
+  const nextNumber = createHeadingNumberer();
+  const maxDepth = options.maxDepth ?? 3;
+  const toc: MarkdownTocItem[] = [];
+
+  visitHeadings(tree, (heading) => {
+    const number = options.numberHeadings ? nextNumber(heading.depth) : '';
+    if (heading.depth > maxDepth) return;
+
+    const rawText = getHeadingText(heading).trim();
+    toc.push({
+      level: heading.depth,
+      text: number ? `${number} ${rawText}` : rawText,
+      id: `toc-heading-${toc.length + 1}`,
+    });
+  });
+
+  return toc;
+}
+
+export async function renderMarkdown(
+  content: string,
+  options: RenderMarkdownOptions = {},
+) {
   const processedContent = await unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkMath)
+    .use(remarkNumberHeadings, options)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
     .use(rehypeSanitize, markdownSchema)

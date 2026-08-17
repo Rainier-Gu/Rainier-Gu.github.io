@@ -49,10 +49,10 @@ export default function ClientTOC({ toc }: { toc: TocItem[] }) {
     const headings = Array.from(contentDiv.querySelectorAll('h1, h2, h3'));
 
     // 🌟 强制统一正文 ID
-    headings.forEach((heading) => {
-      // heading.textContent 拿到的是渲染后的纯文字（已经没有超链接语法了）
-      // 再过一遍 getSafeId，确保正文和侧边栏的 ID 100% 对齐！
-      heading.id = getSafeId(heading.textContent || '');
+    headings.forEach((heading, index) => {
+      // 目录 ID 由服务端按标题顺序生成，避免公式、链接等富文本造成
+      // 正文 textContent 与 Markdown 原文不一致。
+      heading.id = toc[index]?.id || getSafeId(heading.textContent || '');
     });
 
     const handleScroll = () => {
@@ -133,7 +133,7 @@ export default function ClientTOC({ toc }: { toc: TocItem[] }) {
           const displayText = getDisplayText(item.text);
 
           // 底层跳转：生成纯净版的 ID "toc-3万度"，绝对不会找错目标！
-          const safeId = getSafeId(item.text);
+          const safeId = item.id || getSafeId(item.text);
           const isActive = activeId === safeId;
 
           return (
