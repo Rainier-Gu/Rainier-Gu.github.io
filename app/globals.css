@@ -201,6 +201,24 @@
   letter-spacing: var(--tracking-body);
 }
 
+/* Obsidian-style compact $$...$$ syntax is promoted to a real display block. */
+.prose.article-prose .katex-display {
+  display: block !important;
+  max-width: 100%;
+  margin: 1.25rem 0 !important;
+  padding: 0.2rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prose.article-prose .katex-display > .katex {
+  display: inline-block;
+  min-width: max-content;
+  white-space: nowrap;
+}
+
 .prose.article-prose :where(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-serif) !important;
   font-synthesis: weight;

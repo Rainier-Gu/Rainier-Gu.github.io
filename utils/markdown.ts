@@ -14,6 +14,11 @@ type MarkdownAstNode = {
   depth?: number;
   value?: string;
   alt?: string;
+  data?: Record<string, unknown>;
+  position?: {
+    start?: { offset?: number };
+    end?: { offset?: number };
+  };
   children?: MarkdownAstNode[];
 };
 
@@ -105,6 +110,99 @@ function remarkNumberHeadings(options: RenderMarkdownOptions = {}) {
   };
 }
 
+function isDoubleDollarMath(node: MarkdownAstNode, source: string) {
+  if (node.type !== 'inlineMath') return false;
+
+  const start = node.position?.start?.offset;
+  const end = node.position?.end?.offset;
+  if (typeof start !== 'number' || typeof end !== 'number') return false;
+
+  return source.slice(start, start + 2) === '$$'
+    && source.slice(end - 2, end) === '$$';
+}
+
+function createDisplayMathNode(node: MarkdownAstNode): MarkdownAstNode {
+  const value = node.value || '';
+
+  return {
+    ...node,
+    type: 'math',
+    data: {
+      hName: 'pre',
+      hChildren: [
+        {
+          type: 'element',
+          tagName: 'code',
+          properties: {
+            className: ['language-math', 'math-display'],
+          },
+          children: [{ type: 'text', value }],
+        },
+      ],
+    },
+  };
+}
+
+/**
+ * remark-math only treats $$...$$ as display math when the delimiters occupy
+ * their own lines. Obsidian also accepts the compact `text $$...$$ text`
+ * form, so promote double-dollar inline nodes into flow math nodes here.
+ * Single-dollar math remains inline.
+ */
+function remarkPromoteDoubleDollarMath(options: { source: string }) {
+  return (tree: unknown) => {
+    const source = options.source;
+
+    const transform = (parent: MarkdownAstNode) => {
+      if (!parent.children?.length) return;
+
+      const nextChildren: MarkdownAstNode[] = [];
+
+      parent.children.forEach((child) => {
+        if (child.type !== 'paragraph' || !child.children?.length) {
+          transform(child);
+          nextChildren.push(child);
+          return;
+        }
+
+        const containsDisplayMath = child.children.some((inlineNode) => (
+          isDoubleDollarMath(inlineNode, source)
+        ));
+
+        if (!containsDisplayMath) {
+          nextChildren.push(child);
+          return;
+        }
+
+        let paragraphChildren: MarkdownAstNode[] = [];
+        const flushParagraph = () => {
+          if (!paragraphChildren.length) return;
+          nextChildren.push({
+            ...child,
+            children: paragraphChildren,
+          });
+          paragraphChildren = [];
+        };
+
+        child.children.forEach((inlineNode) => {
+          if (isDoubleDollarMath(inlineNode, source)) {
+            flushParagraph();
+            nextChildren.push(createDisplayMathNode(inlineNode));
+          } else {
+            paragraphChildren.push(inlineNode);
+          }
+        });
+
+        flushParagraph();
+      });
+
+      parent.children = nextChildren;
+    };
+
+    transform(tree as MarkdownAstNode);
+  };
+}
+
 export function extractMarkdownToc(
   content: string,
   options: RenderMarkdownOptions & { maxDepth?: number } = {},
@@ -141,6 +239,7 @@ export async function renderMarkdown(
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkMath)
+    .use(remarkPromoteDoubleDollarMath, { source: content })
     .use(remarkNumberHeadings, options)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)

@@ -26,7 +26,22 @@
 
 # misc
 .DS_Store
+Thumbs.db
+Desktop.ini
 *.pem
+
+# local editors and workspace state
+/.obsidian/
+/.vscode/
+/.idea/
+/.agents/
+/.codex/
+*.code-workspace
+
+# Obsidian local trash and root-level temporary attachments
+/.trash/
+/Pasted image*.png
+/未命名*.md
 
 # debug
 npm-debug.log*
