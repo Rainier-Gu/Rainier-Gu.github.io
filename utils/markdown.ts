@@ -15,6 +15,8 @@ type MarkdownAstNode = {
   depth?: number;
   value?: string;
   alt?: string;
+  url?: string;
+  title?: string | null;
   data?: Record<string, unknown>;
   position?: {
     start?: { offset?: number };
@@ -35,6 +37,7 @@ export type MarkdownTocItem = {
 };
 
 const codeAttributes = defaultSchema.attributes?.code || [];
+const imageAttributes = defaultSchema.attributes?.img || [];
 
 const markdownSchema = {
   ...defaultSchema,
@@ -44,8 +47,107 @@ const markdownSchema = {
       ...codeAttributes,
       ['className', /^language-[\w-]+$/, 'math-inline', 'math-display'],
     ],
+    img: [
+      ...imageAttributes,
+      ['className', 'article-image', 'article-image-center'],
+      ['loading', 'lazy'],
+      ['decoding', 'async'],
+    ],
   },
 } as Options;
+
+const OBSIDIAN_IMAGE_PATTERN = /!\[\[([^\]\r\n]+)\]\]/g;
+const SUPPORTED_IMAGE_EXTENSION = /\.(?:avif|gif|jpe?g|png|svg|webp)$/i;
+
+function createObsidianImageNode(rawEmbed: string): MarkdownAstNode | null {
+  const [rawTarget, ...rawOptions] = rawEmbed.split('|');
+  let target = rawTarget.trim().replace(/\\/g, '/');
+  let alignment = 'center';
+
+  target = target.replace(/#pic(?:[:_-])(center|left|right)$/i, (_match, value: string) => {
+    alignment = value.toLowerCase();
+    return '';
+  });
+
+  if (!SUPPORTED_IMAGE_EXTENSION.test(target)) return null;
+
+  if (target.startsWith('public/')) target = target.slice('public'.length);
+  if (!/^(?:https?:)?\/\//i.test(target) && !target.startsWith('/')) {
+    target = target.includes('/') ? `/${target}` : `/assets/img/posts/${target}`;
+  }
+
+  const widthOption = rawOptions.find((option) => /^\d{1,4}$/.test(option.trim()));
+  const width = widthOption ? Number.parseInt(widthOption.trim(), 10) : undefined;
+  const fileName = target.split('/').pop() || 'article image';
+  const alt = fileName.replace(/\.[^.]+$/, '');
+  const className = ['article-image'];
+  if (alignment === 'center') className.push('article-image-center');
+
+  return {
+    type: 'image',
+    url: target,
+    alt,
+    title: null,
+    data: {
+      hProperties: {
+        className,
+        ...(width ? { width } : {}),
+        loading: 'lazy',
+        decoding: 'async',
+      },
+    },
+  };
+}
+
+function remarkObsidianImageEmbeds() {
+  return (tree: unknown) => {
+    const transform = (parent: MarkdownAstNode) => {
+      if (!parent.children?.length) return;
+
+      const nextChildren: MarkdownAstNode[] = [];
+
+      parent.children.forEach((child) => {
+        if (child.type !== 'text' || typeof child.value !== 'string') {
+          transform(child);
+          nextChildren.push(child);
+          return;
+        }
+
+        let cursor = 0;
+        let match: RegExpExecArray | null;
+        OBSIDIAN_IMAGE_PATTERN.lastIndex = 0;
+
+        while ((match = OBSIDIAN_IMAGE_PATTERN.exec(child.value)) !== null) {
+          const imageNode = createObsidianImageNode(match[1]);
+          if (!imageNode) continue;
+
+          if (match.index > cursor) {
+            nextChildren.push({
+              ...child,
+              value: child.value.slice(cursor, match.index),
+            });
+          }
+
+          nextChildren.push(imageNode);
+          cursor = match.index + match[0].length;
+        }
+
+        if (cursor === 0) {
+          nextChildren.push(child);
+        } else if (cursor < child.value.length) {
+          nextChildren.push({
+            ...child,
+            value: child.value.slice(cursor),
+          });
+        }
+      });
+
+      parent.children = nextChildren;
+    };
+
+    transform(tree as MarkdownAstNode);
+  };
+}
 
 function visitHeadings(
   node: MarkdownAstNode,
@@ -272,6 +374,7 @@ export async function renderMarkdown(
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkMath)
+    .use(remarkObsidianImageEmbeds)
     .use(remarkPromoteDoubleDollarMath, { source: content })
     .use(remarkNumberHeadings, options)
     .use(remarkRehype, { allowDangerousHtml: true })

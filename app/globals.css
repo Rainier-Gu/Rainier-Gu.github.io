@@ -230,6 +230,16 @@
   white-space: nowrap;
 }
 
+.prose.article-prose img.article-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.prose.article-prose img.article-image-center {
+  display: block;
+  margin-inline: auto;
+}
+
 .prose.article-prose :where(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-serif) !important;
   font-synthesis: weight;
