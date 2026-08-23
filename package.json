@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "npm run images:thumbnails",
     "dev": "next dev -p 4000",
+    "prebuild": "npm run images:thumbnails",
     "build": "next build",
     "start": "next start -p 4000",
     "lint": "eslint",

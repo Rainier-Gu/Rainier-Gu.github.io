@@ -2,9 +2,20 @@
 
 import Link from 'next/link';
 import { Pin } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { type SyntheticEvent, useRef, useState } from 'react';
 
 const POSTS_PER_PAGE = 5;
+
+function fallbackToOriginalCover(
+  event: SyntheticEvent<HTMLImageElement>,
+  originalCover?: string,
+) {
+  if (!originalCover) return;
+
+  const image = event.currentTarget;
+  const fallbackUrl = new URL(originalCover, window.location.href).href;
+  if (image.src !== fallbackUrl) image.src = originalCover;
+}
 
 export default function HomePostStream({ posts }: { posts: any[] }) {
   const safePosts = posts || [];
@@ -67,6 +78,7 @@ export default function HomePostStream({ posts }: { posts: any[] }) {
               className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-1000 group-hover:scale-105 dark:opacity-90"
               loading="lazy"
               decoding="async"
+              onError={(event) => fallbackToOriginalCover(event, featuredPost.cover)}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-transparent dark:hidden" />
             <div className="absolute inset-0 hidden bg-gradient-to-t from-black/90 via-black/35 to-transparent dark:block" />
@@ -122,6 +134,7 @@ export default function HomePostStream({ posts }: { posts: any[] }) {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
                   decoding="async"
+                  onError={(event) => fallbackToOriginalCover(event, post.cover)}
                 />
               </div>
 
